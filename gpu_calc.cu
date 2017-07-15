@@ -39,12 +39,12 @@ __device__ void ShiftRowsCuda(int *state) {
   memcpy(cw, cb, sizeof(cw));
 
   for (i = 0; i < NB; i += 4) {
-    i4 = i * 4;
+    i4 = i << 4;
     for (j = 1; j < 4; j++) {
-      cw[i4 + j + 0 * 4] = cb[i4 + j + ((j + 0) & 3) * 4];
-      cw[i4 + j + 1 * 4] = cb[i4 + j + ((j + 1) & 3) * 4];
-      cw[i4 + j + 2 * 4] = cb[i4 + j + ((j + 2) & 3) * 4];
-      cw[i4 + j + 3 * 4] = cb[i4 + j + ((j + 3) & 3) * 4];
+      cw[i4 + j + 0 << 2] = cb[i4 + j + ((j + 0) & 3) << 2];
+      cw[i4 + j + 1 << 2] = cb[i4 + j + ((j + 1) & 3) << 2];
+      cw[i4 + j + 2 << 2] = cb[i4 + j + ((j + 2) & 3) << 2];
+      cw[i4 + j + 3 << 2] = cb[i4 + j + ((j + 3) & 3) << 2];
     }
   }
   memcpy(cb, cw, sizeof(cw));
@@ -101,7 +101,6 @@ __device__ void AddRoundKeyCuda(int *state, int *w, int n) {
 __device__ void CipherCUDA(int *pt, int *rkey) {
   int rnd;
   int *state = pt;
-  unsigned char *uchar = (unsigned char *) state;
 
   AddRoundKeyCuda(state, rkey, 0);
 

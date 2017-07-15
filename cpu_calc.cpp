@@ -127,7 +127,6 @@ void AddRoundKey(int *state, int *w, int n){
 /* FIPS 197  P.15 Figure 5 */ //暗号化
 void Cipher(int *state, int *rkey){
   int rnd;
-  unsigned char* uchar = (unsigned char*) state;
 
   AddRoundKey(state, rkey, 0);
 
