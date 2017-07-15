@@ -47,7 +47,7 @@ __device__ void ShiftRowsCuda(int *state) {
       cw[threadIdx.x][i4 + j + (3 << 2)] = cb[i4 + j + (((j + 3) & 3) << 2)];
     }
   }
-  memcpy(cb, &cw[threadIdx.x], sizeof(sizeof(unsigned char) * NBb));
+  memcpy(cb, &cw[threadIdx.x], sizeof(unsigned char) * NBb);
 }
 
 __device__ int mulCUDA(int dt, int n) {
