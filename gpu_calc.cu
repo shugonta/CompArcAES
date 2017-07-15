@@ -157,7 +157,8 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   //This function launches the AES kernel.
   //Please modify this function for AES kernel.
   //In this function, you need to allocate the device memory and so on.
-  unsigned char *d_pt, *d_ct;
+  int *d_pt;
+  unsigned char *d_ct;
   int *d_rkey;
 
   dim3 dim_grid(GRIDSIZE, 1, 1), dim_block(BLOCKSIZE, 1, 1);
