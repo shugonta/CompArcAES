@@ -121,7 +121,7 @@ __global__ void device_aes_encrypt(unsigned char *pt, int *rkey, unsigned char *
 
   //This kernel executes AES encryption on a GPU.
   //Please modify this kernel!!
-  int thread_id = ((blockIdx.z * blockDim.z + blockIdx.y) * blockDim.y + blockIdx.x) * blockDim.x + threadIdx.x;
+  int thread_id = ((blockIdx.z * blockDim.y + blockIdx.y) * blockDim.x + blockIdx.x) * blockDim.z + threadIdx.x;
 
   if (thread_id == 0)
     printf("size = %ld\n", size);
