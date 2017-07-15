@@ -11,8 +11,9 @@
 // You have to set FILESIZE to "16*128*13*16*512" at the time of your submission.
 // Please do not modify the other parts in this file.
 /*******************************************************************************/
-#define FILESIZE (32)
-// #define FILESIZE (16*128*13*16*512)
+//#define FILESIZE (32)
+#define FILESIZE (16*128*13*16*512)
+#define BLOCK_SIZE 512
 
 void SubBytes(int *);                 /* FIPS 197  P.16 Figure  6 */
 void ShiftRows(int *);                /* FIPS 197  P.17 Figure  8 */
