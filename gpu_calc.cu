@@ -39,7 +39,7 @@ __device__ void ShiftRowsCuda(int *state) {
   memcpy(&cw[threadIdx.x], cb, sizeof(unsigned char) * NBb);
 
   for (i = 0; i < NB; i += 4) {
-    i4 = i << 4;
+    i4 = i << 2;
     for (j = 1; j < 4; j++) {
       cw[threadIdx.x][i4 + j + (0 << 2)] = cb[i4 + j + (((j + 0) & 3) << 2)];
       cw[threadIdx.x][i4 + j + (1 << 2)] = cb[i4 + j + (((j + 1) & 3) << 2)];
