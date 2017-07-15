@@ -36,7 +36,7 @@ __device__ void ShiftRowsCuda(int *state) {
   int i, j, i4;
   unsigned char *cb = (unsigned char *) state;
   __shared__ unsigned char cw[BLOCKSIZE][NBb];
-  memcpy(&cw[threadIdx.x], cb, sizeof(cw[BLOCKSIZE]));
+  memcpy(&cw[threadIdx.x], cb, sizeof(unsigned char) * NBb);
 
   for (i = 0; i < NB; i += 4) {
     i4 = i << 4;
@@ -47,7 +47,7 @@ __device__ void ShiftRowsCuda(int *state) {
       cw[threadIdx.x][i4 + j + (3 << 2)] = cb[i4 + j + (((j + 3) & 3) << 2)];
     }
   }
-  memcpy(cb, &cw[threadIdx.x], sizeof(cw));
+  memcpy(cb, &cw[threadIdx.x], sizeof(unsigned char) * NBb);
 }
 
 __device__ int mulCUDA(int dt, int n) {
