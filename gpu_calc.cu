@@ -136,15 +136,16 @@ __global__ void device_aes_encrypt(unsigned char *pt, int *rkey, unsigned char *
   //Please modify this kernel!!
   int thread_id = blockDim.x * blockIdx.x + threadIdx.x;
 
-  if (thread_id == 0)
+  if (thread_id == 0) {
     printf("size = %ld\n", size);
-
-//  printf("You can use printf function to eliminate bugs in your kernel.\n");
-  printf("char:\n");
-  int a;
-  for (a = 0; a < 16; a++) {
-    printf("0x%x\n", pt[a]);
+    printf("char:\n");
+    int a;
+    for (a = 0; a < 16; a++) {
+      printf("0x%x\n", pt[a]);
+    }
   }
+//  printf("You can use printf function to eliminate bugs in your kernel.\n");
+
   CipherCUDA((int *) &pt[thread_id * 16], rkey, thread_id);
 }
 
@@ -166,7 +167,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
   cudaMemcpy(d_rkey, rk, sizeof(int) * 44, cudaMemcpyHostToDevice);
 
-  device_aes_encrypt << < dim_grid, dim_block >> > (d_pt, d_rkey, d_ct, size);
+  device_aes_encrypt<<<dim_grid, dim_block>>>(d_pt, d_rkey, d_ct, size);
 
   cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
 
