@@ -156,7 +156,7 @@ __device__ void CipherCUDA(int *pt, int *rkey, int thread_id) {
   return;
 }
 
-__global__ void device_aes_encrypt(int *pt, int *rkey, unsigned char *ct, long int size) {
+__global__ void device_aes_encrypt(unsigned char *pt, int *rkey, unsigned char *ct, long int size) {
 
   //This kernel executes AES encryption on a GPU.
   //Please modify this kernel!!
@@ -166,7 +166,7 @@ __global__ void device_aes_encrypt(int *pt, int *rkey, unsigned char *ct, long i
     printf("size = %ld\n", size);
 //  printf("You can use printf function to eliminate bugs in your kernel.\n");
 
-  CipherCUDA(&pt[thread_id * 4], rkey, thread_id);
+  CipherCUDA((int *)&pt[thread_id * 16], rkey, thread_id);
 }
 
 void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int size) {
@@ -174,8 +174,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   //This function launches the AES kernel.
   //Please modify this function for AES kernel.
   //In this function, you need to allocate the device memory and so on.
-  int *d_pt;
-  unsigned char *d_ct;
+  unsigned char *d_pt, *d_ct;
   int *d_rkey;
 
   dim3 dim_grid(GRIDSIZE, 1, 1), dim_block(BLOCKSIZE, 1, 1);
