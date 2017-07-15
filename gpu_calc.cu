@@ -144,6 +144,7 @@ __device__ void CipherCUDA(int *pt, int *rkey, int thread_id) {
       for (a = 0; a < 4; a++) {
         printf("0x%x\n", state[a]);
       }
+    }
     ShiftRowsCuda(state);
     MixColumnsCUDA(state);
     AddRoundKeyCuda(state, rkey, rnd);
