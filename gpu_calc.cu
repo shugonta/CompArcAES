@@ -73,19 +73,22 @@ __device__ void MixColumnsCUDA(int *state) {
     x = mulCUDA(datagetCUDA(state, i4 + 0), 2) ^
         mulCUDA(datagetCUDA(state, i4 + 1), 3) ^
         mulCUDA(datagetCUDA(state, i4 + 2), 1) ^
-        mulCUDA(datagetCUDA(state, i4 + 3), 1);
-    x |= (mulCUDA(datagetCUDA(state, i4 + 1), 2) ^
-          mulCUDA(datagetCUDA(state, i4 + 2), 3) ^
-          mulCUDA(datagetCUDA(state, i4 + 3), 1) ^
-          mulCUDA(datagetCUDA(state, i4 + 0), 1)) << 8;
-    x |= (mulCUDA(datagetCUDA(state, i4 + 2), 2) ^
-          mulCUDA(datagetCUDA(state, i4 + 3), 3) ^
-          mulCUDA(datagetCUDA(state, i4 + 0), 1) ^
-          mulCUDA(datagetCUDA(state, i4 + 1), 1)) << 16;
-    x |= (mulCUDA(datagetCUDA(state, i4 + 3), 2) ^
-          mulCUDA(datagetCUDA(state, i4 + 0), 3) ^
-          mulCUDA(datagetCUDA(state, i4 + 1), 1) ^
-          mulCUDA(datagetCUDA(state, i4 + 2), 1)) << 24;
+        mulCUDA(datagetCUDA(state, i4 + 3), 1)
+        |
+        (mulCUDA(datagetCUDA(state, i4 + 1), 2) ^
+         mulCUDA(datagetCUDA(state, i4 + 2), 3) ^
+         mulCUDA(datagetCUDA(state, i4 + 3), 1) ^
+         mulCUDA(datagetCUDA(state, i4 + 0), 1)) << 8
+        |
+        (mulCUDA(datagetCUDA(state, i4 + 2), 2) ^
+         mulCUDA(datagetCUDA(state, i4 + 3), 3) ^
+         mulCUDA(datagetCUDA(state, i4 + 0), 1) ^
+         mulCUDA(datagetCUDA(state, i4 + 1), 1)) << 16
+        |
+        (mulCUDA(datagetCUDA(state, i4 + 3), 2) ^
+         mulCUDA(datagetCUDA(state, i4 + 0), 3) ^
+         mulCUDA(datagetCUDA(state, i4 + 1), 1) ^
+         mulCUDA(datagetCUDA(state, i4 + 2), 1)) << 24;
     state[i] = x;
   }
 }
@@ -150,7 +153,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
 
-  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
+  device_aes_encrypt << < dim_grid, dim_block >> > (d_pt, d_ct, size);
 
   cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
 
