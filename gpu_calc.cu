@@ -25,7 +25,7 @@ __device__ unsigned char SboxCUDA[256] = {
 __device__ void SubBytesCUDA(int *state, int thread_id) {
   int i, j;
   unsigned char *cb = (unsigned char *) state;
-  if (thread_id == 0) {
+  /*if (thread_id == 0) {
     int a;
     printf("int2:\n");
     for (a = 0; a < 4; a++) {
@@ -36,7 +36,7 @@ __device__ void SubBytesCUDA(int *state, int thread_id) {
     for (a = 0; a < 16; a++) {
       printf("0x%x\n", cb[a]);
     }
-  }
+  }*/
   for (i = 0; i < NBb; i += 4) {
     for (j = 0; j < 4; j++) {
       cb[i + j] = SboxCUDA[cb[i + j]];
@@ -133,6 +133,17 @@ __device__ void CipherCUDA(int *pt, int *rkey, int thread_id) {
 
   for (rnd = 1; rnd < NR; rnd++) {
     SubBytesCUDA(state, thread_id);
+    if (thread_id == 0) {
+      printf("char2:\n");
+      int a;
+      for (a = 0; a < 16; a++) {
+        printf("0x%x\n", uchar[a]);
+      }
+
+      printf("int2:\n");
+      for (a = 0; a < 4; a++) {
+        printf("0x%x\n", state[a]);
+      }
     ShiftRowsCuda(state);
     MixColumnsCUDA(state);
     AddRoundKeyCuda(state, rkey, rnd);
