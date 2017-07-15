@@ -105,14 +105,15 @@ __device__ void AddRoundKeyCuda(int *state, int *w, int n) {
   }
 }
 
-__device__ void CipherCUDA(unsigned char *pt, int *rkey, int thread_id) {
+__device__ void CipherCUDA(int *pt, int *rkey, int thread_id) {
   int rnd;
-  int* state = (int*)pt;
+  int* state = pt;
+  unsigned char* uchar = (unsigned char*) state;
   if (thread_id == 0) {
     printf("char:\n");
     int a;
     for (a = 0; a < 16; a++) {
-      printf("0x%x\n", pt[a]);
+      printf("0x%x\n", uchar[a]);
     }
 
     printf("int:\n");
@@ -138,23 +139,17 @@ __device__ void CipherCUDA(unsigned char *pt, int *rkey, int thread_id) {
   return;
 }
 
-__global__ void device_aes_encrypt(unsigned char *pt, int *rkey, unsigned char *ct, long int size) {
+__global__ void device_aes_encrypt(int *pt, int *rkey, unsigned char *ct, long int size) {
 
   //This kernel executes AES encryption on a GPU.
   //Please modify this kernel!!
   int thread_id = blockDim.x * blockIdx.x + threadIdx.x;
 
-  if (thread_id == 0) {
+  if (thread_id == 0)
     printf("size = %ld\n", size);
-    printf("char:\n");
-    int a;
-    for (a = 0; a < 16; a++) {
-      printf("0x%x\n", pt[a]);
-    }
-  }
 //  printf("You can use printf function to eliminate bugs in your kernel.\n");
 
-  CipherCUDA(&pt[thread_id * 16], rkey, thread_id);
+  CipherCUDA(&pt[thread_id * 4], rkey, thread_id);
 }
 
 void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int size) {
