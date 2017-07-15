@@ -133,18 +133,6 @@ __device__ void CipherCUDA(int *pt, int *rkey, int thread_id) {
 
   for (rnd = 1; rnd < NR; rnd++) {
     SubBytesCUDA(state, thread_id);
-    if (thread_id == 0) {
-      printf("char2:\n");
-      int a;
-      for (a = 0; a < 16; a++) {
-        printf("0x%x\n", uchar[a]);
-      }
-
-      printf("int2:\n");
-      for (a = 0; a < 4; a++) {
-        printf("0x%x\n", state[a]);
-      }
-    }
     ShiftRowsCuda(state);
     MixColumnsCUDA(state);
     AddRoundKeyCuda(state, rkey, rnd);
@@ -153,6 +141,18 @@ __device__ void CipherCUDA(int *pt, int *rkey, int thread_id) {
   SubBytesCUDA(state, thread_id);
   ShiftRowsCuda(state);
   AddRoundKeyCuda(state, rkey, rnd);
+  if (thread_id == 0) {
+    printf("char2:\n");
+    int a;
+    for (a = 0; a < 16; a++) {
+      printf("0x%x\n", uchar[a]);
+    }
+
+    printf("int2:\n");
+    for (a = 0; a < 4; a++) {
+      printf("0x%x\n", state[a]);
+    }
+  }
   return;
 }
 
