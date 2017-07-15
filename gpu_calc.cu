@@ -139,7 +139,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   unsigned char *d_pt, *d_ct;
   int *d_rkey;
 
-  dim3 dim_grid(GRIDSIZE, 1, 1), dim_block(BLOCKSIZE, 1, 1);
+  dim3 dim_grid(GRIDSIZE_X, GRIDSIZE_Y, GRIDSIZE_Z), dim_block(BLOCKSIZE, 1, 1);
 
   cudaMalloc((void **) &d_pt, sizeof(unsigned char) * size);
   cudaMalloc((void **) &d_rkey, sizeof(int) * 44);
