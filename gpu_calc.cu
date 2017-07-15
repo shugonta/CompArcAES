@@ -35,19 +35,19 @@ __device__ void SubBytesCUDA(int *state) {
 __device__ void ShiftRowsCuda(int *state) {
   int i, j, i4;
   unsigned char *cb = (unsigned char *) state;
-  __shared__ unsigned char cw[BLOCKSIZE][NBb];
-  memcpy(&cw[threadIdx.x], cb, sizeof(unsigned char) * NBb);
+  unsigned char cw[NBb];
+  memcpy(cw, cb, sizeof(unsigned char) * NBb);
 
   for (i = 0; i < NB; i += 4) {
     i4 = i << 2;
     for (j = 1; j < 4; j++) {
-      cw[threadIdx.x][i4 + j + (0 << 2)] = cb[i4 + j + (((j + 0) & 3) << 2)];
-      cw[threadIdx.x][i4 + j + (1 << 2)] = cb[i4 + j + (((j + 1) & 3) << 2)];
-      cw[threadIdx.x][i4 + j + (2 << 2)] = cb[i4 + j + (((j + 2) & 3) << 2)];
-      cw[threadIdx.x][i4 + j + (3 << 2)] = cb[i4 + j + (((j + 3) & 3) << 2)];
+      cw[i4 + j + (0 << 2)] = cb[i4 + j + (((j + 0) & 3) << 2)];
+      cw[i4 + j + (1 << 2)] = cb[i4 + j + (((j + 1) & 3) << 2)];
+      cw[i4 + j + (2 << 2)] = cb[i4 + j + (((j + 2) & 3) << 2)];
+      cw[i4 + j + (3 << 2)] = cb[i4 + j + (((j + 3) & 3) << 2)];
     }
   }
-  memcpy(cb, &cw[threadIdx.x], sizeof(unsigned char) * NBb);
+  memcpy(cb, cw, sizeof(unsigned char) * NBb);
 }
 
 __device__ int mulCUDA(int dt, int n) {
