@@ -3,6 +3,7 @@
 #include <math.h>
 #include "calculation.h"
 
+__constant__ int rkey[44];
 __constant__ unsigned char SboxCUDA[256] = {
         0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
         0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
@@ -116,7 +117,7 @@ __device__ void CipherCUDA(int *pt, int *rkey) {
   return;
 }
 
-__global__ void device_aes_encrypt(unsigned char *pt, int *rkey, unsigned char *ct, long int size) {
+__global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long int size) {
 
   //This kernel executes AES encryption on a GPU.
   //Please modify this kernel!!
@@ -128,7 +129,7 @@ __global__ void device_aes_encrypt(unsigned char *pt, int *rkey, unsigned char *
 
   __shared__ int state[BLOCKSIZE][NB];
   memcpy(&(state[threadIdx.x][0]), &pt[thread_id << 4], sizeof(unsigned char) * NBb);
-  CipherCUDA(&(state[threadIdx.x][0]), rkey);
+  CipherCUDA(&(state[threadIdx.x][0]), &rkey);
   memcpy(&ct[thread_id << 4], &state[threadIdx.x], sizeof(unsigned char) * NBb);
 }
 
@@ -138,7 +139,6 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   //Please modify this function for AES kernel.
   //In this function, you need to allocate the device memory and so on.
   unsigned char *d_pt, *d_ct;
-  __constant__ int d_rkey[44];
 
   dim3 dim_grid(GRIDSIZE_X, GRIDSIZE_Y, GRIDSIZE_Z), dim_block(BLOCKSIZE, 1, 1);
 
@@ -148,9 +148,9 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
 
   cudaMemset(d_pt, 0, sizeof(unsigned char) * size);
   cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
-  cudaMemcpyToSymbol(d_rkey, rk, sizeof(int) * 44);
+  cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
 
-  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_rkey, d_ct, size);
+  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
 
   cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
 
