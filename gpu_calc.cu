@@ -117,7 +117,7 @@ __device__ void CipherCUDA(int *state, int *rkey, int thread_id) {
     AddRoundKeyCuda(state, rkey, rnd);
   }
 
-  SubBytesCUDA(state);
+  SubBytesCUDA(state, thread_id);
   ShiftRowsCuda(state);
   AddRoundKeyCuda(state, rkey, rnd);
   return;
