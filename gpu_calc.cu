@@ -26,8 +26,13 @@ __device__ void SubBytesCUDA(int *state, int thread_id) {
   int i, j;
   unsigned char *cb = (unsigned char *) state;
   if (thread_id == 0) {
-    printf("char2:\n");
     int a;
+    printf("int2:\n");
+    for (a = 0; a < 4; a++) {
+      printf("0x%x\n", state[a]);
+    }
+
+    printf("char2:\n");
     for (a = 0; a < 16; a++) {
       printf("0x%x\n", cb[a]);
     }
