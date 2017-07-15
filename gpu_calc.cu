@@ -116,7 +116,6 @@ __device__ void CipherCUDA(unsigned char *pt, int *rkey, int thread_id) {
     }
 
     printf("int:\n");
-    int a;
     for (a = 0; a < 4; a++) {
       printf("0x%x\n", state[a]);
     }
