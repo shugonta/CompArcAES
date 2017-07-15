@@ -105,19 +105,28 @@ __device__ void AddRoundKeyCuda(int *state, int *w, int n) {
   }
 }
 
-__device__ void CipherCUDA(int *state, int *rkey, int thread_id) {
+__device__ void CipherCUDA(unsigned char *pt, int *rkey, int thread_id) {
   int rnd;
+  int* state = (int*)pt;
+  if (thread_id == 0) {
+    printf("char:\n");
+    int a;
+    for (a = 0; a < 16; a++) {
+      printf("0x%x\n", pt[a]);
+    }
+
+    printf("int:\n");
+    int a;
+    for (a = 0; a < 4; a++) {
+      printf("0x%x\n", state[a]);
+    }
+  }
+
+
 
   AddRoundKeyCuda(state, rkey, 0);
 
   for (rnd = 1; rnd < NR; rnd++) {
-    if (thread_id == 0) {
-      printf("int:\n");
-      int a;
-      for (a = 0; a < 4; a++) {
-        printf("0x%x\n", state[a]);
-      }
-    }
     SubBytesCUDA(state, thread_id);
     ShiftRowsCuda(state);
     MixColumnsCUDA(state);
@@ -146,7 +155,7 @@ __global__ void device_aes_encrypt(unsigned char *pt, int *rkey, unsigned char *
   }
 //  printf("You can use printf function to eliminate bugs in your kernel.\n");
 
-  CipherCUDA((int *) &pt[thread_id * 16], rkey, thread_id);
+  CipherCUDA(&pt[thread_id * 16], rkey, thread_id);
 }
 
 void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int size) {
