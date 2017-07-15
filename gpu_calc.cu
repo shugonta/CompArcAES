@@ -22,9 +22,16 @@ __device__ unsigned char SboxCUDA[256] = {
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
 
-__device__ void SubBytesCUDA(int *state) {
+__device__ void SubBytesCUDA(int *state, int thread_id) {
   int i, j;
   unsigned char *cb = (unsigned char *) state;
+  if(thread_id == 0){
+   printf("char:\n");
+    int a;
+    for(a=0;a<16; a++) {
+      printf("0x%x\n",cb[a]);
+    }
+  }
   for (i = 0; i < NBb; i += 4) {
     for (j = 0; j < 4; j++) {
       cb[i + j] = SboxCUDA[cb[i + j]];
@@ -75,7 +82,7 @@ __device__ void MixColumnsCUDA(int *state) {
         mulCUDA(datagetCUDA(state, i4 + 2), 1) ^
         mulCUDA(datagetCUDA(state, i4 + 3), 1);
     x |= (mulCUDA(datagetCUDA(state, i4 + 1), 2) ^
-          mulCUDA(datagetCUDA(state, i4 + 2), 3) ^
+           mulCUDA(datagetCUDA(state, i4 + 2), 3) ^
           mulCUDA(datagetCUDA(state, i4 + 3), 1) ^
           mulCUDA(datagetCUDA(state, i4 + 0), 1)) << 8;
     x |= (mulCUDA(datagetCUDA(state, i4 + 2), 2) ^
@@ -98,14 +105,13 @@ __device__ void AddRoundKeyCuda(int *state, int *w, int n) {
   }
 }
 
-__device__ void CipherCUDA(int *state, int *rkey) {
+__device__ void CipherCUDA(int *state, int *rkey, int thread_id) {
   int rnd;
-  int i;
 
   AddRoundKeyCuda(state, rkey, 0);
 
   for (rnd = 1; rnd < NR; rnd++) {
-    SubBytesCUDA(state);
+    SubBytesCUDA(state, thread_id);
     ShiftRowsCuda(state);
     MixColumnsCUDA(state);
     AddRoundKeyCuda(state, rkey, rnd);
@@ -127,7 +133,7 @@ __global__ void device_aes_encrypt(unsigned char *pt, int *rkey, unsigned char *
     printf("size = %ld\n", size);
 
 //  printf("You can use printf function to eliminate bugs in your kernel.\n");
-  CipherCUDA((int *) &pt[thread_id * 16], rkey);
+  CipherCUDA((int *) &pt[thread_id * 16], rkey, thread_id);
 }
 
 void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int size) {
@@ -135,7 +141,6 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   //This function launches the AES kernel.
   //Please modify this function for AES kernel.
   //In this function, you need to allocate the device memory and so on.
-  printf("launched");
   unsigned char *d_pt, *d_ct;
   int *d_rkey;
 
