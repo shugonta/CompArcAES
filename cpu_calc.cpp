@@ -125,21 +125,9 @@ void AddRoundKey(int *state, int *w, int n){
 
 /************************************************************/
 /* FIPS 197  P.15 Figure 5 */ //暗号化
-void Cipher(int *state, int *rkey, int thread_id){
+void Cipher(int *state, int *rkey){
   int rnd;
   unsigned char* uchar = (unsigned char*) state;
-  if (thread_id == 0) {
-    printf("charCPU:\n");
-    int a;
-    for (a = 0; a < 16; a++) {
-      printf("0x%x\n", uchar[a]);
-    }
-
-    printf("intCPU:\n");
-    for (a = 0; a < 4; a++) {
-      printf("0x%x\n", state[a]);
-    }
-  }
 
   AddRoundKey(state, rkey, 0);
 
@@ -152,18 +140,7 @@ void Cipher(int *state, int *rkey, int thread_id){
   SubBytes(state);
   ShiftRows(state);
   AddRoundKey(state, rkey, rnd);
-  if (thread_id == 0) {
-    printf("char2CPU:\n");
-    int a;
-    for (a = 0; a < 16; a++) {
-      printf("0x%x\n", uchar[a]);
-    }
 
-    printf("int2CPU:\n");
-    for (a = 0; a < 4; a++) {
-      printf("0x%x\n", state[a]);
-    }
-  }
   return;
 }
 
@@ -235,7 +212,7 @@ void launch_cpu_aes(unsigned char *pt, int *rk, unsigned char *ct, long int size
     
     //datadump("Plaintext        : ", data, 4);      
       
-    Cipher(data, rk, i);
+    Cipher(data, rk);
 
     memcpy(ct+16*i, data, NBb);
     //datadump("Ciphertext on CPU: ", ct+16*i, 4);

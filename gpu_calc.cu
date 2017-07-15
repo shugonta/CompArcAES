@@ -22,21 +22,9 @@ __device__ unsigned char SboxCUDA[256] = {
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
 
-__device__ void SubBytesCUDA(int *state, int thread_id) {
+__device__ void SubBytesCUDA(int *state) {
   int i, j;
   unsigned char *cb = (unsigned char *) state;
-  /*if (thread_id == 0) {
-    int a;
-    printf("int2:\n");
-    for (a = 0; a < 4; a++) {
-      printf("0x%x\n", state[a]);
-    }
-
-    printf("char2:\n");
-    for (a = 0; a < 16; a++) {
-      printf("0x%x\n", cb[a]);
-    }
-  }*/
   for (i = 0; i < NBb; i += 4) {
     for (j = 0; j < 4; j++) {
       cb[i + j] = SboxCUDA[cb[i + j]];
@@ -110,48 +98,23 @@ __device__ void AddRoundKeyCuda(int *state, int *w, int n) {
   }
 }
 
-__device__ void CipherCUDA(int *pt, int *rkey, int thread_id) {
+__device__ void CipherCUDA(int *pt, int *rkey) {
   int rnd;
   int *state = pt;
   unsigned char *uchar = (unsigned char *) state;
-  if (thread_id == 0) {
-    printf("char:\n");
-    int a;
-    for (a = 0; a < 16; a++) {
-      printf("0x%x\n", uchar[a]);
-    }
-
-    printf("int:\n");
-    for (a = 0; a < 4; a++) {
-      printf("0x%x\n", state[a]);
-    }
-  }
-
 
   AddRoundKeyCuda(state, rkey, 0);
 
   for (rnd = 1; rnd < NR; rnd++) {
-    SubBytesCUDA(state, thread_id);
+    SubBytesCUDA(state);
     ShiftRowsCuda(state);
     MixColumnsCUDA(state);
     AddRoundKeyCuda(state, rkey, rnd);
   }
 
-  SubBytesCUDA(state, thread_id);
+  SubBytesCUDA(state);
   ShiftRowsCuda(state);
   AddRoundKeyCuda(state, rkey, rnd);
-  if (thread_id == 0) {
-    printf("char2:\n");
-    int a;
-    for (a = 0; a < 16; a++) {
-      printf("0x%x\n", uchar[a]);
-    }
-
-    printf("int2:\n");
-    for (a = 0; a < 4; a++) {
-      printf("0x%x\n", state[a]);
-    }
-  }
   return;
 }
 
@@ -165,7 +128,7 @@ __global__ void device_aes_encrypt(unsigned char *pt, int *rkey, unsigned char *
     printf("size = %ld\n", size);
 //  printf("You can use printf function to eliminate bugs in your kernel.\n");
 
-  CipherCUDA((int *) &pt[thread_id << 4], rkey, thread_id);
+  CipherCUDA((int *) &pt[thread_id << 4], rkey);
   memcpy(&ct[thread_id << 4], &pt[thread_id << 4], NBb);
 }
 
@@ -187,7 +150,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
   cudaMemcpy(d_rkey, rk, sizeof(int) * 44, cudaMemcpyHostToDevice);
 
-  device_aes_encrypt << < dim_grid, dim_block >> > (d_pt, d_rkey, d_ct, size);
+  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_rkey, d_ct, size);
 
   cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
 
