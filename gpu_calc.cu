@@ -35,7 +35,7 @@ __device__ void SubBytesCUDA(int *state) {
 __device__ void ShiftRowsCuda(int *state) {
   int i, j, i4;
   unsigned char *cb = (unsigned char *) state;
-  unsigned char cw[NBb];
+  __shared__ unsigned char cw[NBb];
   memcpy(cw, cb, sizeof(cw));
 
   for (i = 0; i < NB; i += 4) {
