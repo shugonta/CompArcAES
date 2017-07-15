@@ -129,7 +129,7 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
 
   __shared__ int state[BLOCKSIZE][NB];
   memcpy(&(state[threadIdx.x][0]), &pt[thread_id << 4], sizeof(unsigned char) * NBb);
-  CipherCUDA(&(state[threadIdx.x][0]), &rkey);
+  CipherCUDA(&(state[threadIdx.x][0]), rkey);
   memcpy(&ct[thread_id << 4], &state[threadIdx.x], sizeof(unsigned char) * NBb);
 }
 
