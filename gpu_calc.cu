@@ -67,37 +67,14 @@ __device__ void ShiftRowsCUDA(int *state) {
           (int) (((unsigned char *) state)[6]) << 16 |
           (int) (((unsigned char *) state)[11] << 24);
 
-/*  if(((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x == 0){
-    int i = 0;
-    for(;i<16;i++){
-      printf("cw2[%d]: 0x%x\n", i, cw[i]);
-    }
-  }*/
-  /*cw[1] = ((unsigned char *) state)[5];
-  cw[2] =((unsigned char *) state)[10];
-  cw[3] = ((unsigned char *) state)[15];
-  cw[4] = ((unsigned char *) state)[4];
-  cw[5] = ((unsigned char *) state)[9];
-  cw[6] = ((unsigned char *) state)[14];
-  cw[7] = ((unsigned char *) state)[3];
-  cw[8] = ((unsigned char *) state)[8];
-  cw[9] = ((unsigned char *) state)[13];
-  cw[10] = ((unsigned char *) state)[2];
-  cw[11] = ((unsigned char *) state)[7];
-  cw[12] = ((unsigned char *) state)[12];
-  cw[13] = ((unsigned char *) state)[1];
-  cw[14] = ((unsigned char *) state)[6];
-  cw[15] = ((unsigned char *) state)[11];
-   */
-
   memcpy(((unsigned char *) state), cw, sizeof(unsigned char) * NBb);
 }
 
 __device__ int mulCUDA(int dt, int n) {
   int x = 0;
-  x <<= 1;
-  if (x & 0x100)
-    x = (x ^ 0x1b) & 0xff;
+//  x <<= 1;
+//  if (x & 0x100)
+//    x = (x ^ 0x1b) & 0xff;
   if ((n & 8))
     x ^= dt;
   x <<= 1;
