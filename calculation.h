@@ -13,9 +13,9 @@
 /*******************************************************************************/
 //#define FILESIZE (32)
 #define FILESIZE (16*128*13*16*512)
-#define BLOCKSIZE (512)
+#define BLOCKSIZE (256)
 #define GRIDSIZE_X (128)
-#define GRIDSIZE_Y (13)
+#define GRIDSIZE_Y (26)
 #define GRIDSIZE_Z (16)
 
 
