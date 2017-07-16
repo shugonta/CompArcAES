@@ -102,6 +102,7 @@ __device__ int mul3CUDA(int dt, int n) {
   x <<= 1;
   if (x & 0x100)
     x = (x ^ 0x1b) & 0xff;
+  x ^= dt;
 
   return (x);
 }
@@ -112,7 +113,6 @@ __device__ int mul2CUDA(int dt, int n) {
   x <<= 1;
   if (x & 0x100)
     x = (x ^ 0x1b) & 0xff;
-  x ^= dt;
 
   return (x);
 }
