@@ -52,14 +52,26 @@ __device__ void ShiftRowsCUDA(int *state) {
 
 __device__ int mulCUDA(int dt, int n) {
   int i, x = 0;
-  for (i = 8; i > 0; i >>= 1) {
-    x <<= 1;
-    if (x & 0x100)
-      x = (x ^ 0x1b) & 0xff;
-    if ((n & i))
-      x ^= dt;
-  }
-  return (x);
+  i = 8;
+  x <<= 1;
+  if (x & 0x100)
+    x = (x ^ 0x1b) & 0xff;
+  if ((n & i))
+    x ^= dt;
+  i = 4;
+  x <<= 1;
+  if (x & 0x100)
+    x = (x ^ 0x1b) & 0xff;
+  if ((n & i))
+    x ^= dt;
+  i = 2;
+  x <<= 1;
+  if (x & 0x100)
+    x = (x ^ 0x1b) & 0xff;
+  if ((n & i))
+    x ^= dt;
+
+    return (x);
 }
 
 __device__ int datagetCUDA(void *data, int n) {
