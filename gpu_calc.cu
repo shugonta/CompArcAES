@@ -71,29 +71,30 @@ __device__ void ShiftRowsCUDA(int *state) {
 }
 
 __device__ int mulCUDA(int dt, int n) {
-  int x = 0;
+  __shared__ int x[BLOCKSIZE];
+  x[threadIdx.x] = 0;
 //  x <<= 1;
 //  if (x & 0x100)
 //    x = (x ^ 0x1b) & 0xff;
   if ((n & 8))
-    x ^= dt;
-  x <<= 1;
-  if (x & 0x100)
-    x = (x ^ 0x1b) & 0xff;
+    x[threadIdx.x] ^= dt;
+  x[threadIdx.x] <<= 1;
+  if (x[threadIdx.x] & 0x100)
+    x[threadIdx.x] = (x[threadIdx.x] ^ 0x1b) & 0xff;
   if ((n & 4))
-    x ^= dt;
-  x <<= 1;
-  if (x & 0x100)
-    x = (x ^ 0x1b) & 0xff;
+    x[threadIdx.x] ^= dt;
+  x[threadIdx.x] <<= 1;
+  if (x[threadIdx.x] & 0x100)
+    x[threadIdx.x] = (x[threadIdx.x] ^ 0x1b) & 0xff;
   if ((n & 2))
-    x ^= dt;
-  x <<= 1;
-  if (x & 0x100)
-    x = (x ^ 0x1b) & 0xff;
+    x[threadIdx.x] ^= dt;
+  x[threadIdx.x] <<= 1;
+  if (x[threadIdx.x] & 0x100)
+    x[threadIdx.x] = (x[threadIdx.x] ^ 0x1b) & 0xff;
   if ((n & 1))
-    x ^= dt;
+    x[threadIdx.x] ^= dt;
 
-  return (x);
+  return (x[threadIdx.x]);
 }
 
 __device__ void MixColumnsCUDA(int *state) {
@@ -118,7 +119,7 @@ __device__ void MixColumnsCUDA(int *state) {
        mulCUDA(((unsigned char *) state)[1], 1) ^
        mulCUDA(((unsigned char *) state)[2], 1)) << 24;
   state[0] = x;
-  
+
   x = mulCUDA(((unsigned char *) state)[4], 2) ^
       mulCUDA(((unsigned char *) state)[5], 3) ^
       mulCUDA(((unsigned char *) state)[6], 1) ^
