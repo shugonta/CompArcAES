@@ -50,12 +50,12 @@ __device__ void ShiftRowsCUDA(int *state) {
   cw[1] = ((unsigned char *) state)[5];
   cw[2] =((unsigned char *) state)[10];
   cw[3] = ((unsigned char *) state)[15];
-  if(threadIdx.x == 0){
+/*  if(threadIdx.x == 0){
     int i = 0;
     for(;i<16;i++){
       printf("cw[%d]: 0x%x\n", i, cw[i]);
     }
-  }
+  }*/
 
 /*  ((int *) cw)[0] =
           ((unsigned char *) state)[0] << 3 |
