@@ -52,20 +52,20 @@ __device__ void ShiftRowsCUDA(int *state) {
           ((unsigned char *) state)[10] << 16 |
           ((unsigned char *) state)[15] << 24;
   cw[1] =
-          (int) (((unsigned char *) state)[4]) << 0 |
-          (int) (((unsigned char *) state)[9]) << 8 |
-          (int) (((unsigned char *) state)[14]) << 16 |
-          (int) (((unsigned char *) state)[3] << 24);
+          ((unsigned char *) state)[4] << 0 |
+          ((unsigned char *) state)[9] << 8 |
+          ((unsigned char *) state)[14] << 16 |
+          ((unsigned char *) state)[3] << 24;
   cw[2] =
-          (int) (((unsigned char *) state)[8]) << 0 |
-          (int) (((unsigned char *) state)[13]) << 8 |
-          (int) (((unsigned char *) state)[2]) << 16 |
-          (int) (((unsigned char *) state)[7] << 24);
+          ((unsigned char *) state)[8] << 0 |
+          ((unsigned char *) state)[13] << 8 |
+          ((unsigned char *) state)[2] << 16 |
+          ((unsigned char *) state)[7] << 24;
   cw[3] =
-          (int) (((unsigned char *) state)[12]) << 0 |
-          (int) (((unsigned char *) state)[1]) << 8 |
-          (int) (((unsigned char *) state)[6]) << 16 |
-          (int) (((unsigned char *) state)[11] << 24);
+          ((unsigned char *) state)[12] << 0 |
+          ((unsigned char *) state)[1] << 8 |
+          ((unsigned char *) state)[6] << 16 |
+          ((unsigned char *) state)[11] << 24;
 
   memcpy(((unsigned char *) state), cw, sizeof(unsigned char) * NBb);
 }
