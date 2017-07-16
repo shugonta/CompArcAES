@@ -105,25 +105,25 @@ __device__ void MixColumnsCUDA(int *state) {
     i4_2 = i4 | 2;
     i4_3 = i4 | 3;
 
-    x = mulCUDA(datagetCUDA(state, i4), 2) ^
-        mulCUDA(datagetCUDA(state, i4_1), 3) ^
-        mulCUDA(datagetCUDA(state, i4_2), 1) ^
-        mulCUDA(datagetCUDA(state, i4_3), 1)
+    x = mulCUDA(((unsigned char *) state)[i4], 2) ^
+        mulCUDA(((unsigned char *) state)[i4_1], 3) ^
+        mulCUDA(((unsigned char *) state)[i4_2], 1) ^
+        mulCUDA(((unsigned char *) state)[i4_3], 1)
         |
-        (mulCUDA(datagetCUDA(state, i4_1), 2) ^
-         mulCUDA(datagetCUDA(state, i4_2), 3) ^
-         mulCUDA(datagetCUDA(state, i4_3), 1) ^
-         mulCUDA(datagetCUDA(state, i4), 1)) << 8
+        (mulCUDA(((unsigned char *) state)[i4_1], 2) ^
+         mulCUDA(((unsigned char *) state)[i4_2], 3) ^
+         mulCUDA(((unsigned char *) state)[i4_3], 1) ^
+         mulCUDA(((unsigned char *) state)[i4], 1)) << 8
         |
-        (mulCUDA(datagetCUDA(state, i4_2), 2) ^
-         mulCUDA(datagetCUDA(state, i4_3), 3) ^
-         mulCUDA(datagetCUDA(state, i4), 1) ^
-         mulCUDA(datagetCUDA(state, i4_1), 1)) << 16
+        (mulCUDA(((unsigned char *) state)[i4_2], 2) ^
+         mulCUDA(((unsigned char *) state)[i4_3], 3) ^
+         mulCUDA(((unsigned char *) state)[i4], 1) ^
+         mulCUDA(((unsigned char *) state)[i4_1], 1)) << 16
         |
-        (mulCUDA(datagetCUDA(state, i4_3), 2) ^
-         mulCUDA(datagetCUDA(state, i4), 3) ^
-         mulCUDA(datagetCUDA(state, i4_1), 1) ^
-         mulCUDA(datagetCUDA(state, i4_2), 1)) << 24;
+        (mulCUDA(((unsigned char *) state)[i4_3], 2) ^
+         mulCUDA(((unsigned char *) state)[i4], 3) ^
+         mulCUDA(((unsigned char *) state)[i4_1], 1) ^
+         mulCUDA(((unsigned char *) state)[i4_2], 1)) << 24;
     state[i] = x;
   }
 }
@@ -188,7 +188,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
 
-  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
+  device_aes_encrypt << < dim_grid, dim_block >> > (d_pt, d_ct, size);
 
   cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
 
