@@ -64,9 +64,9 @@ __device__ void ShiftRowsCUDA(int *state) {
 
   ((int *) cw)[0] =
           (int) (((unsigned char *) state)[0]) << 0 |
-          (int) (((unsigned char *) state)[5]) << 1 |
-          (int) (((unsigned char *) state)[10]) << 2 |
-          (int) (((unsigned char *) state)[15] << 3);
+          (int) (((unsigned char *) state)[5]) << 8 |
+          (int) (((unsigned char *) state)[10]) << 16 |
+          (int) (((unsigned char *) state)[15] << 24);
 
   if(((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x == 0){
     int i = 0;
