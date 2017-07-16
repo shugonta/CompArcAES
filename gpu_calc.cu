@@ -39,12 +39,12 @@ __device__ void ShiftRowsCUDA(int *state) {
   memcpy(cw, cb, sizeof(unsigned char) * NBb);
 
 //  cw[1 | (0 << 2)] = cb[1 | ((1 & 3) << 2)];
-  cw[1 | (1 << 2)] = cb[1 | ((2 & 3) << 2)];
+//  cw[1 | (1 << 2)] = cb[1 | ((2 & 3) << 2)];
   cw[1 | (2 << 2)] = cb[1 | ((3 & 3) << 2)];
   cw[1 | (3 << 2)] = cb[1 | ((4 & 3) << 2)];
 
   cw[1] = cb[5];
-//  cw[5] = cb[11];
+  cw[5] = cb[11];
 //  cw[9] = cb[13];
 //  cw[15] = cb[1];
 
