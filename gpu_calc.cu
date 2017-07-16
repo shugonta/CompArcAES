@@ -44,26 +44,26 @@ __device__ void SubBytesCUDA(int *state) {
 }
 
 __device__ void ShiftRowsCUDA(int *state) {
-  __shared__ unsigned char cw[BLOCKSIZE][NBb];
+  unsigned char cw[NBb];
 
-  cw[threadIdx.x][0] = ((unsigned char *) state)[0];
-  cw[threadIdx.x][1] = ((unsigned char *) state)[5];
-  cw[threadIdx.x][2] =((unsigned char *) state)[10];
-  cw[threadIdx.x][3] = ((unsigned char *) state)[15];
-  cw[threadIdx.x][4] = ((unsigned char *) state)[4];
-  cw[threadIdx.x][5] = ((unsigned char *) state)[9];
-  cw[threadIdx.x][6] = ((unsigned char *) state)[14];
-  cw[threadIdx.x][7] = ((unsigned char *) state)[3];
-  cw[threadIdx.x][8] = ((unsigned char *) state)[8];
-  cw[threadIdx.x][9] = ((unsigned char *) state)[13];
-  cw[threadIdx.x][10] = ((unsigned char *) state)[2];
-  cw[threadIdx.x][11] = ((unsigned char *) state)[7];
-  cw[threadIdx.x][12] = ((unsigned char *) state)[12];
-  cw[threadIdx.x][13] = ((unsigned char *) state)[1];
-  cw[threadIdx.x][14] = ((unsigned char *) state)[6];
-  cw[threadIdx.x][15] = ((unsigned char *) state)[11];
+  cw[0] = ((unsigned char *) state)[0];
+  cw[1] = ((unsigned char *) state)[5];
+  cw[2] =((unsigned char *) state)[10];
+  cw[3] = ((unsigned char *) state)[15];
+  cw[4] = ((unsigned char *) state)[4];
+  cw[5] = ((unsigned char *) state)[9];
+  cw[6] = ((unsigned char *) state)[14];
+  cw[7] = ((unsigned char *) state)[3];
+  cw[8] = ((unsigned char *) state)[8];
+  cw[9] = ((unsigned char *) state)[13];
+  cw[10] = ((unsigned char *) state)[2];
+  cw[11] = ((unsigned char *) state)[7];
+  cw[12] = ((unsigned char *) state)[12];
+  cw[13] = ((unsigned char *) state)[1];
+  cw[14] = ((unsigned char *) state)[6];
+  cw[15] = ((unsigned char *) state)[11];
 
-  memcpy(((unsigned char *) state), &(cw[threadIdx.x]), sizeof(unsigned char) * NBb);
+  memcpy(((unsigned char *) state), cw, sizeof(unsigned char) * NBb);
 }
 
 __device__ int mulCUDA(int dt, int n) {
