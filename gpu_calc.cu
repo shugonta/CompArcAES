@@ -33,7 +33,7 @@ __device__ void SubBytesCUDA(int *state) {
   }
 }
 
-__device__ void ShiftRowsCuda(int *state) {
+__device__ void ShiftRowsCUDA(int *state) {
   int i, j, i4;
   unsigned char *cb = (unsigned char *) state;
   unsigned char cw[NBb];
@@ -67,34 +67,38 @@ __device__ int datagetCUDA(void *data, int n) {
 }
 
 __device__ void MixColumnsCUDA(int *state) {
-  int i, i4, x;
+  int i, i4, i4_1, i4_2, i4_3, x;
   for (i = 0; i < NB; i++) {
     i4 = i << 2;
-    x = mulCUDA(datagetCUDA(state, i4 + 0), 2) ^
-        mulCUDA(datagetCUDA(state, i4 + 1), 3) ^
-        mulCUDA(datagetCUDA(state, i4 + 2), 1) ^
-        mulCUDA(datagetCUDA(state, i4 + 3), 1)
+    i4_1 = i4 | 1;
+    i4_2 = i4 | 2;
+    i4_3 = i4 | 3;
+
+    x = mulCUDA(datagetCUDA(state, i4), 2) ^
+        mulCUDA(datagetCUDA(state, i4_1), 3) ^
+        mulCUDA(datagetCUDA(state, i4_2), 1) ^
+        mulCUDA(datagetCUDA(state, i4_3), 1)
         |
-        (mulCUDA(datagetCUDA(state, i4 + 1), 2) ^
-         mulCUDA(datagetCUDA(state, i4 + 2), 3) ^
-         mulCUDA(datagetCUDA(state, i4 + 3), 1) ^
-         mulCUDA(datagetCUDA(state, i4 + 0), 1)) << 8
+        (mulCUDA(datagetCUDA(state, i4_1), 2) ^
+         mulCUDA(datagetCUDA(state, i4_2), 3) ^
+         mulCUDA(datagetCUDA(state, i4_3), 1) ^
+         mulCUDA(datagetCUDA(state, i4), 1)) << 8
         |
-        (mulCUDA(datagetCUDA(state, i4 + 2), 2) ^
-         mulCUDA(datagetCUDA(state, i4 + 3), 3) ^
-         mulCUDA(datagetCUDA(state, i4 + 0), 1) ^
-         mulCUDA(datagetCUDA(state, i4 + 1), 1)) << 16
+        (mulCUDA(datagetCUDA(state, i4_2), 2) ^
+         mulCUDA(datagetCUDA(state, i4_3), 3) ^
+         mulCUDA(datagetCUDA(state, i4), 1) ^
+         mulCUDA(datagetCUDA(state, i4_1), 1)) << 16
         |
-        (mulCUDA(datagetCUDA(state, i4 + 3), 2) ^
-         mulCUDA(datagetCUDA(state, i4 + 0), 3) ^
-         mulCUDA(datagetCUDA(state, i4 + 1), 1) ^
-         mulCUDA(datagetCUDA(state, i4 + 2), 1)) << 24;
+        (mulCUDA(datagetCUDA(state, i4_3), 2) ^
+         mulCUDA(datagetCUDA(state, i4), 3) ^
+         mulCUDA(datagetCUDA(state, i4_1), 1) ^
+         mulCUDA(datagetCUDA(state, i4_2), 1)) << 24;
     state[i] = x;
   }
 }
 
 
-__device__ void AddRoundKeyCuda(int *state, int *w, int n) {
+__device__ void AddRoundKeyCUDA(int *state, int *w, int n) {
   int i;
   for (i = 0; i < NB; i++) {
     state[i] ^= w[i + NB * n];
@@ -105,18 +109,18 @@ __device__ void CipherCUDA(int *pt, int *rkey) {
   int rnd;
   int *state = pt;
 
-  AddRoundKeyCuda(state, rkey, 0);
+  AddRoundKeyCUDA(state, rkey, 0);
 
   for (rnd = 1; rnd < NR; rnd++) {
     SubBytesCUDA(state);
-    ShiftRowsCuda(state);
+    ShiftRowsCUDA(state);
     MixColumnsCUDA(state);
-    AddRoundKeyCuda(state, rkey, rnd);
+    AddRoundKeyCUDA(state, rkey, rnd);
   }
 
   SubBytesCUDA(state);
-  ShiftRowsCuda(state);
-  AddRoundKeyCuda(state, rkey, rnd);
+  ShiftRowsCUDA(state);
+  AddRoundKeyCUDA(state, rkey, rnd);
   return;
 }
 
@@ -153,7 +157,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
 
-  device_aes_encrypt << < dim_grid, dim_block >> > (d_pt, d_ct, size);
+  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
 
   cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
 
