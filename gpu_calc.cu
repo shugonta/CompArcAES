@@ -26,17 +26,53 @@ __constant__ unsigned char SboxCUDA[256] = {
 __device__ void SubBytesCUDA(int *state) {
   int i, j;
   unsigned char *cb = (unsigned char *) state;
-  for (i = 0; i < NBb; i += 4) {
+  i = 0;
+  j = 0;
+  cb[i + j] = SboxCUDA[cb[i + j]];
+  j = 1;
+  cb[i + j] = SboxCUDA[cb[i + j]];
+  j = 2;
+  cb[i + j] = SboxCUDA[cb[i + j]];
+  j = 3;
+  cb[i + j] = SboxCUDA[cb[i + j]];
+  i = 4;
+  j = 0;
+  cb[i + j] = SboxCUDA[cb[i + j]];
+  j = 1;
+  cb[i + j] = SboxCUDA[cb[i + j]];
+  j = 2;
+  cb[i + j] = SboxCUDA[cb[i + j]];
+  j = 3;
+  cb[i + j] = SboxCUDA[cb[i + j]];
+  i = 8;
+  j = 0;
+  cb[i + j] = SboxCUDA[cb[i + j]];
+  j = 1;
+  cb[i + j] = SboxCUDA[cb[i + j]];
+  j = 2;
+  cb[i + j] = SboxCUDA[cb[i + j]];
+  j = 3;
+  cb[i + j] = SboxCUDA[cb[i + j]];
+  i = 12;
+  j = 0;
+  cb[i + j] = SboxCUDA[cb[i + j]];
+  j = 1;
+  cb[i + j] = SboxCUDA[cb[i + j]];
+  j = 2;
+  cb[i + j] = SboxCUDA[cb[i + j]];
+  j = 3;
+  cb[i + j] = SboxCUDA[cb[i + j]];
+
+  /*for (i = 0; i < NBb; i += 4) {
     for (j = 0; j < 4; j++) {
       cb[i + j] = SboxCUDA[cb[i + j]];
     }
-  }
+  }*/
 }
 
 __device__ void ShiftRowsCUDA(int *state) {
   unsigned char *cb = (unsigned char *) state;
   unsigned char cw[NBb];
-//  memcpy(cw, cb, sizeof(unsigned char) * NBb);
 
   cw[0] = cb[0];
   cw[1] = cb[5];
