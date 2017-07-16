@@ -47,10 +47,10 @@ __device__ void ShiftRowsCUDA(int *state) {
   unsigned char cw[NBb];
 
   ((int *) cw)[0] =
-          ((unsigned char *) state)[0] |
-          ((unsigned char *) state)[5] << 1 |
-          ((unsigned char *) state)[10] << 2 |
-          ((unsigned char *) state)[15] << 3;
+          ((unsigned char *) state)[0] << 3 |
+          ((unsigned char *) state)[5] << 2 |
+          ((unsigned char *) state)[10] << 1 |
+          ((unsigned char *) state)[15];
   /*cw[1] = ((unsigned char *) state)[5];
   cw[2] =((unsigned char *) state)[10];
   cw[3] = ((unsigned char *) state)[15];*/
