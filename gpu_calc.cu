@@ -46,11 +46,29 @@ __device__ void SubBytesCUDA(int *state) {
 __device__ void ShiftRowsCUDA(int *state) {
   unsigned char cw[NBb];
 
+  cw[0] = ((unsigned char *) state)[0];
+  cw[1] = ((unsigned char *) state)[5];
+  cw[2] =((unsigned char *) state)[10];
+  cw[3] = ((unsigned char *) state)[15];
+  if(threadIdx.x == 0){
+    int i = 0;
+    for(;i<16;i++){
+      printf("cw[%d]: 0x%x\n", i, cw[i]);
+    }
+  }
+
   ((int *) cw)[0] =
           ((unsigned char *) state)[0] << 3 |
           ((unsigned char *) state)[5] << 2 |
           ((unsigned char *) state)[10] << 1 |
           ((unsigned char *) state)[15];
+
+  if(threadIdx.x == 0){
+    int i = 0;
+    for(;i<16;i++){
+      printf("cw2[%d]: 0x%x\n", i, cw[i]);
+    }
+  }
   /*cw[1] = ((unsigned char *) state)[5];
   cw[2] =((unsigned char *) state)[10];
   cw[3] = ((unsigned char *) state)[15];*/
