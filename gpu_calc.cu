@@ -55,22 +55,22 @@ __device__ int mulCUDA(int dt, int n) {
   x <<= 1;
   if (x & 0x100)
     x = (x ^ 0x1b) & 0xff;
-  if ((n & 0x1000))
+  if ((n & 8))
     x ^= dt;
   x <<= 1;
   if (x & 0x100)
     x = (x ^ 0x1b) & 0xff;
-  if ((n & 0x100))
+  if ((n & 4))
     x ^= dt;
   x <<= 1;
   if (x & 0x100)
     x = (x ^ 0x1b) & 0xff;
-  if ((n & 0x10))
+  if ((n & 2))
     x ^= dt;
   x <<= 1;
   if (x & 0x100)
     x = (x ^ 0x1b) & 0xff;
-  if ((n & 0x1))
+  if ((n & 1))
     x ^= dt;
 
   return (x);
