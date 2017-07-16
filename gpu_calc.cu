@@ -70,36 +70,9 @@ __device__ void ShiftRowsCUDA(int *state) {
   memcpy(((unsigned char *) state), cw, sizeof(unsigned char) * NBb);
 }
 
-__device__ int mulCUDA(int dt, int n) {
-  int x = 0;
-//  x <<= 1;
-//  if (x & 0x100)
-//    x = (x ^ 0x1b) & 0xff;
-  /* if ((n & 8))
-     x ^= dt;
-   x <<= 1;
-   if (x & 0x100)
-     x = (x ^ 0x1b) & 0xff;
-   if ((n & 4))
-     x ^= dt;
-   x <<= 1;
-   if (x & 0x100)
-     x = (x ^ 0x1b) & 0xff;*/
-//  if ((n & 2)) n=1は入力しない
-  x ^= dt;
-  x <<= 1;
-  if (x & 0x100)
-    x = (x ^ 0x1b) & 0xff;
-  if ((n & 1))
-    x ^= dt;
-
-  return (x);
-}
-
 __device__ int mul3CUDA(int dt) {
-  int x = 0;
-  x ^= dt;
-  x <<= 1;
+  int x;
+  x = dt << 1;
   if (x & 0x100)
     x = (x ^ 0x1b) & 0xff;
   x ^= dt;
@@ -108,9 +81,8 @@ __device__ int mul3CUDA(int dt) {
 }
 
 __device__ int mul2CUDA(int dt) {
-  int x = 0;
-  x ^= dt;
-  x <<= 1;
+  int x;
+  x = dt << 1;
   if (x & 0x100)
     x = (x ^ 0x1b) & 0xff;
 
