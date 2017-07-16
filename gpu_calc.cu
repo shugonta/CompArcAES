@@ -57,7 +57,7 @@ __device__ void ShiftRowsCUDA(int *state) {
     }
   }
 
-  ((int *) cw)[0] =
+/*  ((int *) cw)[0] =
           ((unsigned char *) state)[0] << 3 |
           ((unsigned char *) state)[5] << 2 |
           ((unsigned char *) state)[10] << 1 |
@@ -68,7 +68,7 @@ __device__ void ShiftRowsCUDA(int *state) {
     for(;i<16;i++){
       printf("cw2[%d]: 0x%x\n", i, cw[i]);
     }
-  }
+  }*/
   /*cw[1] = ((unsigned char *) state)[5];
   cw[2] =((unsigned char *) state)[10];
   cw[3] = ((unsigned char *) state)[15];*/
