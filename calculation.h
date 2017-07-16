@@ -41,6 +41,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
 #define __global__
 #define __forceinline__
 #define __shared__
+#define __constant__
 inline void __syncthreads() {}
 inline void __threadfence_block() {}
 template<class T> inline T __clz(const T val) { return val; }

@@ -24,7 +24,6 @@ __constant__ unsigned char SboxCUDA[256] = {
 };
 
 __device__ void SubBytesCUDA(int *state) {
-  int i, j;
   unsigned char *cb = (unsigned char *) state;
   cb[0] = SboxCUDA[cb[0]];
   cb[1] = SboxCUDA[cb[1]];
@@ -42,12 +41,6 @@ __device__ void SubBytesCUDA(int *state) {
   cb[13] = SboxCUDA[cb[13]];
   cb[14] = SboxCUDA[cb[14]];
   cb[15] = SboxCUDA[cb[15]];
-
-  /*for (i = 0; i < NBb; i += 4) {
-    for (j = 0; j < 4; j++) {
-      cb[i + j] = SboxCUDA[cb[i + j]];
-    }
-  }*/
 }
 
 __device__ void ShiftRowsCUDA(int *state) {
