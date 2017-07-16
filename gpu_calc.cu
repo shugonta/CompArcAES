@@ -36,22 +36,21 @@ __device__ void SubBytesCUDA(int *state) {
 __device__ void ShiftRowsCUDA(int *state) {
   unsigned char *cb = (unsigned char *) state;
   unsigned char cw[NBb];
-  memcpy(cw, cb, sizeof(unsigned char) * NBb);
+//  memcpy(cw, cb, sizeof(unsigned char) * NBb);
 
-//  cw[1 | (0 << 2)] = cb[1 | ((1 & 3) << 2)];
-//  cw[1 | (1 << 2)] = cb[1 | ((2 & 3) << 2)];
-//  cw[1 | (2 << 2)] = cb[1 | ((3 & 3) << 2)];
-//  cw[1 | (3 << 2)] = cb[1 | ((4 & 3) << 2)];
-
+  cw[0] = cb[0];
   cw[1] = cb[5];
   cw[2] = cb[10];
   cw[3] = cb[15];
+  cw[4] = cb[4];
   cw[5] = cb[9];
   cw[6] = cb[14];
   cw[7] = cb[3];
+  cw[8] = cb[8];
   cw[9] = cb[13];
   cw[10] = cb[2];
   cw[11] = cb[7];
+  cw[12] = cb[12];
   cw[13] = cb[1];
   cw[14] = cb[6];
   cw[15] = cb[11];
