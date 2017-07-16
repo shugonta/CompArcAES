@@ -95,114 +95,89 @@ __device__ int mulCUDA(int dt, int n) {
 
 __device__ void MixColumnsCUDA(int *state) {
   int i, i4, i4_1, i4_2, i4_3, x;
-  i = 0;
-  i4 = i << 2;
-  i4_1 = i4 | 1;
-  i4_2 = i4 | 2;
-  i4_3 = i4 | 3;
+  x = mulCUDA(((unsigned char *) state)[0], 2) ^
+      mulCUDA(((unsigned char *) state)[1], 3) ^
+      mulCUDA(((unsigned char *) state)[2], 1) ^
+      mulCUDA(((unsigned char *) state)[3], 1)
+      |
+      (mulCUDA(((unsigned char *) state)[1], 2) ^
+       mulCUDA(((unsigned char *) state)[2], 3) ^
+       mulCUDA(((unsigned char *) state)[3], 1) ^
+       mulCUDA(((unsigned char *) state)[0], 1)) << 8
+      |
+      (mulCUDA(((unsigned char *) state)[2], 2) ^
+       mulCUDA(((unsigned char *) state)[3], 3) ^
+       mulCUDA(((unsigned char *) state)[0], 1) ^
+       mulCUDA(((unsigned char *) state)[1], 1)) << 16
+      |
+      (mulCUDA(((unsigned char *) state)[3], 2) ^
+       mulCUDA(((unsigned char *) state)[0], 3) ^
+       mulCUDA(((unsigned char *) state)[1], 1) ^
+       mulCUDA(((unsigned char *) state)[2], 1)) << 24;
+  state[0] = x;
+  
+  x = mulCUDA(((unsigned char *) state)[4], 2) ^
+      mulCUDA(((unsigned char *) state)[5], 3) ^
+      mulCUDA(((unsigned char *) state)[6], 1) ^
+      mulCUDA(((unsigned char *) state)[7], 1)
+      |
+      (mulCUDA(((unsigned char *) state)[5], 2) ^
+       mulCUDA(((unsigned char *) state)[6], 3) ^
+       mulCUDA(((unsigned char *) state)[7], 1) ^
+       mulCUDA(((unsigned char *) state)[4], 1)) << 8
+      |
+      (mulCUDA(((unsigned char *) state)[6], 2) ^
+       mulCUDA(((unsigned char *) state)[7], 3) ^
+       mulCUDA(((unsigned char *) state)[4], 1) ^
+       mulCUDA(((unsigned char *) state)[5], 1)) << 16
+      |
+      (mulCUDA(((unsigned char *) state)[7], 2) ^
+       mulCUDA(((unsigned char *) state)[4], 3) ^
+       mulCUDA(((unsigned char *) state)[5], 1) ^
+       mulCUDA(((unsigned char *) state)[6], 1)) << 24;
+  state[1] = x;
 
-  x = mulCUDA(((unsigned char *) state)[i4], 2) ^
-      mulCUDA(((unsigned char *) state)[i4_1], 3) ^
-      mulCUDA(((unsigned char *) state)[i4_2], 1) ^
-      mulCUDA(((unsigned char *) state)[i4_3], 1)
+  x = mulCUDA(((unsigned char *) state)[8], 2) ^
+      mulCUDA(((unsigned char *) state)[9], 3) ^
+      mulCUDA(((unsigned char *) state)[10], 1) ^
+      mulCUDA(((unsigned char *) state)[11], 1)
       |
-      (mulCUDA(((unsigned char *) state)[i4_1], 2) ^
-       mulCUDA(((unsigned char *) state)[i4_2], 3) ^
-       mulCUDA(((unsigned char *) state)[i4_3], 1) ^
-       mulCUDA(((unsigned char *) state)[i4], 1)) << 8
+      (mulCUDA(((unsigned char *) state)[9], 2) ^
+       mulCUDA(((unsigned char *) state)[10], 3) ^
+       mulCUDA(((unsigned char *) state)[11], 1) ^
+       mulCUDA(((unsigned char *) state)[8], 1)) << 8
       |
-      (mulCUDA(((unsigned char *) state)[i4_2], 2) ^
-       mulCUDA(((unsigned char *) state)[i4_3], 3) ^
-       mulCUDA(((unsigned char *) state)[i4], 1) ^
-       mulCUDA(((unsigned char *) state)[i4_1], 1)) << 16
+      (mulCUDA(((unsigned char *) state)[10], 2) ^
+       mulCUDA(((unsigned char *) state)[11], 3) ^
+       mulCUDA(((unsigned char *) state)[8], 1) ^
+       mulCUDA(((unsigned char *) state)[9], 1)) << 16
       |
-      (mulCUDA(((unsigned char *) state)[i4_3], 2) ^
-       mulCUDA(((unsigned char *) state)[i4], 3) ^
-       mulCUDA(((unsigned char *) state)[i4_1], 1) ^
-       mulCUDA(((unsigned char *) state)[i4_2], 1)) << 24;
-  state[i] = x;
+      (mulCUDA(((unsigned char *) state)[11], 2) ^
+       mulCUDA(((unsigned char *) state)[8], 3) ^
+       mulCUDA(((unsigned char *) state)[9], 1) ^
+       mulCUDA(((unsigned char *) state)[10], 1)) << 24;
+  state[2] = x;
 
-  i = 1;
-  i4 = i << 2;
-  i4_1 = i4 | 1;
-  i4_2 = i4 | 2;
-  i4_3 = i4 | 3;
-
-  x = mulCUDA(((unsigned char *) state)[i4], 2) ^
-      mulCUDA(((unsigned char *) state)[i4_1], 3) ^
-      mulCUDA(((unsigned char *) state)[i4_2], 1) ^
-      mulCUDA(((unsigned char *) state)[i4_3], 1)
+  x = mulCUDA(((unsigned char *) state)[12], 2) ^
+      mulCUDA(((unsigned char *) state)[13], 3) ^
+      mulCUDA(((unsigned char *) state)[14], 1) ^
+      mulCUDA(((unsigned char *) state)[15], 1)
       |
-      (mulCUDA(((unsigned char *) state)[i4_1], 2) ^
-       mulCUDA(((unsigned char *) state)[i4_2], 3) ^
-       mulCUDA(((unsigned char *) state)[i4_3], 1) ^
-       mulCUDA(((unsigned char *) state)[i4], 1)) << 8
+      (mulCUDA(((unsigned char *) state)[13], 2) ^
+       mulCUDA(((unsigned char *) state)[14], 3) ^
+       mulCUDA(((unsigned char *) state)[15], 1) ^
+       mulCUDA(((unsigned char *) state)[12], 1)) << 8
       |
-      (mulCUDA(((unsigned char *) state)[i4_2], 2) ^
-       mulCUDA(((unsigned char *) state)[i4_3], 3) ^
-       mulCUDA(((unsigned char *) state)[i4], 1) ^
-       mulCUDA(((unsigned char *) state)[i4_1], 1)) << 16
+      (mulCUDA(((unsigned char *) state)[14], 2) ^
+       mulCUDA(((unsigned char *) state)[15], 3) ^
+       mulCUDA(((unsigned char *) state)[12], 1) ^
+       mulCUDA(((unsigned char *) state)[13], 1)) << 16
       |
-      (mulCUDA(((unsigned char *) state)[i4_3], 2) ^
-       mulCUDA(((unsigned char *) state)[i4], 3) ^
-       mulCUDA(((unsigned char *) state)[i4_1], 1) ^
-       mulCUDA(((unsigned char *) state)[i4_2], 1)) << 24;
-  state[i] = x;
-
-  i = 2;
-  i4 = i << 2;
-  i4_1 = i4 | 1;
-  i4_2 = i4 | 2;
-  i4_3 = i4 | 3;
-
-  x = mulCUDA(((unsigned char *) state)[i4], 2) ^
-      mulCUDA(((unsigned char *) state)[i4_1], 3) ^
-      mulCUDA(((unsigned char *) state)[i4_2], 1) ^
-      mulCUDA(((unsigned char *) state)[i4_3], 1)
-      |
-      (mulCUDA(((unsigned char *) state)[i4_1], 2) ^
-       mulCUDA(((unsigned char *) state)[i4_2], 3) ^
-       mulCUDA(((unsigned char *) state)[i4_3], 1) ^
-       mulCUDA(((unsigned char *) state)[i4], 1)) << 8
-      |
-      (mulCUDA(((unsigned char *) state)[i4_2], 2) ^
-       mulCUDA(((unsigned char *) state)[i4_3], 3) ^
-       mulCUDA(((unsigned char *) state)[i4], 1) ^
-       mulCUDA(((unsigned char *) state)[i4_1], 1)) << 16
-      |
-      (mulCUDA(((unsigned char *) state)[i4_3], 2) ^
-       mulCUDA(((unsigned char *) state)[i4], 3) ^
-       mulCUDA(((unsigned char *) state)[i4_1], 1) ^
-       mulCUDA(((unsigned char *) state)[i4_2], 1)) << 24;
-  state[i] = x;
-
-  i = 3;
-  i4 = i << 2;
-  i4_1 = i4 | 1;
-  i4_2 = i4 | 2;
-  i4_3 = i4 | 3;
-
-  x = mulCUDA(((unsigned char *) state)[i4], 2) ^
-      mulCUDA(((unsigned char *) state)[i4_1], 3) ^
-      mulCUDA(((unsigned char *) state)[i4_2], 1) ^
-      mulCUDA(((unsigned char *) state)[i4_3], 1)
-      |
-      (mulCUDA(((unsigned char *) state)[i4_1], 2) ^
-       mulCUDA(((unsigned char *) state)[i4_2], 3) ^
-       mulCUDA(((unsigned char *) state)[i4_3], 1) ^
-       mulCUDA(((unsigned char *) state)[i4], 1)) << 8
-      |
-      (mulCUDA(((unsigned char *) state)[i4_2], 2) ^
-       mulCUDA(((unsigned char *) state)[i4_3], 3) ^
-       mulCUDA(((unsigned char *) state)[i4], 1) ^
-       mulCUDA(((unsigned char *) state)[i4_1], 1)) << 16
-      |
-      (mulCUDA(((unsigned char *) state)[i4_3], 2) ^
-       mulCUDA(((unsigned char *) state)[i4], 3) ^
-       mulCUDA(((unsigned char *) state)[i4_1], 1) ^
-       mulCUDA(((unsigned char *) state)[i4_2], 1)) << 24;
-  state[i] = x;
-
+      (mulCUDA(((unsigned char *) state)[15], 2) ^
+       mulCUDA(((unsigned char *) state)[12], 3) ^
+       mulCUDA(((unsigned char *) state)[13], 1) ^
+       mulCUDA(((unsigned char *) state)[14], 1)) << 24;
+  state[3] = x;
 }
 
 
