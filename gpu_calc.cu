@@ -100,23 +100,23 @@ __device__ void MixColumnsCUDA(int *state) {
   int x;
   x = mulCUDA(((unsigned char *) state)[0], 2) ^
       mulCUDA(((unsigned char *) state)[1], 3) ^
-      mulCUDA(((unsigned char *) state)[2], 1) ^
-      mulCUDA(((unsigned char *) state)[3], 1)
+      ((unsigned char *) state)[2] ^
+      ((unsigned char *) state)[3]
       |
       (mulCUDA(((unsigned char *) state)[1], 2) ^
        mulCUDA(((unsigned char *) state)[2], 3) ^
-       mulCUDA(((unsigned char *) state)[3], 1) ^
-       mulCUDA(((unsigned char *) state)[0], 1)) << 8
+       ((unsigned char *) state)[3] ^
+       ((unsigned char *) state)[0]) << 8
       |
       (mulCUDA(((unsigned char *) state)[2], 2) ^
        mulCUDA(((unsigned char *) state)[3], 3) ^
-       mulCUDA(((unsigned char *) state)[0], 1) ^
-       mulCUDA(((unsigned char *) state)[1], 1)) << 16
+       ((unsigned char *) state)[0] ^
+       ((unsigned char *) state)[1]) << 16
       |
       (mulCUDA(((unsigned char *) state)[3], 2) ^
        mulCUDA(((unsigned char *) state)[0], 3) ^
-       mulCUDA(((unsigned char *) state)[1], 1) ^
-       mulCUDA(((unsigned char *) state)[2], 1)) << 24;
+       ((unsigned char *) state)[1] ^
+       ((unsigned char *) state)[2]) << 24;
   state[0] = x;
 
   x = mulCUDA(((unsigned char *) state)[4], 2) ^
