@@ -44,33 +44,28 @@ __device__ void SubBytesCUDA(int *state) {
 }
 
 __device__ void ShiftRowsCUDA(int *state) {
-  unsigned char cw[NBb];
+  int cw[NB];
 
-/*
-  cw[0] = ((unsigned char *) state)[0];
-  cw[1] = ((unsigned char *) state)[5];
-  cw[2] =((unsigned char *) state)[10];
-  cw[3] = ((unsigned char *) state)[15];
-  */
-/*((int *) cw)[0] =
-          (int) (((unsigned char *) state)[0]) << 0 |
-          (int) (((unsigned char *) state)[5]) << 1 |
-          (int) (((unsigned char *) state)[10]) << 2 |
-          (int) (((unsigned char *) state)[15] << 3);*//*
-
-  if(((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x == 0){
-    int i = 0;
-    for(;i<16;i++){
-      printf("cw[%d]: 0x%x\n", i, cw[i]);
-    }
-  }
-*/
-
-  ((int *) cw)[0] =
+  cw[0] =
           (int) (((unsigned char *) state)[0]) << 0 |
           (int) (((unsigned char *) state)[5]) << 8 |
           (int) (((unsigned char *) state)[10]) << 16 |
           (int) (((unsigned char *) state)[15] << 24);
+  cw[1] =
+          (int) (((unsigned char *) state)[4]) << 0 |
+          (int) (((unsigned char *) state)[9]) << 8 |
+          (int) (((unsigned char *) state)[14]) << 16 |
+          (int) (((unsigned char *) state)[3] << 24);
+  cw[2] =
+          (int) (((unsigned char *) state)[8]) << 0 |
+          (int) (((unsigned char *) state)[13]) << 8 |
+          (int) (((unsigned char *) state)[2]) << 16 |
+          (int) (((unsigned char *) state)[7] << 24);
+  cw[3] =
+          (int) (((unsigned char *) state)[12]) << 0 |
+          (int) (((unsigned char *) state)[1]) << 8 |
+          (int) (((unsigned char *) state)[6]) << 16 |
+          (int) (((unsigned char *) state)[11] << 24);
 
 /*  if(((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x == 0){
     int i = 0;
@@ -80,7 +75,7 @@ __device__ void ShiftRowsCUDA(int *state) {
   }*/
   /*cw[1] = ((unsigned char *) state)[5];
   cw[2] =((unsigned char *) state)[10];
-  cw[3] = ((unsigned char *) state)[15];*/
+  cw[3] = ((unsigned char *) state)[15];
   cw[4] = ((unsigned char *) state)[4];
   cw[5] = ((unsigned char *) state)[9];
   cw[6] = ((unsigned char *) state)[14];
@@ -93,6 +88,7 @@ __device__ void ShiftRowsCUDA(int *state) {
   cw[13] = ((unsigned char *) state)[1];
   cw[14] = ((unsigned char *) state)[6];
   cw[15] = ((unsigned char *) state)[11];
+   */
 
   memcpy(((unsigned char *) state), cw, sizeof(unsigned char) * NBb);
 }
