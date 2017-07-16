@@ -182,10 +182,10 @@ __device__ void MixColumnsCUDA(int *state) {
 
 
 __device__ void AddRoundKeyCUDA(int *state, int *w, int n) {
-  state[0] ^= w[n << 2];
-  state[1] ^= w[(n << 2) | 1];
-  state[2] ^= w[(n << 2) | 2];
-  state[3] ^= w[(n << 2) | 3];
+  state[0] ^= rkey[n << 2];
+  state[1] ^= rkey[(n << 2) | 1];
+  state[2] ^= rkey[(n << 2) | 2];
+  state[3] ^= rkey[(n << 2) | 3];
 
   /*for (i = 0; i < NB; i++) {
     state[i] ^= w[i + NB * n];
