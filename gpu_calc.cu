@@ -75,7 +75,7 @@ __device__ int mulCUDA(int dt, int n) {
 //  x <<= 1;
 //  if (x & 0x100)
 //    x = (x ^ 0x1b) & 0xff;
-  if ((n & 8))
+ /* if ((n & 8))
     x ^= dt;
   x <<= 1;
   if (x & 0x100)
@@ -84,7 +84,7 @@ __device__ int mulCUDA(int dt, int n) {
     x ^= dt;
   x <<= 1;
   if (x & 0x100)
-    x = (x ^ 0x1b) & 0xff;
+    x = (x ^ 0x1b) & 0xff;*/
   if ((n & 2))
     x ^= dt;
   x <<= 1;
