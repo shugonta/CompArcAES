@@ -34,18 +34,16 @@ __device__ void SubBytesCUDA(int *state) {
 }
 
 __device__ void ShiftRowsCUDA(int *state) {
-  int i, j, i4;
+  int j;
   unsigned char *cb = (unsigned char *) state;
   unsigned char cw[NBb];
   memcpy(cw, cb, sizeof(unsigned char) * NBb);
 
-  i = 0;
-  i4 = i << 2;
   for (j = 1; j < 4; j++) {
-    cw[i4 + j + (0 << 2)] = cb[i4 + j + (((j + 0) & 3) << 2)];
-    cw[i4 + j + (1 << 2)] = cb[i4 + j + (((j + 1) & 3) << 2)];
-    cw[i4 + j + (2 << 2)] = cb[i4 + j + (((j + 2) & 3) << 2)];
-    cw[i4 + j + (3 << 2)] = cb[i4 + j + (((j + 3) & 3) << 2)];
+    cw[j | (0 << 2)] = cb[j | (((j + 0) & 3) << 2)];
+    cw[j | (1 << 2)] = cb[j | (((j + 1) & 3) << 2)];
+    cw[j | (2 << 2)] = cb[j | (((j + 2) & 3) << 2)];
+    cw[j | (3 << 2)] = cb[j | (((j + 3) & 3) << 2)];
   }
   memcpy(cb, cw, sizeof(unsigned char) * NBb);
 }
