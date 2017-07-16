@@ -13,10 +13,10 @@
 /*******************************************************************************/
 //#define FILESIZE (32)
 #define FILESIZE (16*128*13*16*512)
-#define BLOCKSIZE (512)
-#define GRIDSIZE_X (128)
-#define GRIDSIZE_Y (13)
-#define GRIDSIZE_Z (16)
+#define BLOCKSIZE (128)
+#define GRIDSIZE_X (128*26*32)
+#define GRIDSIZE_Y (1)
+#define GRIDSIZE_Z (1)
 
 
 void SubBytes(int *);                 /* FIPS 197  P.16 Figure  6 */
