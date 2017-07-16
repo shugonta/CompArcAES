@@ -46,10 +46,15 @@ __device__ void SubBytesCUDA(int *state) {
 __device__ void ShiftRowsCUDA(int *state) {
   unsigned char cw[NBb];
 
-  cw[0] = ((unsigned char *) state)[0];
-  cw[1] = ((unsigned char *) state)[5];
-  cw[2] =((unsigned char *) state)[10];
-  cw[3] = ((unsigned char *) state)[15];
+//  cw[0] = ((unsigned char *) state)[0];
+//  cw[1] = ((unsigned char *) state)[5];
+//  cw[2] =((unsigned char *) state)[10];
+//  cw[3] = ((unsigned char *) state)[15];
+  ((int *) cw)[0] =
+          (int) (((unsigned char *) state)[0]) << 0 |
+          (int) (((unsigned char *) state)[5]) << 1 |
+          (int) (((unsigned char *) state)[10]) << 2 |
+          (int) (((unsigned char *) state)[15] << 3);
 /*  if(threadIdx.x == 0){
     int i = 0;
     for(;i<16;i++){
