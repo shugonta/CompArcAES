@@ -45,7 +45,7 @@ __device__ void SubBytesCUDA(int *state) {
 
 __device__ void ShiftRowsCUDA(int *state) {
   unsigned char *cb = (unsigned char *) state;
-  unsigned char cw[BLOCKSIZE][NBb];
+  __shared__ unsigned char cw[BLOCKSIZE][NBb];
 
   cw[threadIdx.x][0] = cb[0];
   cw[threadIdx.x][1] = cb[5];
