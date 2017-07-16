@@ -97,7 +97,6 @@ __device__ int mulCUDA(int dt, int n) {
 }
 
 __device__ void MixColumnsCUDA(int *state) {
-  int x;
   state[0] = mulCUDA(((unsigned char *) state)[0], 2) ^
       mulCUDA(((unsigned char *) state)[1], 3) ^
       ((unsigned char *) state)[2] ^
@@ -117,9 +116,8 @@ __device__ void MixColumnsCUDA(int *state) {
        mulCUDA(((unsigned char *) state)[0], 3) ^
        ((unsigned char *) state)[1] ^
        ((unsigned char *) state)[2]) << 24;
-//  state[0] = x;
 
-  state[1] = x = mulCUDA(((unsigned char *) state)[4], 2) ^
+  state[1] = mulCUDA(((unsigned char *) state)[4], 2) ^
       mulCUDA(((unsigned char *) state)[5], 3) ^
       ((unsigned char *) state)[6] ^
       ((unsigned char *) state)[7]
@@ -138,7 +136,6 @@ __device__ void MixColumnsCUDA(int *state) {
        mulCUDA(((unsigned char *) state)[4], 3) ^
        ((unsigned char *) state)[5] ^
        ((unsigned char *) state)[6]) << 24;
-//  state[1] = x;
 
   state[2] = mulCUDA(((unsigned char *) state)[8], 2) ^
       mulCUDA(((unsigned char *) state)[9], 3) ^
@@ -159,7 +156,6 @@ __device__ void MixColumnsCUDA(int *state) {
        mulCUDA(((unsigned char *) state)[8], 3) ^
        ((unsigned char *) state)[9] ^
        ((unsigned char *) state)[10]) << 24;
-//  state[2] = x;
 
   state[3] = mulCUDA(((unsigned char *) state)[12], 2) ^
       mulCUDA(((unsigned char *) state)[13], 3) ^
@@ -180,7 +176,6 @@ __device__ void MixColumnsCUDA(int *state) {
        mulCUDA(((unsigned char *) state)[12], 3) ^
        ((unsigned char *) state)[13] ^
        ((unsigned char *) state)[14]) << 24;
-//  state[3] = x;
 }
 
 
