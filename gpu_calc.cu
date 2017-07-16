@@ -46,21 +46,25 @@ __device__ void SubBytesCUDA(int *state) {
 __device__ void ShiftRowsCUDA(int *state) {
   unsigned char cw[NBb];
 
+/*
   cw[0] = ((unsigned char *) state)[0];
   cw[1] = ((unsigned char *) state)[5];
   cw[2] =((unsigned char *) state)[10];
   cw[3] = ((unsigned char *) state)[15];
-  /*((int *) cw)[0] =
+  */
+/*((int *) cw)[0] =
           (int) (((unsigned char *) state)[0]) << 0 |
           (int) (((unsigned char *) state)[5]) << 1 |
           (int) (((unsigned char *) state)[10]) << 2 |
-          (int) (((unsigned char *) state)[15] << 3);*/
+          (int) (((unsigned char *) state)[15] << 3);*//*
+
   if(((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x == 0){
     int i = 0;
     for(;i<16;i++){
       printf("cw[%d]: 0x%x\n", i, cw[i]);
     }
   }
+*/
 
   ((int *) cw)[0] =
           (int) (((unsigned char *) state)[0]) << 0 |
@@ -68,12 +72,12 @@ __device__ void ShiftRowsCUDA(int *state) {
           (int) (((unsigned char *) state)[10]) << 16 |
           (int) (((unsigned char *) state)[15] << 24);
 
-  if(((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x == 0){
+/*  if(((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x == 0){
     int i = 0;
     for(;i<16;i++){
       printf("cw2[%d]: 0x%x\n", i, cw[i]);
     }
-  }
+  }*/
   /*cw[1] = ((unsigned char *) state)[5];
   cw[2] =((unsigned char *) state)[10];
   cw[3] = ((unsigned char *) state)[15];*/
