@@ -186,10 +186,6 @@ __device__ void AddRoundKeyCUDA(int *state, int *w, int n) {
   state[1] ^= rkey[(n << 2) | 1];
   state[2] ^= rkey[(n << 2) | 2];
   state[3] ^= rkey[(n << 2) | 3];
-
-  /*for (i = 0; i < NB; i++) {
-    state[i] ^= w[i + NB * n];
-  }*/
 }
 
 __device__ void CipherCUDA(int *pt, int *rkey) {
@@ -244,7 +240,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
 
-  device_aes_encrypt << < dim_grid, dim_block >> > (d_pt, d_ct, size);
+  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
 
   cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
 
