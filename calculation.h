@@ -6,6 +6,7 @@
 
 #define NK (4)                        /* 128-bit鍵モードでの鍵の長さ */
 #define NR (10)                       /* ラウンド数 */
+#define NR4 (40)                       /* ラウンド数 */
 
 /********************************************************************************/
 // You have to set FILESIZE to "16*128*13*16*512" at the time of your submission.
