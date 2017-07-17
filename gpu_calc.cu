@@ -319,8 +319,9 @@ __device__ void AddRoundKeyCUDA(int *state, int *w, int n) {
 
 __device__ void CipherCUDA(int *pt, int *rkey) {
   int rnd;
-  int state[NB];
-  memcpy(state, pt, sizeof(int) * NB);
+  int* state = pt;
+//  int state[NB];
+//  memcpy(state, pt, sizeof(int) * NB);
 
   state[0] ^= rkey[0];
   state[1] ^= rkey[1];
