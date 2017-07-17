@@ -179,10 +179,10 @@ __device__ void AddRoundKeyCUDA(int *state, int *w, int n) {
   int cw[NB], key[NB];
   memcpy(cw, state, sizeof(int) * NB);
   memcpy(key, &(rkey[n << 2]), sizeof(int) * NB);
-  cw[0] ^= key[n << 2];
-  cw[1] ^= key[(n << 2) | 1];
-  cw[2] ^= key[(n << 2) | 2];
-  cw[3] ^= key[(n << 2) | 3];
+  cw[0] ^= key[0];
+  cw[1] ^= key[1];
+  cw[2] ^= key[2];
+  cw[3] ^= key[3];
   memcpy(state, cw, sizeof(int) * NB);
 }
 
