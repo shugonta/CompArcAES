@@ -319,7 +319,8 @@ __device__ void AddRoundKeyCUDA(int *state, int *w, int n) {
 
 __device__ void CipherCUDA(int *pt, int *rkey) {
   int rnd;
-  int *state = pt;
+  int state[NB];
+  memcpy(state, pt, sizeof(int) * NB);
 
   AddRoundKeyCUDA(state, rkey, 0);
 
@@ -336,6 +337,8 @@ __device__ void CipherCUDA(int *pt, int *rkey) {
 //  SubBytesCUDA(state);
 //  ShiftRowsCUDA(state);
   AddRoundKeyCUDA(state, rkey, rnd);
+  memcpy(pt, state, sizeof(int) * NB);
+
   return;
 }
 
