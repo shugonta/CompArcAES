@@ -322,7 +322,11 @@ __device__ void CipherCUDA(int *pt, int *rkey) {
   int state[NB];
   memcpy(state, pt, sizeof(int) * NB);
 
-  AddRoundKeyCUDA(state, rkey, 0);
+  state[0] ^= rkey[0];
+  state[1] ^= rkey[1];
+  state[2] ^= rkey[2];
+  state[3] ^= rkey[3];
+//  AddRoundKeyCUDA(state, rkey, 0);
 
   for (rnd = 4; rnd < NR4; rnd += 4) {
     SubShift(state);
