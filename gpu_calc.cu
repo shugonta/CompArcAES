@@ -329,7 +329,26 @@ __device__ void CipherCUDA(int *pt, int *rkey) {
 //  AddRoundKeyCUDA(state, rkey, 0);
 
   for (rnd = 4; rnd < NR4; rnd += 4) {
-    SubShift(state);
+    unsigned char cb[NBb];
+    cb[0] = SboxCUDA[((unsigned char *) state)[0]];
+    cb[1] = SboxCUDA[((unsigned char *) state)[5]];
+    cb[2] = SboxCUDA[((unsigned char *) state)[10]];
+    cb[3] = SboxCUDA[((unsigned char *) state)[15]];
+    cb[4] = SboxCUDA[((unsigned char *) state)[4]];
+    cb[5] = SboxCUDA[((unsigned char *) state)[9]];
+    cb[6] = SboxCUDA[((unsigned char *) state)[14]];
+    cb[7] = SboxCUDA[((unsigned char *) state)[3]];
+    cb[8] = SboxCUDA[((unsigned char *) state)[8]];
+    cb[9] = SboxCUDA[((unsigned char *) state)[13]];
+    cb[10] = SboxCUDA[((unsigned char *) state)[2]];
+    cb[11] = SboxCUDA[((unsigned char *) state)[7]];
+    cb[12] = SboxCUDA[((unsigned char *) state)[12]];
+    cb[13] = SboxCUDA[((unsigned char *) state)[1]];
+    cb[14] = SboxCUDA[((unsigned char *) state)[6]];
+    cb[15] = SboxCUDA[((unsigned char *) state)[11]];
+    memcpy(state, cb, sizeof(int) * NB);
+
+//    SubShift(state);
 //    SubBytesCUDA(state);
 //    ShiftRowsCUDA(state);
     MixAddRound(state, rnd);
