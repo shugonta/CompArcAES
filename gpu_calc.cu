@@ -177,6 +177,7 @@ __device__ void MixColumnsCUDA(int *state) {
 
 __device__ void AddRoundKeyCUDA(int *state, int *w, int n) {
   int cw[NB];
+  memcpy(cw, state, sizeof(int) * NB);
   cw[0] ^= rkey[n << 2];
   cw[1] ^= rkey[(n << 2) | 1];
   cw[2] ^= rkey[(n << 2) | 2];
