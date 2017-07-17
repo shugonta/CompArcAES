@@ -24,30 +24,49 @@ __constant__ unsigned char SboxCUDA[256] = {
 };
 
 __device__ void SubBytesCUDA(int *state) {
-  int cw[NB];
-  cw[0] = SboxCUDA[((unsigned char *) state)[0]]
-          | SboxCUDA[((unsigned char *) state)[1]] << 8
-          | SboxCUDA[((unsigned char *) state)[2]] << 16
-          | SboxCUDA[((unsigned char *) state)[3]] << 24;
-  cw[1] = SboxCUDA[((unsigned char *) state)[4]]
-          | SboxCUDA[((unsigned char *) state)[5]] << 8
-          | SboxCUDA[((unsigned char *) state)[6]] << 16
-          | SboxCUDA[((unsigned char *) state)[7]] << 24;
-  cw[2] = SboxCUDA[((unsigned char *) state)[8]]
-          | SboxCUDA[((unsigned char *) state)[9]] << 8
-          | SboxCUDA[((unsigned char *) state)[10]] << 16
-          | SboxCUDA[((unsigned char *) state)[11]] << 24;
-  cw[3] = SboxCUDA[((unsigned char *) state)[12]]
-          | SboxCUDA[((unsigned char *) state)[13]] << 8
-          | SboxCUDA[((unsigned char *) state)[14]] << 16
-          | SboxCUDA[((unsigned char *) state)[15]] << 24;
-  memcpy(state, cw, sizeof(int) * NB);
+  unsigned char cb[NBb];
+  cb[0] = SboxCUDA[((unsigned char *) state)[0]];
+  cb[1] = SboxCUDA[((unsigned char *) state)[1]];
+  cb[2] = SboxCUDA[((unsigned char *) state)[2]];
+  cb[3] = SboxCUDA[((unsigned char *) state)[3]];
+  cb[4] = SboxCUDA[((unsigned char *) state)[4]];
+  cb[5] = SboxCUDA[((unsigned char *) state)[5]];
+  cb[6] = SboxCUDA[((unsigned char *) state)[6]];
+  cb[7] = SboxCUDA[((unsigned char *) state)[7]];
+  cb[8] = SboxCUDA[((unsigned char *) state)[8]];
+  cb[9] = SboxCUDA[((unsigned char *) state)[9]];
+  cb[10] = SboxCUDA[((unsigned char *) state)[10]];
+  cb[11] = SboxCUDA[((unsigned char *) state)[11]];
+  cb[12] = SboxCUDA[((unsigned char *) state)[12]];
+  cb[13] = SboxCUDA[((unsigned char *) state)[13]];
+  cb[14] = SboxCUDA[((unsigned char *) state)[14]];
+  cb[15] = SboxCUDA[((unsigned char *) state)[15]];
+  memcpy(state, cb, sizeof(unsigned char) * NBb);
 }
 
 __device__ void ShiftRowsCUDA(int *state) {
-  int cw[NB];
+  unsigned char cb[NBb];
 
-  cw[0] =
+  cb[0] = ((unsigned char *) state)[0];
+  cb[1] = ((unsigned char *) state)[5];
+  cb[2] = ((unsigned char *) state)[10];
+  cb[3] = ((unsigned char *) state)[15];
+  cb[4] = ((unsigned char *) state)[4];
+  cb[5] = ((unsigned char *) state)[9];
+  cb[6] = ((unsigned char *) state)[14];
+  cb[7] = ((unsigned char *) state)[3];
+  cb[8] = ((unsigned char *) state)[8];
+  cb[9] = ((unsigned char *) state)[13];
+  cb[10] = ((unsigned char *) state)[2];
+  cb[11] = ((unsigned char *) state)[7];
+  cb[12] = ((unsigned char *) state)[12];
+  cb[13] = ((unsigned char *) state)[1];
+  cb[14] = ((unsigned char *) state)[6];
+  cb[15] = ((unsigned char *) state)[11];
+
+
+
+/*  cw[0] =
           ((unsigned char *) state)[0] |
           ((unsigned char *) state)[5] << 8 |
           ((unsigned char *) state)[10] << 16 |
@@ -66,7 +85,7 @@ __device__ void ShiftRowsCUDA(int *state) {
           ((unsigned char *) state)[12] |
           ((unsigned char *) state)[1] << 8 |
           ((unsigned char *) state)[6] << 16 |
-          ((unsigned char *) state)[11] << 24;
+          ((unsigned char *) state)[11] << 24;*/
 
   memcpy(state, cw, sizeof(int) * NB);
 }
