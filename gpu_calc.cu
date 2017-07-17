@@ -179,7 +179,7 @@ __device__ void MixColumnsCUDA(int *state) {
 __device__ void AddRoundKeyCUDA(int *state, int *w, int n) {
   int cw[NB], key[NB];
   memcpy(cw, state, sizeof(int) * NB);
-  memcpy(key, &(rkey[n << 2]), sizeof(int) * NB);
+  memcpy(key, &(rkey[n]), sizeof(int) * NB);
   cw[0] ^= key[0];
   cw[1] ^= key[1];
   cw[2] ^= key[2];
@@ -193,7 +193,7 @@ __device__ void CipherCUDA(int *pt, int *rkey) {
 
   AddRoundKeyCUDA(state, rkey, 0);
 
-  for (rnd = 1; rnd < NR; rnd++) {
+  for (rnd = 4; rnd < NR4; rnd += 4) {
     SubBytesCUDA(state);
     ShiftRowsCUDA(state);
     MixColumnsCUDA(state);
