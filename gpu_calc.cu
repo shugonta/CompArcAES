@@ -71,7 +71,7 @@ __device__ void ShiftRowsCUDA(int *state) {
   memcpy(state, cw, sizeof(int) * NB);
 }
 
-__device__ int mul3CUDA(int dt) {
+__device__ int mul3CUDA(unsigned char dt) {
   int x;
   x = dt << 1;
   if (x & 0x100)
@@ -81,7 +81,7 @@ __device__ int mul3CUDA(int dt) {
   return (x);
 }
 
-__device__ int mul2CUDA(int dt) {
+__device__ int mul2CUDA(unsigned char dt) {
   int x;
   x = dt << 1;
   if (x & 0x100)
