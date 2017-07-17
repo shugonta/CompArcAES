@@ -68,7 +68,7 @@ __device__ void ShiftRowsCUDA(int *state) {
           ((unsigned char *) state)[6] << 16 |
           ((unsigned char *) state)[11] << 24;
 
-  memcpy(((unsigned char *) state), cw, sizeof(unsigned char) * NBb);
+  memcpy(state, cw, sizeof(int) * NB);
 }
 
 __device__ int mul3CUDA(int dt) {
@@ -91,7 +91,8 @@ __device__ int mul2CUDA(int dt) {
 }
 
 __device__ void MixColumnsCUDA(int *state) {
-  state[0] = mul2CUDA(((unsigned char *) state)[0]) ^
+  int cw[NB];
+  cw[0] = mul2CUDA(((unsigned char *) state)[0]) ^
              mul3CUDA(((unsigned char *) state)[1]) ^
              ((unsigned char *) state)[2] ^
              ((unsigned char *) state)[3]
@@ -111,7 +112,7 @@ __device__ void MixColumnsCUDA(int *state) {
               ((unsigned char *) state)[1] ^
               ((unsigned char *) state)[2]) << 24;
 
-  state[1] = mul2CUDA(((unsigned char *) state)[4]) ^
+  cw[1] = mul2CUDA(((unsigned char *) state)[4]) ^
              mul3CUDA(((unsigned char *) state)[5]) ^
              ((unsigned char *) state)[6] ^
              ((unsigned char *) state)[7]
@@ -131,7 +132,7 @@ __device__ void MixColumnsCUDA(int *state) {
               ((unsigned char *) state)[5] ^
               ((unsigned char *) state)[6]) << 24;
 
-  state[2] = mul2CUDA(((unsigned char *) state)[8]) ^
+  cw[2] = mul2CUDA(((unsigned char *) state)[8]) ^
              mul3CUDA(((unsigned char *) state)[9]) ^
              ((unsigned char *) state)[10] ^
              ((unsigned char *) state)[11]
@@ -151,7 +152,7 @@ __device__ void MixColumnsCUDA(int *state) {
               ((unsigned char *) state)[9] ^
               ((unsigned char *) state)[10]) << 24;
 
-  state[3] = mul2CUDA(((unsigned char *) state)[12]) ^
+  cw[3] = mul2CUDA(((unsigned char *) state)[12]) ^
              mul3CUDA(((unsigned char *) state)[13]) ^
              ((unsigned char *) state)[14] ^
              ((unsigned char *) state)[15]
@@ -170,6 +171,7 @@ __device__ void MixColumnsCUDA(int *state) {
               mul3CUDA(((unsigned char *) state)[12]) ^
               ((unsigned char *) state)[13] ^
               ((unsigned char *) state)[14]) << 24;
+  memcpy(state, cw, sizeof(int) * NB);
 }
 
 
