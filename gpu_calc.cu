@@ -87,7 +87,7 @@ __device__ void ShiftRowsCUDA(int *state) {
           ((unsigned char *) state)[6] << 16 |
           ((unsigned char *) state)[11] << 24;*/
 
-  memcpy(state, cw, sizeof(int) * NB);
+  memcpy(state, cb, sizeof(int) * NB);
 }
 
 __device__ int mul3CUDA(unsigned char dt) {
