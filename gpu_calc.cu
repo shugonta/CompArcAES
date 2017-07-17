@@ -176,10 +176,12 @@ __device__ void MixColumnsCUDA(int *state) {
 
 
 __device__ void AddRoundKeyCUDA(int *state, int *w, int n) {
-  state[0] ^= rkey[n << 2];
-  state[1] ^= rkey[(n << 2) | 1];
-  state[2] ^= rkey[(n << 2) | 2];
-  state[3] ^= rkey[(n << 2) | 3];
+  int cw[NB];
+  cw[0] ^= rkey[n << 2];
+  cw[1] ^= rkey[(n << 2) | 1];
+  cw[2] ^= rkey[(n << 2) | 2];
+  cw[3] ^= rkey[(n << 2) | 3];
+  memcpy(state, cw, sizeof(int) * NB);
 }
 
 __device__ void CipherCUDA(int *pt, int *rkey) {
