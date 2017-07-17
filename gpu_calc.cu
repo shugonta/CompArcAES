@@ -346,7 +346,7 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
   int thread_id = ((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x;
 
   if (thread_id == 0)
-    printf("size = %ld\n", size);
+//    printf("size = %ld\n", size);
 //  printf("You can use printf function to eliminate bugs in your kernel.\n");
 
   __shared__ int state[BLOCKSIZE][NB];
