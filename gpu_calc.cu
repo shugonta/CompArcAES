@@ -24,7 +24,7 @@ __constant__ unsigned char SboxCUDA[256] = {
 };
 
 __device__ void SubBytesCUDA(int *state) {
-  unsigned char *cb = (unsigned char *) state;
+  unsigned char cb[NBb];
   cb[0] = SboxCUDA[cb[0]];
   cb[1] = SboxCUDA[cb[1]];
   cb[2] = SboxCUDA[cb[2]];
@@ -41,6 +41,7 @@ __device__ void SubBytesCUDA(int *state) {
   cb[13] = SboxCUDA[cb[13]];
   cb[14] = SboxCUDA[cb[14]];
   cb[15] = SboxCUDA[cb[15]];
+  memcpy(state, cb, sizeof(unsigned char) * NBb);
 }
 
 __device__ void ShiftRowsCUDA(int *state) {
