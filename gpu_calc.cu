@@ -34,13 +34,13 @@ __device__ void SubBytesCUDA(int *state) {
           | SboxCUDA[((unsigned char *) state)[6]] << 16
           | SboxCUDA[((unsigned char *) state)[7]] << 24;
   cw[2] = SboxCUDA[((unsigned char *) state)[8]]
-          | SboxCUDA[((unsigned char *) state)[9]]
-          | SboxCUDA[((unsigned char *) state)[10]]
-          | SboxCUDA[((unsigned char *) state)[11]];
+          | SboxCUDA[((unsigned char *) state)[9]] << 8
+          | SboxCUDA[((unsigned char *) state)[10]] << 16
+          | SboxCUDA[((unsigned char *) state)[11]] << 24;
   cw[3] = SboxCUDA[((unsigned char *) state)[12]]
-          | SboxCUDA[((unsigned char *) state)[13]]
-          | SboxCUDA[((unsigned char *) state)[14]]
-          | SboxCUDA[((unsigned char *) state)[15]];
+          | SboxCUDA[((unsigned char *) state)[13]] << 8
+          | SboxCUDA[((unsigned char *) state)[14]] << 16
+          | SboxCUDA[((unsigned char *) state)[15]] << 24;
   memcpy(state, cw, sizeof(int) * NB);
 }
 
