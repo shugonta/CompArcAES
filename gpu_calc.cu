@@ -29,15 +29,15 @@ __device__ void SubBytesCUDA(int *state) {
           | SboxCUDA[((unsigned char *) state)[1]] << 8
           | SboxCUDA[((unsigned char *) state)[2]] << 16
           | SboxCUDA[((unsigned char *) state)[3]] << 24;
-  cw[2] = SboxCUDA[((unsigned char *) state)[4]]
+  cw[1] = SboxCUDA[((unsigned char *) state)[4]]
           | SboxCUDA[((unsigned char *) state)[5]] << 8
           | SboxCUDA[((unsigned char *) state)[6]] << 16
           | SboxCUDA[((unsigned char *) state)[7]] << 24;
-  cw[3] = SboxCUDA[((unsigned char *) state)[8]]
+  cw[2] = SboxCUDA[((unsigned char *) state)[8]]
           | SboxCUDA[((unsigned char *) state)[9]]
           | SboxCUDA[((unsigned char *) state)[10]]
           | SboxCUDA[((unsigned char *) state)[11]];
-  cw[4] = SboxCUDA[((unsigned char *) state)[12]]
+  cw[3] = SboxCUDA[((unsigned char *) state)[12]]
           | SboxCUDA[((unsigned char *) state)[13]]
           | SboxCUDA[((unsigned char *) state)[14]]
           | SboxCUDA[((unsigned char *) state)[15]];
