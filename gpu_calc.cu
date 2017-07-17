@@ -24,24 +24,24 @@ __constant__ unsigned char SboxCUDA[256] = {
 };
 
 __device__ void SubBytesCUDA(int *state) {
-  unsigned char cb[NBb];
-  cb[0] = SboxCUDA[((unsigned char *) state)[0]];
-  cb[1] = SboxCUDA[((unsigned char *) state)[1]];
-  cb[2] = SboxCUDA[((unsigned char *) state)[2]];
-  cb[3] = SboxCUDA[((unsigned char *) state)[3]];
-  cb[4] = SboxCUDA[((unsigned char *) state)[4]];
-  cb[5] = SboxCUDA[((unsigned char *) state)[5]];
-  cb[6] = SboxCUDA[((unsigned char *) state)[6]];
-  cb[7] = SboxCUDA[((unsigned char *) state)[7]];
-  cb[8] = SboxCUDA[((unsigned char *) state)[8]];
-  cb[9] = SboxCUDA[((unsigned char *) state)[9]];
-  cb[10] = SboxCUDA[((unsigned char *) state)[10]];
-  cb[11] = SboxCUDA[((unsigned char *) state)[11]];
-  cb[12] = SboxCUDA[((unsigned char *) state)[12]];
-  cb[13] = SboxCUDA[((unsigned char *) state)[13]];
-  cb[14] = SboxCUDA[((unsigned char *) state)[14]];
-  cb[15] = SboxCUDA[((unsigned char *) state)[15]];
-  memcpy(state, cb, sizeof(unsigned char) * NBb);
+  int cw[NB];
+  cw[0] = SboxCUDA[((unsigned char *) state)[0]]
+          | SboxCUDA[((unsigned char *) state)[1]] << 8
+          | SboxCUDA[((unsigned char *) state)[2]] << 16
+          | SboxCUDA[((unsigned char *) state)[3]] << 24;
+  cw[2] = SboxCUDA[((unsigned char *) state)[4]]
+          | SboxCUDA[((unsigned char *) state)[5]] << 8
+          | SboxCUDA[((unsigned char *) state)[6]] << 16
+          | SboxCUDA[((unsigned char *) state)[7]] << 24;
+  cw[3] = SboxCUDA[((unsigned char *) state)[8]]
+          | SboxCUDA[((unsigned char *) state)[9]]
+          | SboxCUDA[((unsigned char *) state)[10]]
+          | SboxCUDA[((unsigned char *) state)[11]];
+  cw[4] = SboxCUDA[((unsigned char *) state)[12]]
+          | SboxCUDA[((unsigned char *) state)[13]]
+          | SboxCUDA[((unsigned char *) state)[14]]
+          | SboxCUDA[((unsigned char *) state)[15]];
+  memcpy(state, cw, sizeof(int) * NB);
 }
 
 __device__ void ShiftRowsCUDA(int *state) {
