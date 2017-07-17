@@ -45,29 +45,29 @@ __device__ void SubBytesCUDA(int *state) {
 }
 
 __device__ void ShiftRowsCUDA(int *state) {
-  int cw[NB];
-  memcpy(cw, state, sizeof(int) * NB);
+  int cw[NB], state2[NB];
+  memcpy(state2, state, sizeof(int) * NB);
 
   cw[0] =
-          ((unsigned char *) cw)[0] << 0 |
-          ((unsigned char *) cw)[5] << 8 |
-          ((unsigned char *) cw)[10] << 16 |
-          ((unsigned char *) cw)[15] << 24;
+          ((unsigned char *) state2)[0] << 0 |
+          ((unsigned char *) state2)[5] << 8 |
+          ((unsigned char *) state2)[10] << 16 |
+          ((unsigned char *) state2)[15] << 24;
   cw[1] =
-          ((unsigned char *) cw)[4] << 0 |
-          ((unsigned char *) cw)[9] << 8 |
-          ((unsigned char *) cw)[14] << 16 |
-          ((unsigned char *) cw)[3] << 24;
+          ((unsigned char *) state2)[4] << 0 |
+          ((unsigned char *) state2)[9] << 8 |
+          ((unsigned char *) state2)[14] << 16 |
+          ((unsigned char *) state2)[3] << 24;
   cw[2] =
-          ((unsigned char *) cw)[8] << 0 |
-          ((unsigned char *) cw)[13] << 8 |
-          ((unsigned char *) cw)[2] << 16 |
-          ((unsigned char *) cw)[7] << 24;
+          ((unsigned char *) state2)[8] << 0 |
+          ((unsigned char *) state2)[13] << 8 |
+          ((unsigned char *) state2)[2] << 16 |
+          ((unsigned char *) state2)[7] << 24;
   cw[3] =
-          ((unsigned char *) cw)[12] << 0 |
-          ((unsigned char *) cw)[1] << 8 |
-          ((unsigned char *) cw)[6] << 16 |
-          ((unsigned char *) cw)[11] << 24;
+          ((unsigned char *) state2)[12] << 0 |
+          ((unsigned char *) state2)[1] << 8 |
+          ((unsigned char *) state2)[6] << 16 |
+          ((unsigned char *) state2)[11] << 24;
 
   memcpy(state, cw, sizeof(int) * NB);
 }
