@@ -92,85 +92,86 @@ __device__ int mul2CUDA(unsigned char dt) {
 
 __device__ void MixColumnsCUDA(int *state) {
   int cw[NB];
-  cw[0] = mul2CUDA(((unsigned char *) state)[0]) ^
-             mul3CUDA(((unsigned char *) state)[1]) ^
-             ((unsigned char *) state)[2] ^
-             ((unsigned char *) state)[3]
+  memcpy(cw, state, sizeof(int) * NB);
+  cw[0] = mul2CUDA(((unsigned char *) cw)[0]) ^
+             mul3CUDA(((unsigned char *) cw)[1]) ^
+             ((unsigned char *) cw)[2] ^
+             ((unsigned char *) cw)[3]
              |
-             (mul2CUDA(((unsigned char *) state)[1]) ^
-              mul3CUDA(((unsigned char *) state)[2]) ^
-              ((unsigned char *) state)[3] ^
-              ((unsigned char *) state)[0]) << 8
+             (mul2CUDA(((unsigned char *) cw)[1]) ^
+              mul3CUDA(((unsigned char *) cw)[2]) ^
+              ((unsigned char *) cw)[3] ^
+              ((unsigned char *) cw)[0]) << 8
              |
-             (mul2CUDA(((unsigned char *) state)[2]) ^
-              mul3CUDA(((unsigned char *) state)[3]) ^
-              ((unsigned char *) state)[0] ^
-              ((unsigned char *) state)[1]) << 16
+             (mul2CUDA(((unsigned char *) cw)[2]) ^
+              mul3CUDA(((unsigned char *) cw)[3]) ^
+              ((unsigned char *) cw)[0] ^
+              ((unsigned char *) cw)[1]) << 16
              |
-             (mul2CUDA(((unsigned char *) state)[3]) ^
-              mul3CUDA(((unsigned char *) state)[0]) ^
-              ((unsigned char *) state)[1] ^
-              ((unsigned char *) state)[2]) << 24;
+             (mul2CUDA(((unsigned char *) cw)[3]) ^
+              mul3CUDA(((unsigned char *) cw)[0]) ^
+              ((unsigned char *) cw)[1] ^
+              ((unsigned char *) cw)[2]) << 24;
 
-  cw[1] = mul2CUDA(((unsigned char *) state)[4]) ^
-             mul3CUDA(((unsigned char *) state)[5]) ^
-             ((unsigned char *) state)[6] ^
-             ((unsigned char *) state)[7]
+  cw[1] = mul2CUDA(((unsigned char *) cw)[4]) ^
+             mul3CUDA(((unsigned char *) cw)[5]) ^
+             ((unsigned char *) cw)[6] ^
+             ((unsigned char *) cw)[7]
              |
-             (mul2CUDA(((unsigned char *) state)[5]) ^
-              mul3CUDA(((unsigned char *) state)[6]) ^
-              ((unsigned char *) state)[7] ^
-              ((unsigned char *) state)[4]) << 8
+             (mul2CUDA(((unsigned char *) cw)[5]) ^
+              mul3CUDA(((unsigned char *) cw)[6]) ^
+              ((unsigned char *) cw)[7] ^
+              ((unsigned char *) cw)[4]) << 8
              |
-             (mul2CUDA(((unsigned char *) state)[6]) ^
-              mul3CUDA(((unsigned char *) state)[7]) ^
-              ((unsigned char *) state)[4] ^
-              ((unsigned char *) state)[5]) << 16
+             (mul2CUDA(((unsigned char *) cw)[6]) ^
+              mul3CUDA(((unsigned char *) cw)[7]) ^
+              ((unsigned char *) cw)[4] ^
+              ((unsigned char *) cw)[5]) << 16
              |
-             (mul2CUDA(((unsigned char *) state)[7]) ^
-              mul3CUDA(((unsigned char *) state)[4]) ^
-              ((unsigned char *) state)[5] ^
-              ((unsigned char *) state)[6]) << 24;
+             (mul2CUDA(((unsigned char *) cw)[7]) ^
+              mul3CUDA(((unsigned char *) cw)[4]) ^
+              ((unsigned char *) cw)[5] ^
+              ((unsigned char *) cw)[6]) << 24;
 
-  cw[2] = mul2CUDA(((unsigned char *) state)[8]) ^
-             mul3CUDA(((unsigned char *) state)[9]) ^
-             ((unsigned char *) state)[10] ^
-             ((unsigned char *) state)[11]
+  cw[2] = mul2CUDA(((unsigned char *) cw)[8]) ^
+             mul3CUDA(((unsigned char *) cw)[9]) ^
+             ((unsigned char *) cw)[10] ^
+             ((unsigned char *) cw)[11]
              |
-             (mul2CUDA(((unsigned char *) state)[9]) ^
-              mul3CUDA(((unsigned char *) state)[10]) ^
-              ((unsigned char *) state)[11] ^
-              ((unsigned char *) state)[8]) << 8
+             (mul2CUDA(((unsigned char *) cw)[9]) ^
+              mul3CUDA(((unsigned char *) cw)[10]) ^
+              ((unsigned char *) cw)[11] ^
+              ((unsigned char *) cw)[8]) << 8
              |
-             (mul2CUDA(((unsigned char *) state)[10]) ^
-              mul3CUDA(((unsigned char *) state)[11]) ^
-              ((unsigned char *) state)[8] ^
-              ((unsigned char *) state)[9]) << 16
+             (mul2CUDA(((unsigned char *) cw)[10]) ^
+              mul3CUDA(((unsigned char *) cw)[11]) ^
+              ((unsigned char *) cw)[8] ^
+              ((unsigned char *) cw)[9]) << 16
              |
-             (mul2CUDA(((unsigned char *) state)[11]) ^
-              mul3CUDA(((unsigned char *) state)[8]) ^
-              ((unsigned char *) state)[9] ^
-              ((unsigned char *) state)[10]) << 24;
+             (mul2CUDA(((unsigned char *) cw)[11]) ^
+              mul3CUDA(((unsigned char *) cw)[8]) ^
+              ((unsigned char *) cw)[9] ^
+              ((unsigned char *) cw)[10]) << 24;
 
-  cw[3] = mul2CUDA(((unsigned char *) state)[12]) ^
-             mul3CUDA(((unsigned char *) state)[13]) ^
-             ((unsigned char *) state)[14] ^
-             ((unsigned char *) state)[15]
+  cw[3] = mul2CUDA(((unsigned char *) cw)[12]) ^
+             mul3CUDA(((unsigned char *) cw)[13]) ^
+             ((unsigned char *) cw)[14] ^
+             ((unsigned char *) cw)[15]
              |
-             (mul2CUDA(((unsigned char *) state)[13]) ^
-              mul3CUDA(((unsigned char *) state)[14]) ^
-              ((unsigned char *) state)[15] ^
-              ((unsigned char *) state)[12]) << 8
+             (mul2CUDA(((unsigned char *) cw)[13]) ^
+              mul3CUDA(((unsigned char *) cw)[14]) ^
+              ((unsigned char *) cw)[15] ^
+              ((unsigned char *) cw)[12]) << 8
              |
-             (mul2CUDA(((unsigned char *) state)[14]) ^
-              mul3CUDA(((unsigned char *) state)[15]) ^
-              ((unsigned char *) state)[12] ^
-              ((unsigned char *) state)[13]) << 16
+             (mul2CUDA(((unsigned char *) cw)[14]) ^
+              mul3CUDA(((unsigned char *) cw)[15]) ^
+              ((unsigned char *) cw)[12] ^
+              ((unsigned char *) cw)[13]) << 16
              |
-             (mul2CUDA(((unsigned char *) state)[15]) ^
-              mul3CUDA(((unsigned char *) state)[12]) ^
-              ((unsigned char *) state)[13] ^
-              ((unsigned char *) state)[14]) << 24;
+             (mul2CUDA(((unsigned char *) cw)[15]) ^
+              mul3CUDA(((unsigned char *) cw)[12]) ^
+              ((unsigned char *) cw)[13] ^
+              ((unsigned char *) cw)[14]) << 24;
   memcpy(state, cw, sizeof(int) * NB);
 }
 
