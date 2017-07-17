@@ -345,10 +345,10 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
   //Please modify this kernel!!
   int thread_id = ((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x;
 
-  if (thread_id == 0)
-//    printf("size = %ld\n", size);
+ /* if (thread_id == 0)
+    printf("size = %ld\n", size);
 //  printf("You can use printf function to eliminate bugs in your kernel.\n");
-
+*/
   __shared__ int state[BLOCKSIZE][NB];
   memcpy(&(state[threadIdx.x][0]), &pt[thread_id << 4], sizeof(unsigned char) * NBb);
   CipherCUDA(&(state[threadIdx.x][0]), rkey);
