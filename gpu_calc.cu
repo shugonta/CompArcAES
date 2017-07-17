@@ -23,6 +23,27 @@ __constant__ unsigned char SboxCUDA[256] = {
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
 
+__device__ void SubShift(int *state){
+  unsigned char cb[NBb];
+  cb[0] = SboxCUDA[((unsigned char *) state)[0]];
+  cb[1] = SboxCUDA[((unsigned char *) state)[5]];
+  cb[2] = SboxCUDA[((unsigned char *) state)[10]];
+  cb[3] = SboxCUDA[((unsigned char *) state)[15]];
+  cb[4] = SboxCUDA[((unsigned char *) state)[4]];
+  cb[5] = SboxCUDA[((unsigned char *) state)[9]];
+  cb[6] = SboxCUDA[((unsigned char *) state)[14]];
+  cb[7] = SboxCUDA[((unsigned char *) state)[3]];
+  cb[8] = SboxCUDA[((unsigned char *) state)[8]];
+  cb[9] = SboxCUDA[((unsigned char *) state)[13]];
+  cb[10] = SboxCUDA[((unsigned char *) state)[2]];
+  cb[11] = SboxCUDA[((unsigned char *) state)[7]];
+  cb[12] = SboxCUDA[((unsigned char *) state)[12]];
+  cb[13] = SboxCUDA[((unsigned char *) state)[1]];
+  cb[14] = SboxCUDA[((unsigned char *) state)[6]];
+  cb[15] = SboxCUDA[((unsigned char *) state)[11]];
+  memcpy(state, cb, sizeof(unsigned char) * NBb);
+}
+
 __device__ void SubBytesCUDA(int *state) {
   unsigned char cb[NBb];
   cb[0] = SboxCUDA[((unsigned char *) state)[0]];
@@ -213,14 +234,16 @@ __device__ void CipherCUDA(int *pt, int *rkey) {
   AddRoundKeyCUDA(state, rkey, 0);
 
   for (rnd = 4; rnd < NR4; rnd += 4) {
-    SubBytesCUDA(state);
-    ShiftRowsCUDA(state);
+    SubShift(state);
+//    SubBytesCUDA(state);
+//    ShiftRowsCUDA(state);
     MixColumnsCUDA(state);
     AddRoundKeyCUDA(state, rkey, rnd);
   }
 
-  SubBytesCUDA(state);
-  ShiftRowsCUDA(state);
+  SubShift(state);
+//  SubBytesCUDA(state);
+//  ShiftRowsCUDA(state);
   AddRoundKeyCUDA(state, rkey, rnd);
   return;
 }
