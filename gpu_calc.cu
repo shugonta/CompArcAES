@@ -466,7 +466,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
 //  SubBytesCUDA(state);
 //  ShiftRowsCUDA(state);
 //  AddRoundKeyCUDA(cw, rkey, rnd);
-  memcpy(&ct[(((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x) << 4], cb[index2],
+  memcpy(&ct[(((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x) << 4], &(cb[index2]),
          sizeof(int) * NB);
 
   return;
