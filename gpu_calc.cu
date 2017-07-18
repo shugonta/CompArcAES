@@ -853,7 +853,7 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
 
   unsigned char cb[NBb2];
   int *cw = (int *) cb;
-  unsigned char* state = &(pt[thread_id << 4]);
+  int* state = (int*)&(pt[thread_id << 4]);
 
   cw[0] = state[0] ^ rkey[0];
   cw[1] = state[1] ^ rkey[1];
