@@ -846,11 +846,15 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
      printf("size = %ld\n", size);
  //  printf("You can use printf function to eliminate bugs in your kernel.\n");
  */
-  __syncthreads();
   if(threadIdx.x == 0){
     memcpy(SboxCUDA, SboxCUDAConst, sizeof(unsigned char) * 256);
   }
+  __syncthreads();
   __threadfence_block();
+
+  /*if(thread_id == 512){
+    prtinf("SBOX[0]")
+  }*/
 //  __shared__ int state[BLOCKSIZE][NB];
 //  memcpy(&(state[threadIdx.x][0]), &(pt[thread_id << 4]), sizeof(unsigned char) * NBb);
   CipherCUDA((int *)(&pt[thread_id << 4]), ct, rkey);
