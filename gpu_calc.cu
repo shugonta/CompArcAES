@@ -467,10 +467,10 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   cb[index2 | 15] = SboxCUDA[cb[index | 11]];
   cw[index2w] ^= rkey[43];
   if (threadId == 0) {
-    printf("cw0: 0x%x\n", cw[indexw2]);
-    printf("cw1: 0x%x\n", cw[indexw2 | 1]);
-    printf("cw2: 0x%x\n", cw[indexw2 | 2]);
-    printf("cw3: 0x%x\n", cw[indexw2 | 3]);
+    printf("cw0: 0x%x\n", cw[index2w]);
+    printf("cw1: 0x%x\n", cw[index2w | 1]);
+    printf("cw2: 0x%x\n", cw[index2w | 2]);
+    printf("cw3: 0x%x\n", cw[index2w | 3]);
   }
 //  SubShift(cw);
 //  SubBytesCUDA(state);
