@@ -9,6 +9,7 @@
 #define MUL2(x) (x & 0x80 ? (x << 1 ^0x1b) & 0xff  : (x << 1))
 
 __constant__ int rkey[44];
+__constant__ unsigned  char d_pt[2048];
 __shared__ unsigned char SboxCUDA[256];
 __constant__ unsigned char SboxCUDAConst[256] = {
         0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
@@ -29,7 +30,7 @@ __constant__ unsigned char SboxCUDAConst[256] = {
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
 
-__global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long int size) {
+__global__ void device_aes_encrypt(/*unsigned char *pt,*/ unsigned char *ct, long int size) {
 
   //This kernel executes AES encryption on a GPU.
   //Please modify this kernel!!
@@ -45,7 +46,7 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
 
   unsigned char cb[NBb2];
   int *cw = (int *) cb;
-  int* state = (int*)&(pt[thread_id << 4]);
+  int* state = (int*)&(d_pt[thread_id << 4]);
 
   cw[0] = state[0] ^ rkey[0];
   cw[1] = state[1] ^ rkey[1];
@@ -848,8 +849,8 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaMalloc((void **) &d_ct, sizeof(unsigned char) * 2048);
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
   for(i =0; i < GRIDSIZE_X; i++) {
-    cudaMemcpy(d_pt, &(pt[i << 11]), sizeof(unsigned char) * 2048, cudaMemcpyHostToDevice);
-    device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, 2048);
+    cudaMemcpyToSymbol(d_pt, &(pt[i << 11]), sizeof(unsigned char) * 2048, cudaMemcpyHostToDevice);
+    device_aes_encrypt <<< dim_grid, dim_block >>> (/*d_pt,*/ d_ct, 2048);
 
     cudaMemcpy(&(ct[i << 11]), d_ct, sizeof(unsigned char) * 2048, cudaMemcpyDeviceToHost);
   }
