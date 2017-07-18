@@ -318,7 +318,7 @@ __device__ void AddRoundKeyCUDA(int *state, int *w, int n) {
 }
 
 __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
-  int rnd;
+  int rnd, threadId = ((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x;
   int* state = pt;
   unsigned char cb[NBb];
   int* cw = (int *)cb;
@@ -329,7 +329,12 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   cw[1] = state[1] ^ rkey[1];
   cw[2] = state[2] ^ rkey[2];
   cw[3] = state[3] ^ rkey[3];
-
+if(threadId == 0) {
+  printf("cw0: 0x%x", cw[0]);
+  printf("cw1: 0x%x", cw[1]);
+  printf("cw2: 0x%x", cw[2]);
+  printf("cw3: 0x%x", cw[3]);
+}
 //  state[0] ^= rkey[0];
 //  state[1] ^= rkey[1];
 //  state[2] ^= rkey[2];

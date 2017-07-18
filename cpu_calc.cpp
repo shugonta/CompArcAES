@@ -125,10 +125,16 @@ void AddRoundKey(int *state, int *w, int n){
 
 /************************************************************/
 /* FIPS 197  P.15 Figure 5 */ //暗号化
-void Cipher(int *state, int *rkey){
+void Cipher(int *state, int *rkey, int i){
   int rnd;
 
   AddRoundKey(state, rkey, 0);
+  if(i == 0) {
+    printf("cw0: 0x%x", state[0]);
+    printf("cw1: 0x%x", state[1]);
+    printf("cw2: 0x%x", state[2]);
+    printf("cw3: 0x%x", state[3]);
+  }
 
   for(rnd = 1; rnd < NR; rnd++){
     SubBytes(state);
@@ -211,7 +217,7 @@ void launch_cpu_aes(unsigned char *pt, int *rk, unsigned char *ct, long int size
     
     //datadump("Plaintext        : ", data, 4);      
       
-    Cipher(data, rk);
+    Cipher(data, rk, i);
 
     memcpy(ct+16*i, data, NBb);
     //datadump("Ciphertext on CPU: ", ct+16*i, 4);
