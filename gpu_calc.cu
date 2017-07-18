@@ -356,7 +356,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
 //    cb[14] = SboxCUDA[((unsigned char *) state)[6]];
 //    cb[15] = SboxCUDA[((unsigned char *) state)[11]];
 
-    memcpy(cw2, cw, sizeof(int) * NB);
+//    memcpy(cw2, cw, sizeof(int) * NB);
     cw[0] = (mul2CUDA(SboxCUDA[((unsigned char *) cw2)[0]]) ^
              mul3CUDA(SboxCUDA[((unsigned char *) cw2)[5]]) ^
              SboxCUDA[((unsigned char *) cw2)[10]] ^
@@ -445,12 +445,12 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
 //    int * swap = cw;
 //    cw = cw2;
 //    cw2 = swap;
-    if (threadId == 0 && rnd == 36) {
+   /* if (threadId == 0 && rnd == 36) {
       printf("cw0: 0x%x\n", cw[0]);
       printf("cw1: 0x%x\n", cw[1]);
       printf("cw2: 0x%x\n", cw[2]);
       printf("cw3: 0x%x\n", cw[3]);
-    }
+    }*/
   }
 
   memcpy(cw2, cw, sizeof(int) * NB);
