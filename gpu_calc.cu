@@ -322,12 +322,8 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   int *state = pt;
   unsigned char cb[NBb2];
   int *cw = (int *) cb;
-  __shared__ unsigned  char index, index2;
-  __shared__ unsigned  char indexw, index2w;
-  index =0;
-  indexw = 0;
-  index2 = NBb;
-  index2w = NB;
+  unsigned  char index = 0, index2 = NBb;
+  unsigned  char indexw = 0, index2w = NB;
 //  int state[NB];
 //  memcpy(state, pt, sizeof(int) * NB);
 
@@ -426,17 +422,13 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
               SboxCUDA[((unsigned char *) cw)[index | 1]] ^
               SboxCUDA[((unsigned char *) cw)[index | 6]]) << 24)
             ^ rkey[rnd | 3];
-    __syncthreads();
-
     unsigned char swap = index;
-    if(threadId ==0) {
-      index = index2;
-      index2 = swap;
-      swap = indexw;
-      indexw = index2w;
-      index2w = swap;
-    }
-    __threadfence_block();
+    index = index2;
+    index2 = swap;
+    swap = indexw;
+    indexw = index2w;
+    index2w = swap;
+
 
 //    int * swap = cw;
 //    cw = cw2;
@@ -501,9 +493,9 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
      printf("size = %ld\n", size);
  //  printf("You can use printf function to eliminate bugs in your kernel.\n");
  */
-  __shared__ int state[BLOCKSIZE][NB];
-  memcpy(&(state[threadIdx.x][0]), &(pt[thread_id << 4]), sizeof(unsigned char) * NBb);
-  CipherCUDA(&(state[threadIdx.x][0]), ct, rkey);
+//  __shared__ int state[BLOCKSIZE][NB];
+//  memcpy(&(state[threadIdx.x][0]), &(pt[thread_id << 4]), sizeof(unsigned char) * NBb);
+  CipherCUDA((int *)(&pt[thread_id << 4]), ct, rkey);
 //  memcpy(&ct[thread_id << 4], &state[threadIdx.x], sizeof(unsigned char) * NBb);
 }
 
