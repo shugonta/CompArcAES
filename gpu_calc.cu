@@ -4,7 +4,7 @@
 #include "calculation.h"
 
 __constant__ int rkey[44];
-__constant__ unsigned char SboxCUDA[256] = {
+__shared__ unsigned char SboxCUDA[256] = {
         0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
         0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
         0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15,
@@ -856,20 +856,22 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   //Please modify this function for AES kernel.
   //In this function, you need to allocate the device memory and so on.
   unsigned char *d_pt, *d_ct;
-  int i;
 
-  cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
-  cudaMalloc((void **) &d_pt, sizeof(unsigned char) * 16 * 128);
+  dim3 dim_grid(GRIDSIZE_X, GRIDSIZE_Y, GRIDSIZE_Z), dim_block(BLOCKSIZE, 1, 1);
+
+  cudaMalloc((void **) &d_pt, sizeof(unsigned char) * size);
 //  cudaMalloc((void **) &d_rkey, sizeof(int) * 44);
-  cudaMalloc((void **) &d_ct, sizeof(unsigned char) * 16 * 128);
-  for (i = 0; i < GRIDSIZE_X; i++) {
-    dim3 dim_grid(1, 1, 1), dim_block(BLOCKSIZE, 1, 1);
+  cudaMalloc((void **) &d_ct, sizeof(unsigned char) * size);
+
 //  cudaMemset(d_pt, 0, sizeof(unsigned char) * size);
-    cudaMemcpy(d_pt, pt, sizeof(unsigned char) * 16 * 128, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
+  cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
 //  cudaMemcpyToSymbol(state_org, pt, sizeof(unsigned char) * size);
-    device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, 16 * 128);
-    cudaMemcpy(ct[i << 8], d_ct, sizeof(unsigned char) * 16 * 128, cudaMemcpyDeviceToHost);
-  }
+
+  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
+
+  cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
+
   cudaFree(d_pt);
   cudaFree(d_ct);
 }
