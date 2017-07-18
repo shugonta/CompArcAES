@@ -462,8 +462,8 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
 //  printf("You can use printf function to eliminate bugs in your kernel.\n");
 */
   __shared__ int state[BLOCKSIZE][NB];
-//  memcpy(&(state[threadIdx.x][0]), &(pt[thread_id << 4]), sizeof(unsigned char) * NBb);
-  CipherCUDA((int *)&(pt[thread_id << 4]),ct, rkey);
+  memcpy(&(state[threadIdx.x][0]), &(pt[thread_id << 4]), sizeof(unsigned char) * NBb);
+  CipherCUDA(&(state[threadIdx.x][0]),ct, rkey);
 //  memcpy(&ct[thread_id << 4], &state[threadIdx.x], sizeof(unsigned char) * NBb);
 }
 
