@@ -467,6 +467,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   cb[index2 | 15] = SboxCUDA[cb[index | 11]];
   cw[index2w] ^= rkey[43];
   if (threadId == 0) {
+    printf("index: %d, index2: %d, indexw :%d, index2w :%d", index, index2, indexw,index2w);
     printf("cw0: 0x%x\n", cw[index2w]);
     printf("cw1: 0x%x\n", cw[index2w | 1]);
     printf("cw2: 0x%x\n", cw[index2w | 2]);
