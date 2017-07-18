@@ -33,13 +33,13 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
 
   //This kernel executes AES encryption on a GPU.
   //Please modify this kernel!!
-  int thread_id = ((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x;
+  int thread_id = blockIdx.x * blockDim.x + threadIdx.x;
 
   /* if (thread_id == 0)
      printf("size = %ld\n", size);
  //  printf("You can use printf function to eliminate bugs in your kernel.\n");
  */
-    memcpy(&(SboxCUDA[threadIdx.x << 1]), &(SboxCUDAConst[threadIdx.x << 1]), 2);
+  memcpy(&(SboxCUDA[threadIdx.x << 1]), &(SboxCUDAConst[threadIdx.x << 1]), 2);
   __syncthreads();
 
   unsigned char cb[NBb2];
@@ -839,7 +839,8 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   //In this function, you need to allocate the device memory and so on.
   unsigned char *d_pt, *d_ct;
 
-  dim3 dim_grid(GRIDSIZE_X, GRIDSIZE_Y, GRIDSIZE_Z), dim_block(BLOCKSIZE, 1, 1);
+//  dim3 dim_grid(GRIDSIZE_X, GRIDSIZE_Y, GRIDSIZE_Z), dim_block(BLOCKSIZE, 1, 1);
+  dim3 dim_grid(GRIDSIZE_X, 1, 1), dim_block(BLOCKSIZE, 1, 1);
 
   cudaMalloc((void **) &d_pt, sizeof(unsigned char) * size);
 //  cudaMalloc((void **) &d_rkey, sizeof(int) * 44);
