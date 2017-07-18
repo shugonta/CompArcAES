@@ -839,7 +839,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   //This function launches the AES kernel.
   //Please modify this function for AES kernel.
   //In this function, you need to allocate the device memory and so on.
-  unsigned char *d_pt, *d_ct;
+  unsigned char /**d_pt*/ *d_ct;
 
   dim3 dim_grid(1, GRIDSIZE_Y, GRIDSIZE_Z), dim_block(BLOCKSIZE, 1, 1);
   int i;
@@ -850,7 +850,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
   for(i =0; i < GRIDSIZE_X; i++) {
 //    cudaMemcpy(d_pt, &(pt[i << 11]), sizeof(unsigned char) * 2048, cudaMemcpyHostToDevice);
-    cudaMemcpyToSymbol(pt_const, pt[i << 11], sizeof(unsigned char) * 2048);
+    cudaMemcpyToSymbol(pt_const, &(pt[i << 11]), sizeof(unsigned char) * 2048);
     device_aes_encrypt <<< dim_grid, dim_block >>> (/*d_pt,*/ d_ct, 2048);
 
     cudaMemcpy(&(ct[i << 11]), d_ct, sizeof(unsigned char) * 2048, cudaMemcpyDeviceToHost);
