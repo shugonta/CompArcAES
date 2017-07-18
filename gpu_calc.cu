@@ -931,10 +931,10 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   cb[15] = SboxCUDA[cb[27]];
   ((int *) ct)[threadId | 3] = cw[3] ^ rkey[43];
   if (threadId == 0) {
-    printf("cw0: 0x%x\n", cw[0]);
-    printf("cw1: 0x%x\n", cw[1]);
-    printf("cw2: 0x%x\n", cw[2]);
-    printf("cw3: 0x%x\n", cw[3]);
+    printf("cw0: 0x%x\n", ((int *) ct)[threadId]);
+    printf("cw1: 0x%x\n", ((int *) ct)[threadId | 1]);
+    printf("cw2: 0x%x\n", ((int *) ct)[threadId | 2]);
+    printf("cw3: 0x%x\n", ((int *) ct)[threadId | 3]);
   }
   return;
 }
