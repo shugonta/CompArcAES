@@ -140,7 +140,6 @@ void Cipher(int *state, int *rkey, int i){
       printf("cw2: 0x%x\n", state[2]);
       printf("cw3: 0x%x\n", state[3]);
     }
-    r
   }
   SubBytes(state);
   ShiftRows(state);
