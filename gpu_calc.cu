@@ -850,15 +850,797 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
     memcpy(&(SboxCUDA[threadIdx.x << 1]), &(SboxCUDAConst[threadIdx.x << 1]), sizeof(unsigned char) * 2);
 //  }
   __syncthreads();
-//  __threadfence_block();
 
-  /*if(thread_id == 512){
-    prtinf("SBOX[0]")
-  }*/
-//  __shared__ int state[BLOCKSIZE][NB];
-//  memcpy(&(state[threadIdx.x][0]), &(pt[thread_id << 4]), sizeof(unsigned char) * NBb);
-  CipherCUDA((int *)(&pt[thread_id << 4]), ct, rkey);
-//  memcpy(&ct[thread_id << 4], &state[threadIdx.x], sizeof(unsigned char) * NBb);
+  unsigned char cb[NBb2];
+  int *cw = (int *) cb;
+
+  cw[0] = pt[0] ^ rkey[0];
+  cw[1] = pt[1] ^ rkey[1];
+  cw[2] = pt[2] ^ rkey[2];
+  cw[3] = pt[3] ^ rkey[3];
+//round 1
+  cw[4] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[0]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[5]]) ^
+           SboxCUDA[((unsigned char *) cw)[10]] ^
+           SboxCUDA[((unsigned char *) cw)[15]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[5]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[10]]) ^
+            SboxCUDA[((unsigned char *) cw)[15]] ^
+            SboxCUDA[((unsigned char *) cw)[0]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[10]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[15]]) ^
+            SboxCUDA[((unsigned char *) cw)[0]] ^
+            SboxCUDA[((unsigned char *) cw)[5]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[15]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[0]]) ^
+            SboxCUDA[((unsigned char *) cw)[5]] ^
+            SboxCUDA[((unsigned char *) cw)[10]]) << 24)
+          ^ rkey[4];
+
+  cw[5] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[4]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[9]]) ^
+           SboxCUDA[((unsigned char *) cw)[14]] ^
+           SboxCUDA[((unsigned char *) cw)[3]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[9]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[14]]) ^
+            SboxCUDA[((unsigned char *) cw)[3]] ^
+            SboxCUDA[((unsigned char *) cw)[4]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[14]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[3]]) ^
+            SboxCUDA[((unsigned char *) cw)[4]] ^
+            SboxCUDA[((unsigned char *) cw)[9]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[3]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[4]]) ^
+            SboxCUDA[((unsigned char *) cw)[9]] ^
+            SboxCUDA[((unsigned char *) cw)[14]]) << 24)
+          ^ rkey[5];
+
+  cw[6] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[8]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[13]]) ^
+           SboxCUDA[((unsigned char *) cw)[2]] ^
+           SboxCUDA[((unsigned char *) cw)[7]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[13]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[2]]) ^
+            SboxCUDA[((unsigned char *) cw)[7]] ^
+            SboxCUDA[((unsigned char *) cw)[8]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[2]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[7]]) ^
+            SboxCUDA[((unsigned char *) cw)[8]] ^
+            SboxCUDA[((unsigned char *) cw)[13]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[7]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[8]]) ^
+            SboxCUDA[((unsigned char *) cw)[13]] ^
+            SboxCUDA[((unsigned char *) cw)[2]]) << 24)
+          ^ rkey[6];
+
+  cw[7] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[12]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[1]]) ^
+           SboxCUDA[((unsigned char *) cw)[6]] ^
+           SboxCUDA[((unsigned char *) cw)[11]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[1]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[6]]) ^
+            SboxCUDA[((unsigned char *) cw)[11]] ^
+            SboxCUDA[((unsigned char *) cw)[12]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[6]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[11]]) ^
+            SboxCUDA[((unsigned char *) cw)[12]] ^
+            SboxCUDA[((unsigned char *) cw)[1]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[11]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[12]]) ^
+            SboxCUDA[((unsigned char *) cw)[1]] ^
+            SboxCUDA[((unsigned char *) cw)[6]]) << 24)
+          ^ rkey[7];
+//round 2
+  cw[0] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[16]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[21]]) ^
+           SboxCUDA[((unsigned char *) cw)[26]] ^
+           SboxCUDA[((unsigned char *) cw)[31]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[21]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[26]]) ^
+            SboxCUDA[((unsigned char *) cw)[31]] ^
+            SboxCUDA[((unsigned char *) cw)[16]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[26]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[31]]) ^
+            SboxCUDA[((unsigned char *) cw)[16]] ^
+            SboxCUDA[((unsigned char *) cw)[21]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[31]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[16]]) ^
+            SboxCUDA[((unsigned char *) cw)[21]] ^
+            SboxCUDA[((unsigned char *) cw)[26]]) << 24)
+          ^ rkey[8];
+
+  cw[1] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[20]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[25]]) ^
+           SboxCUDA[((unsigned char *) cw)[30]] ^
+           SboxCUDA[((unsigned char *) cw)[19]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[25]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[30]]) ^
+            SboxCUDA[((unsigned char *) cw)[19]] ^
+            SboxCUDA[((unsigned char *) cw)[20]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[30]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[19]]) ^
+            SboxCUDA[((unsigned char *) cw)[20]] ^
+            SboxCUDA[((unsigned char *) cw)[25]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[19]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[20]]) ^
+            SboxCUDA[((unsigned char *) cw)[25]] ^
+            SboxCUDA[((unsigned char *) cw)[30]]) << 24)
+          ^ rkey[9];
+
+  cw[2] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[24]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[29]]) ^
+           SboxCUDA[((unsigned char *) cw)[18]] ^
+           SboxCUDA[((unsigned char *) cw)[23]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[29]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[18]]) ^
+            SboxCUDA[((unsigned char *) cw)[23]] ^
+            SboxCUDA[((unsigned char *) cw)[24]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[18]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[23]]) ^
+            SboxCUDA[((unsigned char *) cw)[24]] ^
+            SboxCUDA[((unsigned char *) cw)[29]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[23]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[24]]) ^
+            SboxCUDA[((unsigned char *) cw)[29]] ^
+            SboxCUDA[((unsigned char *) cw)[18]]) << 24)
+          ^ rkey[10];
+
+  cw[3] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[28]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[17]]) ^
+           SboxCUDA[((unsigned char *) cw)[22]] ^
+           SboxCUDA[((unsigned char *) cw)[27]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[17]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[22]]) ^
+            SboxCUDA[((unsigned char *) cw)[27]] ^
+            SboxCUDA[((unsigned char *) cw)[28]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[22]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[27]]) ^
+            SboxCUDA[((unsigned char *) cw)[28]] ^
+            SboxCUDA[((unsigned char *) cw)[17]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[27]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[28]]) ^
+            SboxCUDA[((unsigned char *) cw)[17]] ^
+            SboxCUDA[((unsigned char *) cw)[22]]) << 24)
+          ^ rkey[11];
+
+  //round 3
+  cw[4] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[0]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[5]]) ^
+           SboxCUDA[((unsigned char *) cw)[10]] ^
+           SboxCUDA[((unsigned char *) cw)[15]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[5]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[10]]) ^
+            SboxCUDA[((unsigned char *) cw)[15]] ^
+            SboxCUDA[((unsigned char *) cw)[0]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[10]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[15]]) ^
+            SboxCUDA[((unsigned char *) cw)[0]] ^
+            SboxCUDA[((unsigned char *) cw)[5]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[15]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[0]]) ^
+            SboxCUDA[((unsigned char *) cw)[5]] ^
+            SboxCUDA[((unsigned char *) cw)[10]]) << 24)
+          ^ rkey[12];
+
+  cw[5] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[4]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[9]]) ^
+           SboxCUDA[((unsigned char *) cw)[14]] ^
+           SboxCUDA[((unsigned char *) cw)[3]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[9]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[14]]) ^
+            SboxCUDA[((unsigned char *) cw)[3]] ^
+            SboxCUDA[((unsigned char *) cw)[4]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[14]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[3]]) ^
+            SboxCUDA[((unsigned char *) cw)[4]] ^
+            SboxCUDA[((unsigned char *) cw)[9]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[3]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[4]]) ^
+            SboxCUDA[((unsigned char *) cw)[9]] ^
+            SboxCUDA[((unsigned char *) cw)[14]]) << 24)
+          ^ rkey[13];
+
+  cw[6] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[8]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[13]]) ^
+           SboxCUDA[((unsigned char *) cw)[2]] ^
+           SboxCUDA[((unsigned char *) cw)[7]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[13]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[2]]) ^
+            SboxCUDA[((unsigned char *) cw)[7]] ^
+            SboxCUDA[((unsigned char *) cw)[8]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[2]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[7]]) ^
+            SboxCUDA[((unsigned char *) cw)[8]] ^
+            SboxCUDA[((unsigned char *) cw)[13]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[7]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[8]]) ^
+            SboxCUDA[((unsigned char *) cw)[13]] ^
+            SboxCUDA[((unsigned char *) cw)[2]]) << 24)
+          ^ rkey[14];
+
+  cw[7] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[12]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[1]]) ^
+           SboxCUDA[((unsigned char *) cw)[6]] ^
+           SboxCUDA[((unsigned char *) cw)[11]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[1]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[6]]) ^
+            SboxCUDA[((unsigned char *) cw)[11]] ^
+            SboxCUDA[((unsigned char *) cw)[12]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[6]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[11]]) ^
+            SboxCUDA[((unsigned char *) cw)[12]] ^
+            SboxCUDA[((unsigned char *) cw)[1]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[11]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[12]]) ^
+            SboxCUDA[((unsigned char *) cw)[1]] ^
+            SboxCUDA[((unsigned char *) cw)[6]]) << 24)
+          ^ rkey[15];
+//round 4
+  cw[0] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[16]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[21]]) ^
+           SboxCUDA[((unsigned char *) cw)[26]] ^
+           SboxCUDA[((unsigned char *) cw)[31]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[21]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[26]]) ^
+            SboxCUDA[((unsigned char *) cw)[31]] ^
+            SboxCUDA[((unsigned char *) cw)[16]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[26]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[31]]) ^
+            SboxCUDA[((unsigned char *) cw)[16]] ^
+            SboxCUDA[((unsigned char *) cw)[21]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[31]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[16]]) ^
+            SboxCUDA[((unsigned char *) cw)[21]] ^
+            SboxCUDA[((unsigned char *) cw)[26]]) << 24)
+          ^ rkey[16];
+
+  cw[1] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[20]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[25]]) ^
+           SboxCUDA[((unsigned char *) cw)[30]] ^
+           SboxCUDA[((unsigned char *) cw)[19]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[25]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[30]]) ^
+            SboxCUDA[((unsigned char *) cw)[19]] ^
+            SboxCUDA[((unsigned char *) cw)[20]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[30]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[19]]) ^
+            SboxCUDA[((unsigned char *) cw)[20]] ^
+            SboxCUDA[((unsigned char *) cw)[25]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[19]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[20]]) ^
+            SboxCUDA[((unsigned char *) cw)[25]] ^
+            SboxCUDA[((unsigned char *) cw)[30]]) << 24)
+          ^ rkey[17];
+
+  cw[2] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[24]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[29]]) ^
+           SboxCUDA[((unsigned char *) cw)[18]] ^
+           SboxCUDA[((unsigned char *) cw)[23]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[29]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[18]]) ^
+            SboxCUDA[((unsigned char *) cw)[23]] ^
+            SboxCUDA[((unsigned char *) cw)[24]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[18]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[23]]) ^
+            SboxCUDA[((unsigned char *) cw)[24]] ^
+            SboxCUDA[((unsigned char *) cw)[29]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[23]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[24]]) ^
+            SboxCUDA[((unsigned char *) cw)[29]] ^
+            SboxCUDA[((unsigned char *) cw)[18]]) << 24)
+          ^ rkey[18];
+
+  cw[3] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[28]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[17]]) ^
+           SboxCUDA[((unsigned char *) cw)[22]] ^
+           SboxCUDA[((unsigned char *) cw)[27]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[17]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[22]]) ^
+            SboxCUDA[((unsigned char *) cw)[27]] ^
+            SboxCUDA[((unsigned char *) cw)[28]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[22]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[27]]) ^
+            SboxCUDA[((unsigned char *) cw)[28]] ^
+            SboxCUDA[((unsigned char *) cw)[17]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[27]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[28]]) ^
+            SboxCUDA[((unsigned char *) cw)[17]] ^
+            SboxCUDA[((unsigned char *) cw)[22]]) << 24)
+          ^ rkey[19];
+
+  //round 5
+  cw[4] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[0]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[5]]) ^
+           SboxCUDA[((unsigned char *) cw)[10]] ^
+           SboxCUDA[((unsigned char *) cw)[15]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[5]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[10]]) ^
+            SboxCUDA[((unsigned char *) cw)[15]] ^
+            SboxCUDA[((unsigned char *) cw)[0]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[10]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[15]]) ^
+            SboxCUDA[((unsigned char *) cw)[0]] ^
+            SboxCUDA[((unsigned char *) cw)[5]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[15]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[0]]) ^
+            SboxCUDA[((unsigned char *) cw)[5]] ^
+            SboxCUDA[((unsigned char *) cw)[10]]) << 24)
+          ^ rkey[20];
+
+  cw[5] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[4]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[9]]) ^
+           SboxCUDA[((unsigned char *) cw)[14]] ^
+           SboxCUDA[((unsigned char *) cw)[3]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[9]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[14]]) ^
+            SboxCUDA[((unsigned char *) cw)[3]] ^
+            SboxCUDA[((unsigned char *) cw)[4]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[14]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[3]]) ^
+            SboxCUDA[((unsigned char *) cw)[4]] ^
+            SboxCUDA[((unsigned char *) cw)[9]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[3]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[4]]) ^
+            SboxCUDA[((unsigned char *) cw)[9]] ^
+            SboxCUDA[((unsigned char *) cw)[14]]) << 24)
+          ^ rkey[21];
+
+  cw[6] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[8]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[13]]) ^
+           SboxCUDA[((unsigned char *) cw)[2]] ^
+           SboxCUDA[((unsigned char *) cw)[7]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[13]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[2]]) ^
+            SboxCUDA[((unsigned char *) cw)[7]] ^
+            SboxCUDA[((unsigned char *) cw)[8]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[2]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[7]]) ^
+            SboxCUDA[((unsigned char *) cw)[8]] ^
+            SboxCUDA[((unsigned char *) cw)[13]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[7]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[8]]) ^
+            SboxCUDA[((unsigned char *) cw)[13]] ^
+            SboxCUDA[((unsigned char *) cw)[2]]) << 24)
+          ^ rkey[22];
+
+  cw[7] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[12]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[1]]) ^
+           SboxCUDA[((unsigned char *) cw)[6]] ^
+           SboxCUDA[((unsigned char *) cw)[11]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[1]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[6]]) ^
+            SboxCUDA[((unsigned char *) cw)[11]] ^
+            SboxCUDA[((unsigned char *) cw)[12]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[6]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[11]]) ^
+            SboxCUDA[((unsigned char *) cw)[12]] ^
+            SboxCUDA[((unsigned char *) cw)[1]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[11]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[12]]) ^
+            SboxCUDA[((unsigned char *) cw)[1]] ^
+            SboxCUDA[((unsigned char *) cw)[6]]) << 24)
+          ^ rkey[23];
+//round 6
+  cw[0] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[16]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[21]]) ^
+           SboxCUDA[((unsigned char *) cw)[26]] ^
+           SboxCUDA[((unsigned char *) cw)[31]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[21]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[26]]) ^
+            SboxCUDA[((unsigned char *) cw)[31]] ^
+            SboxCUDA[((unsigned char *) cw)[16]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[26]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[31]]) ^
+            SboxCUDA[((unsigned char *) cw)[16]] ^
+            SboxCUDA[((unsigned char *) cw)[21]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[31]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[16]]) ^
+            SboxCUDA[((unsigned char *) cw)[21]] ^
+            SboxCUDA[((unsigned char *) cw)[26]]) << 24)
+          ^ rkey[24];
+
+  cw[1] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[20]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[25]]) ^
+           SboxCUDA[((unsigned char *) cw)[30]] ^
+           SboxCUDA[((unsigned char *) cw)[19]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[25]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[30]]) ^
+            SboxCUDA[((unsigned char *) cw)[19]] ^
+            SboxCUDA[((unsigned char *) cw)[20]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[30]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[19]]) ^
+            SboxCUDA[((unsigned char *) cw)[20]] ^
+            SboxCUDA[((unsigned char *) cw)[25]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[19]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[20]]) ^
+            SboxCUDA[((unsigned char *) cw)[25]] ^
+            SboxCUDA[((unsigned char *) cw)[30]]) << 24)
+          ^ rkey[25];
+
+  cw[2] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[24]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[29]]) ^
+           SboxCUDA[((unsigned char *) cw)[18]] ^
+           SboxCUDA[((unsigned char *) cw)[23]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[29]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[18]]) ^
+            SboxCUDA[((unsigned char *) cw)[23]] ^
+            SboxCUDA[((unsigned char *) cw)[24]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[18]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[23]]) ^
+            SboxCUDA[((unsigned char *) cw)[24]] ^
+            SboxCUDA[((unsigned char *) cw)[29]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[23]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[24]]) ^
+            SboxCUDA[((unsigned char *) cw)[29]] ^
+            SboxCUDA[((unsigned char *) cw)[18]]) << 24)
+          ^ rkey[26];
+
+  cw[3] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[28]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[17]]) ^
+           SboxCUDA[((unsigned char *) cw)[22]] ^
+           SboxCUDA[((unsigned char *) cw)[27]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[17]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[22]]) ^
+            SboxCUDA[((unsigned char *) cw)[27]] ^
+            SboxCUDA[((unsigned char *) cw)[28]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[22]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[27]]) ^
+            SboxCUDA[((unsigned char *) cw)[28]] ^
+            SboxCUDA[((unsigned char *) cw)[17]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[27]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[28]]) ^
+            SboxCUDA[((unsigned char *) cw)[17]] ^
+            SboxCUDA[((unsigned char *) cw)[22]]) << 24)
+          ^ rkey[27];
+
+  //round 7
+  cw[4] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[0]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[5]]) ^
+           SboxCUDA[((unsigned char *) cw)[10]] ^
+           SboxCUDA[((unsigned char *) cw)[15]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[5]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[10]]) ^
+            SboxCUDA[((unsigned char *) cw)[15]] ^
+            SboxCUDA[((unsigned char *) cw)[0]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[10]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[15]]) ^
+            SboxCUDA[((unsigned char *) cw)[0]] ^
+            SboxCUDA[((unsigned char *) cw)[5]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[15]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[0]]) ^
+            SboxCUDA[((unsigned char *) cw)[5]] ^
+            SboxCUDA[((unsigned char *) cw)[10]]) << 24)
+          ^ rkey[28];
+
+  cw[5] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[4]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[9]]) ^
+           SboxCUDA[((unsigned char *) cw)[14]] ^
+           SboxCUDA[((unsigned char *) cw)[3]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[9]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[14]]) ^
+            SboxCUDA[((unsigned char *) cw)[3]] ^
+            SboxCUDA[((unsigned char *) cw)[4]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[14]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[3]]) ^
+            SboxCUDA[((unsigned char *) cw)[4]] ^
+            SboxCUDA[((unsigned char *) cw)[9]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[3]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[4]]) ^
+            SboxCUDA[((unsigned char *) cw)[9]] ^
+            SboxCUDA[((unsigned char *) cw)[14]]) << 24)
+          ^ rkey[29];
+
+  cw[6] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[8]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[13]]) ^
+           SboxCUDA[((unsigned char *) cw)[2]] ^
+           SboxCUDA[((unsigned char *) cw)[7]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[13]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[2]]) ^
+            SboxCUDA[((unsigned char *) cw)[7]] ^
+            SboxCUDA[((unsigned char *) cw)[8]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[2]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[7]]) ^
+            SboxCUDA[((unsigned char *) cw)[8]] ^
+            SboxCUDA[((unsigned char *) cw)[13]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[7]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[8]]) ^
+            SboxCUDA[((unsigned char *) cw)[13]] ^
+            SboxCUDA[((unsigned char *) cw)[2]]) << 24)
+          ^ rkey[30];
+
+  cw[7] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[12]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[1]]) ^
+           SboxCUDA[((unsigned char *) cw)[6]] ^
+           SboxCUDA[((unsigned char *) cw)[11]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[1]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[6]]) ^
+            SboxCUDA[((unsigned char *) cw)[11]] ^
+            SboxCUDA[((unsigned char *) cw)[12]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[6]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[11]]) ^
+            SboxCUDA[((unsigned char *) cw)[12]] ^
+            SboxCUDA[((unsigned char *) cw)[1]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[11]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[12]]) ^
+            SboxCUDA[((unsigned char *) cw)[1]] ^
+            SboxCUDA[((unsigned char *) cw)[6]]) << 24)
+          ^ rkey[31];
+//round 8
+  cw[0] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[16]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[21]]) ^
+           SboxCUDA[((unsigned char *) cw)[26]] ^
+           SboxCUDA[((unsigned char *) cw)[31]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[21]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[26]]) ^
+            SboxCUDA[((unsigned char *) cw)[31]] ^
+            SboxCUDA[((unsigned char *) cw)[16]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[26]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[31]]) ^
+            SboxCUDA[((unsigned char *) cw)[16]] ^
+            SboxCUDA[((unsigned char *) cw)[21]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[31]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[16]]) ^
+            SboxCUDA[((unsigned char *) cw)[21]] ^
+            SboxCUDA[((unsigned char *) cw)[26]]) << 24)
+          ^ rkey[32];
+
+  cw[1] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[20]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[25]]) ^
+           SboxCUDA[((unsigned char *) cw)[30]] ^
+           SboxCUDA[((unsigned char *) cw)[19]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[25]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[30]]) ^
+            SboxCUDA[((unsigned char *) cw)[19]] ^
+            SboxCUDA[((unsigned char *) cw)[20]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[30]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[19]]) ^
+            SboxCUDA[((unsigned char *) cw)[20]] ^
+            SboxCUDA[((unsigned char *) cw)[25]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[19]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[20]]) ^
+            SboxCUDA[((unsigned char *) cw)[25]] ^
+            SboxCUDA[((unsigned char *) cw)[30]]) << 24)
+          ^ rkey[33];
+
+  cw[2] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[24]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[29]]) ^
+           SboxCUDA[((unsigned char *) cw)[18]] ^
+           SboxCUDA[((unsigned char *) cw)[23]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[29]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[18]]) ^
+            SboxCUDA[((unsigned char *) cw)[23]] ^
+            SboxCUDA[((unsigned char *) cw)[24]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[18]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[23]]) ^
+            SboxCUDA[((unsigned char *) cw)[24]] ^
+            SboxCUDA[((unsigned char *) cw)[29]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[23]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[24]]) ^
+            SboxCUDA[((unsigned char *) cw)[29]] ^
+            SboxCUDA[((unsigned char *) cw)[18]]) << 24)
+          ^ rkey[34];
+
+  cw[3] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[28]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[17]]) ^
+           SboxCUDA[((unsigned char *) cw)[22]] ^
+           SboxCUDA[((unsigned char *) cw)[27]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[17]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[22]]) ^
+            SboxCUDA[((unsigned char *) cw)[27]] ^
+            SboxCUDA[((unsigned char *) cw)[28]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[22]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[27]]) ^
+            SboxCUDA[((unsigned char *) cw)[28]] ^
+            SboxCUDA[((unsigned char *) cw)[17]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[27]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[28]]) ^
+            SboxCUDA[((unsigned char *) cw)[17]] ^
+            SboxCUDA[((unsigned char *) cw)[22]]) << 24)
+          ^ rkey[35];
+
+  //round 9
+  cw[4] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[0]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[5]]) ^
+           SboxCUDA[((unsigned char *) cw)[10]] ^
+           SboxCUDA[((unsigned char *) cw)[15]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[5]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[10]]) ^
+            SboxCUDA[((unsigned char *) cw)[15]] ^
+            SboxCUDA[((unsigned char *) cw)[0]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[10]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[15]]) ^
+            SboxCUDA[((unsigned char *) cw)[0]] ^
+            SboxCUDA[((unsigned char *) cw)[5]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[15]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[0]]) ^
+            SboxCUDA[((unsigned char *) cw)[5]] ^
+            SboxCUDA[((unsigned char *) cw)[10]]) << 24)
+          ^ rkey[36];
+
+  cw[5] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[4]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[9]]) ^
+           SboxCUDA[((unsigned char *) cw)[14]] ^
+           SboxCUDA[((unsigned char *) cw)[3]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[9]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[14]]) ^
+            SboxCUDA[((unsigned char *) cw)[3]] ^
+            SboxCUDA[((unsigned char *) cw)[4]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[14]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[3]]) ^
+            SboxCUDA[((unsigned char *) cw)[4]] ^
+            SboxCUDA[((unsigned char *) cw)[9]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[3]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[4]]) ^
+            SboxCUDA[((unsigned char *) cw)[9]] ^
+            SboxCUDA[((unsigned char *) cw)[14]]) << 24)
+          ^ rkey[37];
+
+  cw[6] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[8]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[13]]) ^
+           SboxCUDA[((unsigned char *) cw)[2]] ^
+           SboxCUDA[((unsigned char *) cw)[7]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[13]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[2]]) ^
+            SboxCUDA[((unsigned char *) cw)[7]] ^
+            SboxCUDA[((unsigned char *) cw)[8]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[2]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[7]]) ^
+            SboxCUDA[((unsigned char *) cw)[8]] ^
+            SboxCUDA[((unsigned char *) cw)[13]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[7]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[8]]) ^
+            SboxCUDA[((unsigned char *) cw)[13]] ^
+            SboxCUDA[((unsigned char *) cw)[2]]) << 24)
+          ^ rkey[38];
+
+  cw[7] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[12]]) ^
+           mul3CUDA(SboxCUDA[((unsigned char *) cw)[1]]) ^
+           SboxCUDA[((unsigned char *) cw)[6]] ^
+           SboxCUDA[((unsigned char *) cw)[11]]
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[1]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[6]]) ^
+            SboxCUDA[((unsigned char *) cw)[11]] ^
+            SboxCUDA[((unsigned char *) cw)[12]]) << 8
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[6]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[11]]) ^
+            SboxCUDA[((unsigned char *) cw)[12]] ^
+            SboxCUDA[((unsigned char *) cw)[1]]) << 16
+           |
+           (mul2CUDA(SboxCUDA[((unsigned char *) cw)[11]]) ^
+            mul3CUDA(SboxCUDA[((unsigned char *) cw)[12]]) ^
+            SboxCUDA[((unsigned char *) cw)[1]] ^
+            SboxCUDA[((unsigned char *) cw)[6]]) << 24)
+          ^ rkey[39];
+
+  cb[0] = SboxCUDA[cb[16]];
+  cb[1] = SboxCUDA[cb[21]];
+  cb[2] = SboxCUDA[cb[26]];
+  cb[3] = SboxCUDA[cb[31]];
+  ((int *) ct)[threadId << 2] = cw[0] ^ rkey[40];
+  cb[4] = SboxCUDA[cb[20]];
+  cb[5] = SboxCUDA[cb[25]];
+  cb[6] = SboxCUDA[cb[30]];
+  cb[7] = SboxCUDA[cb[19]];
+  ((int *) ct)[threadId << 2 | 1] = cw[1] ^ rkey[41];
+  cb[8] = SboxCUDA[cb[24]];
+  cb[9] = SboxCUDA[cb[29]];
+  cb[10] = SboxCUDA[cb[18]];
+  cb[11] = SboxCUDA[cb[23]];
+  ((int *) ct)[threadId << 2 | 2] = cw[2] ^ rkey[42];
+  cb[12] = SboxCUDA[cb[28]];
+  cb[13] = SboxCUDA[cb[17]];
+  cb[14] = SboxCUDA[cb[22]];
+  cb[15] = SboxCUDA[cb[27]];
+  ((int *) ct)[threadId << 2 | 3] = cw[3] ^ rkey[43];
+
+//  CipherCUDA((int *)(&pt[thread_id << 4]), ct, rkey);
 }
 
 void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int size) {
