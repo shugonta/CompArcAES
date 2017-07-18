@@ -441,25 +441,25 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
             ^ rkey[rnd | 3];
   }
 
-  cb[0] = SboxCUDA[((unsigned char *) state)[0]];
-  cb[1] = SboxCUDA[((unsigned char *) state)[5]];
-  cb[2] = SboxCUDA[((unsigned char *) state)[10]];
-  cb[3] = SboxCUDA[((unsigned char *) state)[15]];
+  cb[0] = SboxCUDA[(cb)[0]];
+  cb[1] = SboxCUDA[(cb)[5]];
+  cb[2] = SboxCUDA[(cb)[10]];
+  cb[3] = SboxCUDA[(cb)[15]];
   cw[0] ^= rkey[40];
-  cb[4] = SboxCUDA[((unsigned char *) state)[4]];
-  cb[5] = SboxCUDA[((unsigned char *) state)[9]];
-  cb[6] = SboxCUDA[((unsigned char *) state)[14]];
-  cb[7] = SboxCUDA[((unsigned char *) state)[3]];
+  cb[4] = SboxCUDA[(cb)[4]];
+  cb[5] = SboxCUDA[(cb)[9]];
+  cb[6] = SboxCUDA[(cb)[14]];
+  cb[7] = SboxCUDA[(cb)[3]];
   cw[1] ^= rkey[41];
-  cb[8] = SboxCUDA[((unsigned char *) state)[8]];
-  cb[9] = SboxCUDA[((unsigned char *) state)[13]];
-  cb[10] = SboxCUDA[((unsigned char *) state)[2]];
-  cb[11] = SboxCUDA[((unsigned char *) state)[7]];
+  cb[8] = SboxCUDA[(cb)[8]];
+  cb[9] = SboxCUDA[(cb)[13]];
+  cb[10] = SboxCUDA[(cb)[2]];
+  cb[11] = SboxCUDA[(cb)[7]];
   cw[2] ^= rkey[42];
-  cb[12] = SboxCUDA[((unsigned char *) state)[12]];
-  cb[13] = SboxCUDA[((unsigned char *) state)[1]];
-  cb[14] = SboxCUDA[((unsigned char *) state)[6]];
-  cb[15] = SboxCUDA[((unsigned char *) state)[11]];
+  cb[12] = SboxCUDA[(cb)[12]];
+  cb[13] = SboxCUDA[(cb)[1]];
+  cb[14] = SboxCUDA[(cb)[6]];
+  cb[15] = SboxCUDA[(cb)[11]];
   cw[3] ^= rkey[43];
 
 //  SubShift(state);
