@@ -47,8 +47,6 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   int *state = pt;
   unsigned char cb[NBb2];
   int *cw = (int *) cb;
-  unsigned  char index = 0, index2 = NBb;
-  unsigned  char indexw = 0, index2w = NB;
 
   cw[0] = state[0] ^ rkey[0];
   cw[1] = state[1] ^ rkey[1];
@@ -913,11 +911,11 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
     printf("cw3: 0x%x\n", cw[7]);
   }
   ((int*)ct)[threadId] =
-          (SboxCUDA[cb[16]]
-           | SboxCUDA[cb[21]]
-           | SboxCUDA[cb[26]]
-           | SboxCUDA[cb[31]])
-          ^ rkey[40];
+          ((SboxCUDA[cb[16]]
+            | SboxCUDA[cb[21]]
+            | SboxCUDA[cb[26]]
+            | SboxCUDA[cb[31]])
+           ^ rkey[40]);
   cb[4] = SboxCUDA[cb[20]];
   cb[5] = SboxCUDA[cb[25]];
   cb[6] = SboxCUDA[cb[30]];
