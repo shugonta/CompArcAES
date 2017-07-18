@@ -23,6 +23,25 @@ __constant__ unsigned char SboxCUDA[256] = {
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
 
+__device__ int mul3CUDA(unsigned char dt) {
+  int x;
+  x = dt << 1;
+  if (x & 0x100)
+    x = (x ^ 0x1b) & 0xff;
+  x ^= dt;
+
+  return (x);
+}
+
+__device__ int mul2CUDA(unsigned char dt) {
+  int x;
+  x = dt << 1;
+  if (x & 0x100)
+    x = (x ^ 0x1b) & 0xff;
+
+  return (x);
+}
+
 __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   int rnd, threadId = ((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x;
   int *state = pt;
