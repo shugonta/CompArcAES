@@ -24,22 +24,24 @@ __constant__ unsigned char SboxCUDA[256] = {
 };
 
 __device__ int mul3CUDA(unsigned char dt) {
-  int x;
+  /*int x;
   x = dt << 1;
   if (x & 0x100)
     x = (x ^ 0x1b) & 0xff;
   x ^= dt;
 
-  return (x);
+  return (x);*/
+  return 0;
 }
 
 __device__ int mul2CUDA(unsigned char dt) {
-  int x;
+  /*int x;
   x = dt << 1;
   if (x & 0x100)
     x = (x ^ 0x1b) & 0xff;
 
-  return (x);
+  return (x);*/
+  return 0;
 }
 
 __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
