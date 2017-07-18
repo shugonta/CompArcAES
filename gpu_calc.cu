@@ -44,14 +44,13 @@ __device__ int mul2CUDA(unsigned char dt) {
 
 __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   int rnd, threadId = ((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x;
-  int *state = pt;
   unsigned char cb[NBb2];
   int *cw = (int *) cb;
 
-  cw[0] = state[0] ^ rkey[0];
-  cw[1] = state[1] ^ rkey[1];
-  cw[2] = state[2] ^ rkey[2];
-  cw[3] = state[3] ^ rkey[3];
+  cw[0] = pt[0] ^ rkey[0];
+  cw[1] = pt[1] ^ rkey[1];
+  cw[2] = pt[2] ^ rkey[2];
+  cw[3] = pt[3] ^ rkey[3];
 //round 1
   cw[4] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[0]]) ^
            mul3CUDA(SboxCUDA[((unsigned char *) cw)[5]]) ^
@@ -915,6 +914,12 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   cb[2] = SboxCUDA[cb[26]];
   cb[3] = SboxCUDA[cb[31]];
   ((int*)ct)[threadId] = cw[0] ^ rkey[40];
+  if (threadId == 0) {
+    printf("cw0_: 0x%x\n", cw[4]);
+    printf("cw1_: 0x%x\n", cw[5]);
+    printf("cw2_: 0x%x\n", cw[6]);
+    printf("cw3_: 0x%x\n", cw[7]);
+  }
   cb[4] = SboxCUDA[cb[20]];
   cb[5] = SboxCUDA[cb[25]];
   cb[6] = SboxCUDA[cb[30]];
