@@ -455,17 +455,17 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   cb[index2 | 5] = SboxCUDA[cb[index | 9]];
   cb[index2 | 6] = SboxCUDA[cb[index | 14]];
   cb[index2 | 7] = SboxCUDA[cb[index | 3]];
-  cw[index2w] ^= rkey[41];
+  cw[index2w | 1] ^= rkey[41];
   cb[index2 | 8] = SboxCUDA[cb[index | 8]];
   cb[index2 | 9] = SboxCUDA[cb[index | 13]];
   cb[index2 | 10] = SboxCUDA[cb[index | 2]];
   cb[index2 | 11] = SboxCUDA[cb[index | 7]];
-  cw[index2w] ^= rkey[42];
+  cw[index2w | 2] ^= rkey[42];
   cb[index2 | 12] = SboxCUDA[cb[index | 12]];
   cb[index2 | 13] = SboxCUDA[cb[index | 1]];
   cb[index2 | 14] = SboxCUDA[cb[index | 6]];
   cb[index2 | 15] = SboxCUDA[cb[index | 11]];
-  cw[index2w] ^= rkey[43];
+  cw[index2w | 3] ^= rkey[43];
   if (threadId == 0) {
     printf("index: %d, index2: %d, indexw :%d, index2w :%d", index, index2, indexw,index2w);
     printf("cw0: 0x%x\n", cw[index2w]);
