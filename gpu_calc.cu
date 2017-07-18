@@ -853,12 +853,12 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
 
   unsigned char cb[NBb2];
   int *cw = (int *) cb;
-  pt = &(pt[thread_id << 4]);
-          
-  cw[0] = pt[0] ^ rkey[0];
-  cw[1] = pt[1] ^ rkey[1];
-  cw[2] = pt[2] ^ rkey[2];
-  cw[3] = pt[3] ^ rkey[3];
+  unsigned char* state = &(pt[thread_id << 4]);
+
+  cw[0] = state[0] ^ rkey[0];
+  cw[1] = state[1] ^ rkey[1];
+  cw[2] = state[2] ^ rkey[2];
+  cw[3] = state[3] ^ rkey[3];
 //round 1
   cw[4] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[0]]) ^
            mul3CUDA(SboxCUDA[((unsigned char *) cw)[5]]) ^
