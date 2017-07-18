@@ -844,7 +844,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   dim3 dim_grid(1, GRIDSIZE_Y, GRIDSIZE_Z), dim_block(BLOCKSIZE, 1, 1);
   int i;
 
-  cudaMalloc((void **) &d_pt, sizeof(unsigned char) * 2048);
+//  cudaMalloc((void **) &d_pt, sizeof(unsigned char) * 2048);
 //  cudaMalloc((void **) &d_rkey, sizeof(int) * 44);
   cudaMalloc((void **) &d_ct, sizeof(unsigned char) * 2048);
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
