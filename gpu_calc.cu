@@ -322,8 +322,12 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   int *state = pt;
   unsigned char cb[NBb2];
   int *cw = (int *) cb;
-  __shared__ unsigned  char index = 0, index2 = NBb;
-  __shared__ unsigned  char indexw = 0, index2w = NB;
+  __shared__ unsigned  char index, index2;
+  __shared__ unsigned  char indexw, index2w;
+  index =0;
+  indexw = 0;
+  index2 = NBb;
+  index2w = NB;
 //  int state[NB];
 //  memcpy(state, pt, sizeof(int) * NB);
 
