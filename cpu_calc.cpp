@@ -129,18 +129,18 @@ void Cipher(int *state, int *rkey, int i){
   int rnd;
 
   AddRoundKey(state, rkey, 0);
-  if(i == 0) {
-    printf("cw0: 0x%x", state[0]);
-    printf("cw1: 0x%x", state[1]);
-    printf("cw2: 0x%x", state[2]);
-    printf("cw3: 0x%x", state[3]);
-  }
-
   for(rnd = 1; rnd < NR; rnd++){
     SubBytes(state);
     ShiftRows(state);
     MixColumns(state);
     AddRoundKey(state, rkey, rnd);
+    if(i == 0 && rnd == 1) {
+      printf("cw0: 0x%x\n", state[0]);
+      printf("cw1: 0x%x\n", state[1]);
+      printf("cw2: 0x%x\n", state[2]);
+      printf("cw3: 0x%x\n", state[3]);
+    }
+
   }
   SubBytes(state);
   ShiftRows(state);

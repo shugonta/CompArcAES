@@ -329,12 +329,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   cw[1] = state[1] ^ rkey[1];
   cw[2] = state[2] ^ rkey[2];
   cw[3] = state[3] ^ rkey[3];
-if(threadId == 0) {
-  printf("cw0: 0x%x\n", cw[0]);
-  printf("cw1: 0x%x\n", cw[1]);
-  printf("cw2: 0x%x\n", cw[2]);
-  printf("cw3: 0x%x\n", cw[3]);
-}
+
 //  state[0] ^= rkey[0];
 //  state[1] ^= rkey[1];
 //  state[2] ^= rkey[2];
@@ -444,6 +439,12 @@ if(threadId == 0) {
               SboxCUDA[((unsigned char *) cw)[1]] ^
               SboxCUDA[((unsigned char *) cw)[6]]) << 24)
             ^ rkey[rnd | 3];
+    if (threadId == 0 && rnd == 4) {
+      printf("cw0: 0x%x\n", cw[0]);
+      printf("cw1: 0x%x\n", cw[1]);
+      printf("cw2: 0x%x\n", cw[2]);
+      printf("cw3: 0x%x\n", cw[3]);
+    }
   }
 
 /*  cb[0] = SboxCUDA[(cb)[0]];
