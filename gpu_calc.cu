@@ -1095,7 +1095,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
             SboxCUDA[((unsigned char *) cw2)[6]]) << 24)
           ^ rkey[39];
 
-  cb2[0] = SboxCUDA[cb[0]];
+/*  cb2[0] = SboxCUDA[cb[0]];
   cb2[1] = SboxCUDA[cb[5]];
   cb2[2] = SboxCUDA[cb[10]];
   cb2[3] = SboxCUDA[cb[15]];
@@ -1114,18 +1114,19 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   cb2[13] = SboxCUDA[cb[1]];
   cb2[14] = SboxCUDA[cb[6]];
   cb2[15] = SboxCUDA[cb[11]];
-  cw2[3] ^= rkey[43];
+  cw2[3] ^= rkey[43];*/
+
+  SubShift(cw);
+//  SubBytesCUDA(state);
+//  ShiftRowsCUDA(state);
+  AddRoundKeyCUDA(cw, rkey, rnd);
   if (threadId == 0 ) {
     printf("cw0: 0x%x\n", cw[0]);
     printf("cw1: 0x%x\n", cw[1]);
     printf("cw2: 0x%x\n", cw[2]);
     printf("cw3: 0x%x\n", cw[3]);
   }
-//  SubShift(cw);
-//  SubBytesCUDA(state);
-//  ShiftRowsCUDA(state);
-//  AddRoundKeyCUDA(cw, rkey, rnd);
-  memcpy(&ct[(((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x) << 4], cb2,
+  memcpy(&ct[(((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x) << 4], cw,
          sizeof(int) * NB);
 
   return;
