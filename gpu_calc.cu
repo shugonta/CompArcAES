@@ -850,7 +850,7 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
     memcpy(SboxCUDA, SboxCUDAConst, sizeof(unsigned char) * 256);
   }
   __syncthreads();
-  __threadfence_block();
+//  __threadfence_block();
 
   /*if(thread_id == 512){
     prtinf("SBOX[0]")
