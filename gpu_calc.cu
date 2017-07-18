@@ -330,10 +330,10 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   cw[2] = state[2] ^ rkey[2];
   cw[3] = state[3] ^ rkey[3];
 if(threadId == 0) {
-  printf("cw0: 0x%x", cw[0]);
-  printf("cw1: 0x%x", cw[1]);
-  printf("cw2: 0x%x", cw[2]);
-  printf("cw3: 0x%x", cw[3]);
+  printf("cw0: 0x%x\n", cw[0]);
+  printf("cw1: 0x%x\n", cw[1]);
+  printf("cw2: 0x%x\n", cw[2]);
+  printf("cw3: 0x%x\n", cw[3]);
 }
 //  state[0] ^= rkey[0];
 //  state[1] ^= rkey[1];
