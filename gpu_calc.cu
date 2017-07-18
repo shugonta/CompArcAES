@@ -3,7 +3,8 @@
 #include <math.h>
 #include "calculation.h"
 
-__constant__ int rkey[44];
+__shared__ int rkey[44];
+__constant__ int rkeyConst[44];
 __shared__ unsigned char SboxCUDA[256];
 __constant__ unsigned char SboxCUDAConst[256] = {
         0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
@@ -847,8 +848,11 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
  //  printf("You can use printf function to eliminate bugs in your kernel.\n");
  */
 //  if(threadIdx.x == 0){
-    memcpy(&(SboxCUDA[threadIdx.x << 1]), &(SboxCUDAConst[threadIdx.x << 1]), sizeof(unsigned char) * 2);
+  memcpy(&(SboxCUDA[threadIdx.x << 1]), &(SboxCUDAConst[threadIdx.x << 1]), sizeof(unsigned char) << 1);
 //  }
+  if(threadIdx.x < 44){
+    memcpy(&(rkey[threadIdx.x]), &(rkeyConst[threadIdx.x]), sizeof(unsigned char));
+  }
   __syncthreads();
 //  __threadfence_block();
 
@@ -875,7 +879,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
 
 //  cudaMemset(d_pt, 0, sizeof(unsigned char) * size);
   cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
-  cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
+  cudaMemcpyToSymbol(rkeyConst, rk, sizeof(int) * 44);
 //  cudaMemcpyToSymbol(state_org, pt, sizeof(unsigned char) * size);
 
   device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
