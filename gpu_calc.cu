@@ -913,7 +913,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
     printf("cw3: 0x%x\n", cw[7]);
   }
   cb[0] = SboxCUDA[cb[16]];
-  cb[11] = SboxCUDA[cb[21]];
+  cb[1] = SboxCUDA[cb[21]];
   cb[2] = SboxCUDA[cb[26]];
   cb[3] = SboxCUDA[cb[31]];
   ((int*)ct)[threadId] = cw[0] ^ rkey[40];
