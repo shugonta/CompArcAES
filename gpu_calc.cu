@@ -851,7 +851,7 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
   memcpy(&(SboxCUDA[threadIdx.x << 1]), &(SboxCUDAConst[threadIdx.x << 1]), sizeof(unsigned char) << 1);
 //  }
   if(threadIdx.x < 44){
-    memcpy(&(rkey[threadIdx.x]), &(rkeyConst[threadIdx.x]), sizeof(unsigned char));
+    memcpy(&(rkey[threadIdx.x]), &(rkeyConst[threadIdx.x]), sizeof(int));
   }
   __syncthreads();
 //  __threadfence_block();
