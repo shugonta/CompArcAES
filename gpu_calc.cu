@@ -3,7 +3,9 @@
 #include <math.h>
 #include "calculation.h"
 
-#define MUL3(x) (x & 0x80 ? ((x << 1 ^0x1b) & 0xff ^x) : ((x << 1) ^ x))
+//#define MUL3(x) (x & 0x80 ? ((x << 1 ^0x1b) & 0xff ^x) : ((x << 1) ^ x))
+//#define MUL2(x) (x & 0x80 ? (x << 1 ^0x1b) & 0xff  : (x << 1))
+#define MUL3(x) (x << 1 (x & 0x80 ? ^0x1b : ) & 0xff ^x)
 #define MUL2(x) (x & 0x80 ? (x << 1 ^0x1b) & 0xff  : (x << 1))
 
 __constant__ int rkey[44];
