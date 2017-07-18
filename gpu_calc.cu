@@ -812,103 +812,6 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
             SboxCUDA[((unsigned char *) cw)[6]]) << 24)
           ^ rkey[39];
 
- /* for (rnd = 12; rnd < NR4; rnd += 4) {
-    cw[index2w] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[index | 0]]) ^
-                   mul3CUDA(SboxCUDA[((unsigned char *) cw)[index | 5]]) ^
-                   SboxCUDA[((unsigned char *) cw)[index | 10]] ^
-                   SboxCUDA[((unsigned char *) cw)[index | 15]]
-                   |
-                   (mul2CUDA(SboxCUDA[((unsigned char *) cw)[index | 5]]) ^
-                    mul3CUDA(SboxCUDA[((unsigned char *) cw)[index | 10]]) ^
-                    SboxCUDA[((unsigned char *) cw)[index | 15]] ^
-                    SboxCUDA[((unsigned char *) cw)[index | 0]]) << 8
-                   |
-                   (mul2CUDA(SboxCUDA[((unsigned char *) cw)[index | 10]]) ^
-                    mul3CUDA(SboxCUDA[((unsigned char *) cw)[index | 15]]) ^
-                    SboxCUDA[((unsigned char *) cw)[index | 0]] ^
-                    SboxCUDA[((unsigned char *) cw)[index | 5]]) << 16
-                   |
-                   (mul2CUDA(SboxCUDA[((unsigned char *) cw)[index | 15]]) ^
-                    mul3CUDA(SboxCUDA[((unsigned char *) cw)[index | 0]]) ^
-                    SboxCUDA[((unsigned char *) cw)[index | 5]] ^
-                    SboxCUDA[((unsigned char *) cw)[index | 10]]) << 24)
-                  ^ rkey[rnd];
-
-    cw[index2w | 1] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[index | 4]]) ^
-                       mul3CUDA(SboxCUDA[((unsigned char *) cw)[index | 9]]) ^
-                       SboxCUDA[((unsigned char *) cw)[index | 14]] ^
-                       SboxCUDA[((unsigned char *) cw)[index | 3]]
-                       |
-                       (mul2CUDA(SboxCUDA[((unsigned char *) cw)[index | 9]]) ^
-                        mul3CUDA(SboxCUDA[((unsigned char *) cw)[index | 14]]) ^
-                        SboxCUDA[((unsigned char *) cw)[index | 3]] ^
-                        SboxCUDA[((unsigned char *) cw)[index | 4]]) << 8
-                       |
-                       (mul2CUDA(SboxCUDA[((unsigned char *) cw)[index | 14]]) ^
-                        mul3CUDA(SboxCUDA[((unsigned char *) cw)[index | 3]]) ^
-                        SboxCUDA[((unsigned char *) cw)[index | 4]] ^
-                        SboxCUDA[((unsigned char *) cw)[index | 9]]) << 16
-                       |
-                       (mul2CUDA(SboxCUDA[((unsigned char *) cw)[index | 3]]) ^
-                        mul3CUDA(SboxCUDA[((unsigned char *) cw)[index | 4]]) ^
-                        SboxCUDA[((unsigned char *) cw)[index | 9]] ^
-                        SboxCUDA[((unsigned char *) cw)[index | 14]]) << 24)
-                      ^ rkey[rnd | 1];
-
-    cw[index2w | 2] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[index | 8]]) ^
-                       mul3CUDA(SboxCUDA[((unsigned char *) cw)[index | 13]]) ^
-                       SboxCUDA[((unsigned char *) cw)[index | 2]] ^
-                       SboxCUDA[((unsigned char *) cw)[index | 7]]
-                       |
-                       (mul2CUDA(SboxCUDA[((unsigned char *) cw)[index | 13]]) ^
-                        mul3CUDA(SboxCUDA[((unsigned char *) cw)[index | 2]]) ^
-                        SboxCUDA[((unsigned char *) cw)[index | 7]] ^
-                        SboxCUDA[((unsigned char *) cw)[index | 8]]) << 8
-                       |
-                       (mul2CUDA(SboxCUDA[((unsigned char *) cw)[index | 2]]) ^
-                        mul3CUDA(SboxCUDA[((unsigned char *) cw)[index | 7]]) ^
-                        SboxCUDA[((unsigned char *) cw)[index | 8]] ^
-                        SboxCUDA[((unsigned char *) cw)[index | 13]]) << 16
-                       |
-                       (mul2CUDA(SboxCUDA[((unsigned char *) cw)[index | 7]]) ^
-                        mul3CUDA(SboxCUDA[((unsigned char *) cw)[index | 8]]) ^
-                        SboxCUDA[((unsigned char *) cw)[index | 13]] ^
-                        SboxCUDA[((unsigned char *) cw)[index | 2]]) << 24)
-                      ^ rkey[rnd | 2];
-
-    cw[index2w | 3] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[index | 12]]) ^
-                       mul3CUDA(SboxCUDA[((unsigned char *) cw)[index | 1]]) ^
-                       SboxCUDA[((unsigned char *) cw)[index | 6]] ^
-                       SboxCUDA[((unsigned char *) cw)[index | 11]]
-                       |
-                       (mul2CUDA(SboxCUDA[((unsigned char *) cw)[index | 1]]) ^
-                        mul3CUDA(SboxCUDA[((unsigned char *) cw)[index | 6]]) ^
-                        SboxCUDA[((unsigned char *) cw)[index | 11]] ^
-                        SboxCUDA[((unsigned char *) cw)[index | 12]]) << 8
-                       |
-                       (mul2CUDA(SboxCUDA[((unsigned char *) cw)[index | 6]]) ^
-                        mul3CUDA(SboxCUDA[((unsigned char *) cw)[index | 11]]) ^
-                        SboxCUDA[((unsigned char *) cw)[index | 12]] ^
-                        SboxCUDA[((unsigned char *) cw)[index | 1]]) << 16
-                       |
-                       (mul2CUDA(SboxCUDA[((unsigned char *) cw)[index | 11]]) ^
-                        mul3CUDA(SboxCUDA[((unsigned char *) cw)[index | 12]]) ^
-                        SboxCUDA[((unsigned char *) cw)[index | 1]] ^
-                        SboxCUDA[((unsigned char *) cw)[index | 6]]) << 24)
-                      ^ rkey[rnd | 3];
-    unsigned char swap = index;
-    index = index2;
-    index2 = swap;
-    swap = indexw;
-    indexw = index2w;
-    index2w = swap;
-  }*/
-  if (threadId == 0) {
-    printf("cw0: 0x%x\n", cw[4]);
-    printf("cw1: 0x%x\n", cw[5]);
-    printf("cw2: 0x%x\n", cw[6]);
-    printf("cw3: 0x%x\n", cw[7]);
-  }
   cb[0] = SboxCUDA[cb[16]];
   cb[1] = SboxCUDA[cb[21]];
   cb[2] = SboxCUDA[cb[26]];
@@ -929,18 +832,6 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   cb[14] = SboxCUDA[cb[22]];
   cb[15] = SboxCUDA[cb[27]];
   ((int *) ct)[threadId << 2 | 3] = cw[3] ^ rkey[43];
-  if (threadId == 0) {
-    printf("cw0: 0x%x\n", ((int *) ct)[0]);
-    printf("cw1: 0x%x\n", ((int *) ct)[1]);
-    printf("cw2: 0x%x\n", ((int *) ct)[2]);
-    printf("cw3: 0x%x\n", ((int *) ct)[3]);
-  }
-  /*if (threadId == 0) {
-    printf("cw0: 0x%x\n", ((int *) ct)[threadId]);
-    printf("cw1: 0x%x\n", ((int *) ct)[threadId | 1]);
-    printf("cw2: 0x%x\n", ((int *) ct)[threadId | 2]);
-    printf("cw3: 0x%x\n", ((int *) ct)[threadId | 3]);
-  }*/
   return;
 }
 
@@ -965,22 +856,20 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   //Please modify this function for AES kernel.
   //In this function, you need to allocate the device memory and so on.
   unsigned char *d_pt, *d_ct;
+  int i;
 
-  dim3 dim_grid(GRIDSIZE_X, GRIDSIZE_Y, GRIDSIZE_Z), dim_block(BLOCKSIZE, 1, 1);
-
-  cudaMalloc((void **) &d_pt, sizeof(unsigned char) * size);
-//  cudaMalloc((void **) &d_rkey, sizeof(int) * 44);
-  cudaMalloc((void **) &d_ct, sizeof(unsigned char) * size);
-
-//  cudaMemset(d_pt, 0, sizeof(unsigned char) * size);
-  cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
+  cudaMalloc((void **) &d_pt, sizeof(unsigned char) * 16 * 128);
+//  cudaMalloc((void **) &d_rkey, sizeof(int) * 44);
+  cudaMalloc((void **) &d_ct, sizeof(unsigned char) * 16 * 128);
+  for (i = 0; i < GRIDSIZE_X; i++) {
+    dim3 dim_grid(1, 1, 1), dim_block(BLOCKSIZE, 1, 1);
+//  cudaMemset(d_pt, 0, sizeof(unsigned char) * size);
+    cudaMemcpy(d_pt, pt, sizeof(unsigned char) * 16 * 128, cudaMemcpyHostToDevice);
 //  cudaMemcpyToSymbol(state_org, pt, sizeof(unsigned char) * size);
-
-  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
-
-  cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
-
+    device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, 16 * 128);
+    cudaMemcpy(ct[i << 8], d_ct, sizeof(unsigned char) * 16 * 128, cudaMemcpyDeviceToHost);
+  }
   cudaFree(d_pt);
   cudaFree(d_ct);
 }
