@@ -440,7 +440,12 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
        printf("cw3: 0x%x\n", cw[3]);
      }*/
   }
-
+  if (threadId == 0) {
+    printf("cw0: 0x%x\n", cw[indexw]);
+    printf("cw1: 0x%x\n", cw[indexw | 1]);
+    printf("cw2: 0x%x\n", cw[indexw | 2]);
+    printf("cw3: 0x%x\n", cw[indexw | 3]);
+  }
   cb[index2] = SboxCUDA[cb[index | 0]];
   cb[index2 | 1] = SboxCUDA[cb[index | 5]];
   cb[index2 | 2] = SboxCUDA[cb[index | 10]];
@@ -461,7 +466,12 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   cb[index2 | 14] = SboxCUDA[cb[index | 6]];
   cb[index2 | 15] = SboxCUDA[cb[index | 11]];
   cw[index2w] ^= rkey[43];
-
+  if (threadId == 0) {
+    printf("cw0: 0x%x\n", cw[indexw2]);
+    printf("cw1: 0x%x\n", cw[indexw2 | 1]);
+    printf("cw2: 0x%x\n", cw[indexw2 | 2]);
+    printf("cw3: 0x%x\n", cw[indexw2 | 3]);
+  }
 //  SubShift(cw);
 //  SubBytesCUDA(state);
 //  ShiftRowsCUDA(state);
