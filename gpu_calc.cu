@@ -320,8 +320,9 @@ __device__ void AddRoundKeyCUDA(int *state, int *w, int n) {
 __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   int rnd, threadId = ((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x;
   int* state = pt;
-  unsigned char cb[NBb];
+  unsigned char cb[NBb], cb2[NBb];
   int* cw = (int *)cb;
+  int* cw2 = (int *)cb2;
 //  int state[NB];
 //  memcpy(state, pt, sizeof(int) * NB);
 
@@ -356,7 +357,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
 //    cb[15] = SboxCUDA[((unsigned char *) state)[11]];
 
 //    memcpy(key, &(rkey[rnd]), sizeof(int) * NB);
-    cw[0] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[0]]) ^
+    cw2[0] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[0]]) ^
              mul3CUDA(SboxCUDA[((unsigned char *) cw)[5]]) ^
              SboxCUDA[((unsigned char *) cw)[10]] ^
              SboxCUDA[((unsigned char *) cw)[15]]
@@ -377,7 +378,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
               SboxCUDA[((unsigned char *) cw)[10]]) << 24)
             ^ rkey[rnd];
 
-    cw[1] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[4]]) ^
+    cw2[1] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[4]]) ^
              mul3CUDA(SboxCUDA[((unsigned char *) cw)[9]]) ^
              SboxCUDA[((unsigned char *) cw)[14]] ^
              SboxCUDA[((unsigned char *) cw)[3]]
@@ -398,7 +399,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
               SboxCUDA[((unsigned char *) cw)[14]]) << 24)
             ^ rkey[rnd | 1];
 
-    cw[2] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[8]]) ^
+    cw2[2] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[8]]) ^
              mul3CUDA(SboxCUDA[((unsigned char *) cw)[13]]) ^
              SboxCUDA[((unsigned char *) cw)[2]] ^
              SboxCUDA[((unsigned char *) cw)[7]]
@@ -419,7 +420,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
               SboxCUDA[((unsigned char *) cw)[2]]) << 24)
             ^ rkey[rnd | 2];
 
-    cw[3] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[12]]) ^
+    cw2[3] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[12]]) ^
              mul3CUDA(SboxCUDA[((unsigned char *) cw)[1]]) ^
              SboxCUDA[((unsigned char *) cw)[6]] ^
              SboxCUDA[((unsigned char *) cw)[11]]
@@ -439,6 +440,11 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
               SboxCUDA[((unsigned char *) cw)[1]] ^
               SboxCUDA[((unsigned char *) cw)[6]]) << 24)
             ^ rkey[rnd | 3];
+
+
+    unsigned  char * swap = cb;
+    cb = cb2;
+    cb2 = swap;
     if (threadId == 0 && rnd == 4) {
       printf("cw0: 0x%x\n", cw[0]);
       printf("cw1: 0x%x\n", cw[1]);
@@ -447,31 +453,31 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
     }
   }
 
-/*  cb[0] = SboxCUDA[(cb)[0]];
-  cb[1] = SboxCUDA[(cb)[5]];
-  cb[2] = SboxCUDA[(cb)[10]];
-  cb[3] = SboxCUDA[(cb)[15]];
+  cb[0] = SboxCUDA[cb[0]];
+  cb[1] = SboxCUDA[cb[5]];
+  cb[2] = SboxCUDA[cb[10]];
+  cb[3] = SboxCUDA[cb[15]];
   cw[0] ^= rkey[40];
-  cb[4] = SboxCUDA[(cb)[4]];
-  cb[5] = SboxCUDA[(cb)[9]];
-  cb[6] = SboxCUDA[(cb)[14]];
-  cb[7] = SboxCUDA[(cb)[3]];
+  cb[4] = SboxCUDA[cb[4]];
+  cb[5] = SboxCUDA[cb[9]];
+  cb[6] = SboxCUDA[cb[14]];
+  cb[7] = SboxCUDA[cb[3]];
   cw[1] ^= rkey[41];
-  cb[8] = SboxCUDA[(cb)[8]];
-  cb[9] = SboxCUDA[(cb)[13]];
-  cb[10] = SboxCUDA[(cb)[2]];
-  cb[11] = SboxCUDA[(cb)[7]];
+  cb[8] = SboxCUDA[cb[8]];
+  cb[9] = SboxCUDA[cb[13]];
+  cb[10] = SboxCUDA[cb[2]];
+  cb[11] = SboxCUDA[cb[7]];
   cw[2] ^= rkey[42];
-  cb[12] = SboxCUDA[(cb)[12]];
-  cb[13] = SboxCUDA[(cb)[1]];
-  cb[14] = SboxCUDA[(cb)[6]];
-  cb[15] = SboxCUDA[(cb)[11]];
-  cw[3] ^= rkey[43];*/
+  cb[12] = SboxCUDA[cb[12]];
+  cb[13] = SboxCUDA[cb[1]];
+  cb[14] = SboxCUDA[cb[6]];
+  cb[15] = SboxCUDA[cb[11]];
+  cw[3] ^= rkey[43];
 
-  SubShift(cw);
+//  SubShift(cw);
 //  SubBytesCUDA(state);
 //  ShiftRowsCUDA(state);
-  AddRoundKeyCUDA(cw, rkey, rnd);
+//  AddRoundKeyCUDA(cw, rkey, rnd);
   memcpy(&ct[(((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x) << 4], state,
          sizeof(int) * NB);
 
