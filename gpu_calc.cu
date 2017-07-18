@@ -835,7 +835,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   return;
 }
 
-__global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, int *r_key, long int size) {
+__global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, unsigned char *r_key, long int size) {
 
   //This kernel executes AES encryption on a GPU.
   //Please modify this kernel!!
@@ -848,7 +848,7 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, int *r_
 //  __shared__ int state[BLOCKSIZE][NB];
 //  memcpy(&(state[threadIdx.x][0]), &(pt[thread_id << 4]), sizeof(unsigned char) * NBb);
   if(thread_id == 0) {
-    memcpy(&(rkey), &(r_key), sizeof(unsigned char) * NBb);
+    memcpy(&(rkey), &(r_key), sizeof(int) * 44);
   }
   CipherCUDA((int *)(&pt[thread_id << 4]), ct, rkey);
 //  memcpy(&ct[thread_id << 4], &state[threadIdx.x], sizeof(unsigned char) * NBb);
