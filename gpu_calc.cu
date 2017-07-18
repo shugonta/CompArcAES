@@ -201,10 +201,6 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
 }
 
 void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int size) {
-  cudaDeviceProp dev;
-  cutilSafeCall(cudaGetDeviceProperties(&dev, 0));
-
-  printf(" total constant memory : %d (KB)\n", dev.totalConstMem/1024);
   //This function launches the AES kernel.
   //Please modify this function for AES kernel.
   //In this function, you need to allocate the device memory and so on.
