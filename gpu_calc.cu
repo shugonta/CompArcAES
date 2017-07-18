@@ -43,21 +43,8 @@ __device__ int mul2CUDA(unsigned char dt) {
   return (x);
 }
 
-__global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long int size) {
-
-  //This kernel executes AES encryption on a GPU.
-  //Please modify this kernel!!
-  int thread_id = ((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x;
-
-  /* if (thread_id == 0)
-     printf("size = %ld\n", size);
- //  printf("You can use printf function to eliminate bugs in your kernel.\n");
- */
-
-  memcpy(&(SboxCUDA[threadIdx.x << 1]), &(SboxCUDAConst[threadIdx.x << 1]), sizeof(unsigned char) << 1);
-  __syncthreads();
-
-//  CipherCUDA((int *)(&pt[thread_id << 4]), ct, rkey);
+__device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
+  int threadId = ((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x;
   unsigned char cb[NBb2];
   int *cw = (int *) cb;
 
@@ -830,22 +817,47 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
   cb[1] = SboxCUDA[cb[21]];
   cb[2] = SboxCUDA[cb[26]];
   cb[3] = SboxCUDA[cb[31]];
-  ((int *) ct)[thread_id << 2] = cw[0] ^ rkey[40];
+  ((int *) ct)[threadId << 2] = cw[0] ^ rkey[40];
   cb[4] = SboxCUDA[cb[20]];
   cb[5] = SboxCUDA[cb[25]];
   cb[6] = SboxCUDA[cb[30]];
   cb[7] = SboxCUDA[cb[19]];
-  ((int *) ct)[thread_id << 2 | 1] = cw[1] ^ rkey[41];
+  ((int *) ct)[threadId << 2 | 1] = cw[1] ^ rkey[41];
   cb[8] = SboxCUDA[cb[24]];
   cb[9] = SboxCUDA[cb[29]];
   cb[10] = SboxCUDA[cb[18]];
   cb[11] = SboxCUDA[cb[23]];
-  ((int *) ct)[thread_id << 2 | 2] = cw[2] ^ rkey[42];
+  ((int *) ct)[threadId << 2 | 2] = cw[2] ^ rkey[42];
   cb[12] = SboxCUDA[cb[28]];
   cb[13] = SboxCUDA[cb[17]];
   cb[14] = SboxCUDA[cb[22]];
   cb[15] = SboxCUDA[cb[27]];
-  ((int *) ct)[thread_id << 2 | 3] = cw[3] ^ rkey[43];
+  ((int *) ct)[threadId << 2 | 3] = cw[3] ^ rkey[43];
+  return;
+}
+
+__global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long int size) {
+
+  //This kernel executes AES encryption on a GPU.
+  //Please modify this kernel!!
+  int thread_id = ((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x;
+
+  /* if (thread_id == 0)
+     printf("size = %ld\n", size);
+ //  printf("You can use printf function to eliminate bugs in your kernel.\n");
+ */
+//  if(threadIdx.x == 0){
+    memcpy(&(SboxCUDA[threadIdx.x << 1]), &(SboxCUDAConst[threadIdx.x << 1]), sizeof(unsigned char) * 2);
+//  }
+  __syncthreads();
+//  __threadfence_block();
+
+  /*if(thread_id == 512){
+    prtinf("SBOX[0]")
+  }*/
+//  __shared__ int state[BLOCKSIZE][NB];
+//  memcpy(&(state[threadIdx.x][0]), &(pt[thread_id << 4]), sizeof(unsigned char) * NBb);
+  CipherCUDA((int *)(&pt[thread_id << 4]), ct, rkey);
 //  memcpy(&ct[thread_id << 4], &state[threadIdx.x], sizeof(unsigned char) * NBb);
 }
 
