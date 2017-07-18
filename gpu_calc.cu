@@ -849,7 +849,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaMalloc((void **) &d_ct, sizeof(unsigned char) * 2048);
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
   for(i =0; i < GRIDSIZE_X; i++) {
-    cudaMemcpyToSymbol(d_pt, &(pt[i << 11]), sizeof(unsigned char) * 2048, cudaMemcpyHostToDevice);
+    cudaMemcpyToSymbol(d_pt, &(pt[i << 11]), sizeof(unsigned char) * 2048);
     device_aes_encrypt <<< dim_grid, dim_block >>> (/*d_pt,*/ d_ct, 2048);
 
     cudaMemcpy(&(ct[i << 11]), d_ct, sizeof(unsigned char) * 2048, cudaMemcpyDeviceToHost);
