@@ -323,10 +323,10 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
 //  int state[NB];
 //  memcpy(state, pt, sizeof(int) * NB);
 
-/*  state[0] ^= rkey[0];
+  state[0] ^= rkey[0];
   state[1] ^= rkey[1];
   state[2] ^= rkey[2];
-  state[3] ^= rkey[3];*/
+  state[3] ^= rkey[3];
 //  AddRoundKeyCUDA(state, rkey, 0);
 
   for (rnd = 4; rnd < NR4; rnd += 4) {
@@ -351,7 +351,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
 //    cb[15] = SboxCUDA[((unsigned char *) state)[11]];
 
 //    memcpy(key, &(rkey[rnd]), sizeof(int) * NB);
-    /*cw[0] = (mul2CUDA(SboxCUDA[((unsigned char *) state)[0]]) ^
+    cw[0] = (mul2CUDA(SboxCUDA[((unsigned char *) state)[0]]) ^
              mul3CUDA(SboxCUDA[((unsigned char *) state)[5]]) ^
              SboxCUDA[((unsigned char *) state)[10]] ^
              SboxCUDA[((unsigned char *) state)[15]]
@@ -434,7 +434,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
               SboxCUDA[((unsigned char *) state)[1]] ^
               SboxCUDA[((unsigned char *) state)[6]]) << 24)
             ^ rkey[rnd | 3];
-    memcpy(state, cb, sizeof(int) * NB);*/
+    memcpy(state, cb, sizeof(int) * NB);
 
 //    SubShift(state);
 //    SubBytesCUDA(state);
@@ -444,8 +444,8 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
 //    AddRoundKeyCUDA(state, rkey, rnd);
   }
 
-//  SubShift(state);
-//  AddRoundKeyCUDA(state, rkey, rnd);
+  SubShift(state);
+  AddRoundKeyCUDA(state, rkey, rnd);
   memcpy(ct, state, sizeof(int) * NB);
 
   return;
@@ -463,7 +463,7 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
 */
   __shared__ int state[BLOCKSIZE][NB];
 //  memcpy(&(state[threadIdx.x][0]), &(pt[thread_id << 4]), sizeof(unsigned char) * NBb);
-  CipherCUDA(&(state[threadIdx.x][0]),ct, rkey);
+  CipherCUDA((int *)&(pt[thread_id << 4]),ct, rkey);
 //  memcpy(&ct[thread_id << 4], &state[threadIdx.x], sizeof(unsigned char) * NBb);
 }
 
