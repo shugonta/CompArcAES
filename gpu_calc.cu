@@ -45,7 +45,8 @@ __device__ int mul2CUDA(unsigned char dt) {
 
 __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   int threadId = ((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x;
-  __shared__ unsigned char cb[NBb2];
+  __shared__ unsigned char c[BLOCKSIZE][NBb2];
+  unsigned char * cb = &(c[threadIdx.x][0]);
   int *cw = (int *) cb;
 
   cw[0] = pt[0] ^ rkey[0];
