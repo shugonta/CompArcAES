@@ -14,9 +14,9 @@
 // Please do not modify the other parts in this file.
 /*******************************************************************************/
 //#define FILESIZE (32)
-#define FILESIZE (16*128*13*16*512)
+#define FILESIZE (218103808) //16*128*13*16*512
 #define BLOCKSIZE (128)
-#define GRIDSIZE_X (128*26*32)
+#define GRIDSIZE_X (106496) //128*26*32
 #define GRIDSIZE_Y (1)
 #define GRIDSIZE_Z (1)
 
