@@ -815,22 +815,23 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
   cb[1] = SboxCUDA[cb[21]];
   cb[2] = SboxCUDA[cb[26]];
   cb[3] = SboxCUDA[cb[31]];
-  ((int *) ct)[thread_id << 2] = cw[0] ^ rkey[40];
+  cw[0] ^= rkey[40];
   cb[4] = SboxCUDA[cb[20]];
   cb[5] = SboxCUDA[cb[25]];
   cb[6] = SboxCUDA[cb[30]];
   cb[7] = SboxCUDA[cb[19]];
-  ((int *) ct)[thread_id << 2 | 1] = cw[1] ^ rkey[41];
+  cw[1] ^= rkey[41];
   cb[8] = SboxCUDA[cb[24]];
   cb[9] = SboxCUDA[cb[29]];
   cb[10] = SboxCUDA[cb[18]];
   cb[11] = SboxCUDA[cb[23]];
-  ((int *) ct)[thread_id << 2 | 2] = cw[2] ^ rkey[42];
+  cw[2] ^= rkey[42];
   cb[12] = SboxCUDA[cb[28]];
   cb[13] = SboxCUDA[cb[17]];
   cb[14] = SboxCUDA[cb[22]];
   cb[15] = SboxCUDA[cb[27]];
-  ((int *) ct)[thread_id << 2 | 3] = cw[3] ^ rkey[43];
+  cw[3] ^= rkey[43];
+  memcpy(&(ct[thread_id << 2]), cw, sizeof(int) * NB);
 }
 
 void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int size) {
