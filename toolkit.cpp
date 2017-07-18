@@ -18,6 +18,7 @@ void verification(unsigned char *ct, unsigned char *ct2, long int size){
     if(ct[i] != ct2[i]){
       fprintf(stderr,"\nVerification error detected. Position %d. cpu 0x%x, gpu 0x%x \n",	i, ct[i], ct2[i]);
 //      exit(1);
+      break;
     }
   printf(" OK.\n");
 }
