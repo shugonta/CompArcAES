@@ -915,10 +915,10 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   cb[3] = SboxCUDA[cb[31]];
   ((int*)ct)[threadId] = cw[0] ^ rkey[40];
   if (threadId == 0) {
-    printf("cw0_: 0x%x\n", cw[4]);
-    printf("cw1_: 0x%x\n", cw[5]);
-    printf("cw2_: 0x%x\n", cw[6]);
-    printf("cw3_: 0x%x\n", cw[7]);
+    printf("cw0_: 0x%x\n", cw[0]);
+    printf("cw1_: 0x%x\n", cw[1]);
+    printf("cw2_: 0x%x\n", cw[2]);
+    printf("cw3_: 0x%x\n", cw[3]);
   }
   cb[4] = SboxCUDA[cb[20]];
   cb[5] = SboxCUDA[cb[25]];
@@ -936,11 +936,17 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   cb[15] = SboxCUDA[cb[27]];
   ((int *) ct)[threadId | 3] = cw[3] ^ rkey[43];
   if (threadId == 0) {
+    printf("cw0: 0x%x\n", cw[0]);
+    printf("cw1: 0x%x\n", cw[1]);
+    printf("cw2: 0x%x\n", cw[2]);
+    printf("cw3: 0x%x\n", cw[3]);
+  }
+  /*if (threadId == 0) {
     printf("cw0: 0x%x\n", ((int *) ct)[threadId]);
     printf("cw1: 0x%x\n", ((int *) ct)[threadId | 1]);
     printf("cw2: 0x%x\n", ((int *) ct)[threadId | 2]);
     printf("cw3: 0x%x\n", ((int *) ct)[threadId | 3]);
-  }
+  }*/
   return;
 }
 
