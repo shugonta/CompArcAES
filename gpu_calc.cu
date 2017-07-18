@@ -518,7 +518,6 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
      }*/
   }
 
-  memcpy(cw2, cw, sizeof(int) * NB);
   cb[0] = SboxCUDA[cb2[0]];
   cb[1] = SboxCUDA[cb2[5]];
   cb[2] = SboxCUDA[cb2[10]];
