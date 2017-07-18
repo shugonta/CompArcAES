@@ -357,7 +357,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
 //    cb[15] = SboxCUDA[((unsigned char *) state)[11]];
 
     memcpy(state, cw, sizeof(int) * NB);
-    cw2[0] = (mul2CUDA(SboxCUDA[((unsigned char *) state)[0]]) ^
+    cw[0] = (mul2CUDA(SboxCUDA[((unsigned char *) state)[0]]) ^
              mul3CUDA(SboxCUDA[((unsigned char *) state)[5]]) ^
              SboxCUDA[((unsigned char *) state)[10]] ^
              SboxCUDA[((unsigned char *) state)[15]]
@@ -378,7 +378,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
               SboxCUDA[((unsigned char *) state)[10]]) << 24)
             ^ rkey[rnd];
 
-    cw2[1] = (mul2CUDA(SboxCUDA[((unsigned char *) state)[4]]) ^
+    cw[1] = (mul2CUDA(SboxCUDA[((unsigned char *) state)[4]]) ^
              mul3CUDA(SboxCUDA[((unsigned char *) state)[9]]) ^
              SboxCUDA[((unsigned char *) state)[14]] ^
              SboxCUDA[((unsigned char *) state)[3]]
@@ -399,7 +399,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
               SboxCUDA[((unsigned char *) state)[14]]) << 24)
             ^ rkey[rnd | 1];
 
-    cw2[2] = (mul2CUDA(SboxCUDA[((unsigned char *) state)[8]]) ^
+    cw[2] = (mul2CUDA(SboxCUDA[((unsigned char *) state)[8]]) ^
              mul3CUDA(SboxCUDA[((unsigned char *) state)[13]]) ^
              SboxCUDA[((unsigned char *) state)[2]] ^
              SboxCUDA[((unsigned char *) state)[7]]
@@ -420,7 +420,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
               SboxCUDA[((unsigned char *) state)[2]]) << 24)
             ^ rkey[rnd | 2];
 
-    cw2[3] = (mul2CUDA(SboxCUDA[((unsigned char *) state)[12]]) ^
+    cw[3] = (mul2CUDA(SboxCUDA[((unsigned char *) state)[12]]) ^
              mul3CUDA(SboxCUDA[((unsigned char *) state)[1]]) ^
              SboxCUDA[((unsigned char *) state)[6]] ^
              SboxCUDA[((unsigned char *) state)[11]]
