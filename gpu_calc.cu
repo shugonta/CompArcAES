@@ -43,7 +43,7 @@ __device__ int mul2CUDA(unsigned char dt) {
 }
 
 __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
-  int rnd, threadId = ((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x;
+  int threadId = ((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x;
   unsigned char cb[NBb2];
   int *cw = (int *) cb;
 
@@ -811,7 +811,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
             SboxCUDA[((unsigned char *) cw)[1]] ^
             SboxCUDA[((unsigned char *) cw)[6]]) << 24)
           ^ rkey[39];
-  
+
  /* for (rnd = 12; rnd < NR4; rnd += 4) {
     cw[index2w] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[index | 0]]) ^
                    mul3CUDA(SboxCUDA[((unsigned char *) cw)[index | 5]]) ^
@@ -913,27 +913,27 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   cb[1] = SboxCUDA[cb[21]];
   cb[2] = SboxCUDA[cb[26]];
   cb[3] = SboxCUDA[cb[31]];
-  ((int*)ct)[threadId] = cw[0] ^ rkey[40];
+  ((int *) ct)[threadId << 2] = cw[0] ^ rkey[40];
   cb[4] = SboxCUDA[cb[20]];
   cb[5] = SboxCUDA[cb[25]];
   cb[6] = SboxCUDA[cb[30]];
   cb[7] = SboxCUDA[cb[19]];
-  ((int *) ct)[threadId | 1] = cw[1] ^ rkey[41];
+  ((int *) ct)[threadId << 2 | 1] = cw[1] ^ rkey[41];
   cb[8] = SboxCUDA[cb[24]];
   cb[9] = SboxCUDA[cb[29]];
   cb[10] = SboxCUDA[cb[18]];
   cb[11] = SboxCUDA[cb[23]];
-  ((int *) ct)[threadId | 2] = cw[2] ^ rkey[42];
+  ((int *) ct)[threadId << 2 | 2] = cw[2] ^ rkey[42];
   cb[12] = SboxCUDA[cb[28]];
   cb[13] = SboxCUDA[cb[17]];
   cb[14] = SboxCUDA[cb[22]];
   cb[15] = SboxCUDA[cb[27]];
-  ((int *) ct)[threadId | 3] = cw[3] ^ rkey[43];
+  ((int *) ct)[threadId << 2 | 3] = cw[3] ^ rkey[43];
   if (threadId == 0) {
-    printf("cw0: 0x%x\n", ((int *)ct)[0]);
-    printf("cw1: 0x%x\n", ((int *)ct)[1]);
-    printf("cw2: 0x%x\n", ((int *)ct)[2]);
-    printf("cw3: 0x%x\n", ((int *)ct)[3]);
+    printf("cw0: 0x%x\n", ((int *) ct)[0]);
+    printf("cw1: 0x%x\n", ((int *) ct)[1]);
+    printf("cw2: 0x%x\n", ((int *) ct)[2]);
+    printf("cw3: 0x%x\n", ((int *) ct)[3]);
   }
   /*if (threadId == 0) {
     printf("cw0: 0x%x\n", ((int *) ct)[threadId]);
