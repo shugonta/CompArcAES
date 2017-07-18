@@ -835,7 +835,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   return;
 }
 
-__global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long int size) {
+__global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, int *r_key, long int size) {
 
   //This kernel executes AES encryption on a GPU.
   //Please modify this kernel!!
@@ -847,6 +847,9 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
  */
 //  __shared__ int state[BLOCKSIZE][NB];
 //  memcpy(&(state[threadIdx.x][0]), &(pt[thread_id << 4]), sizeof(unsigned char) * NBb);
+  if(thread_id == 0) {
+    memcpy(&(rkey), &(r_key), sizeof(unsigned char) * NBb);
+  }
   CipherCUDA((int *)(&pt[thread_id << 4]), ct, rkey);
 //  memcpy(&ct[thread_id << 4], &state[threadIdx.x], sizeof(unsigned char) * NBb);
 }
@@ -855,20 +858,21 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   //This function launches the AES kernel.
   //Please modify this function for AES kernel.
   //In this function, you need to allocate the device memory and so on.
-  unsigned char *d_pt, *d_ct;
+  unsigned char *d_pt, *d_ct, *d_rkey;
 
   dim3 dim_grid(GRIDSIZE_X, GRIDSIZE_Y, GRIDSIZE_Z), dim_block(BLOCKSIZE, 1, 1);
 
   cudaMalloc((void **) &d_pt, sizeof(unsigned char) * size);
-//  cudaMalloc((void **) &d_rkey, sizeof(int) * 44);
+  cudaMalloc((void **) &d_rkey, sizeof(int) * 44);
   cudaMalloc((void **) &d_ct, sizeof(unsigned char) * size);
 
 //  cudaMemset(d_pt, 0, sizeof(unsigned char) * size);
   cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
-  cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
+  cudaMemcpy(d_rkey, rk, sizeof(int) * 44, cudaMemcpyHostToDevice);
+//  cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
 //  cudaMemcpyToSymbol(state_org, pt, sizeof(unsigned char) * size);
 
-  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
+  device_aes_encrypt << < dim_grid, dim_block >> > (d_pt, d_ct, d_rkey, size);
 
   cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
 
