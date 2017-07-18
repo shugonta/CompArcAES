@@ -23,6 +23,8 @@ __constant__ unsigned char SboxCUDA[256] = {
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
 
+__constant__ unsigned char state_org[FILESIZE];
+
 __device__ void SubShift(int *state){
   unsigned char cb[NBb];
   cb[0] = SboxCUDA[((unsigned char *) state)[0]];
@@ -464,7 +466,7 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
 //  printf("You can use printf function to eliminate bugs in your kernel.\n");
 */
   __shared__ int state[BLOCKSIZE][NB];
-  memcpy(&(state[threadIdx.x][0]), &pt[thread_id << 4], sizeof(unsigned char) * NBb);
+  memcpy(&(state[threadIdx.x][0]), &(state_org[thread_id << 4]), sizeof(unsigned char) * NBb);
   CipherCUDA(&(state[threadIdx.x][0]), rkey);
   memcpy(&ct[thread_id << 4], &state[threadIdx.x], sizeof(unsigned char) * NBb);
 }
@@ -483,8 +485,9 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaMalloc((void **) &d_ct, sizeof(unsigned char) * size);
 
   cudaMemset(d_pt, 0, sizeof(unsigned char) * size);
-  cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
+//  cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
+  cudaMemcpyToSymbol(state_org, pt, sizeof(unsigned char) * size);
 
   device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
 
