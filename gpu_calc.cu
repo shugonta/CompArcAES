@@ -445,12 +445,12 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
 //    int * swap = cw;
 //    cw = cw2;
 //    cw2 = swap;
-   /* if (threadId == 0 && rnd == 4) {
+    if (threadId == 0 && rnd == 4) {
       printf("cw0: 0x%x\n", cw[0]);
       printf("cw1: 0x%x\n", cw[1]);
       printf("cw2: 0x%x\n", cw[2]);
       printf("cw3: 0x%x\n", cw[3]);
-    }*/
+    }
   }
 
   cb[0] = SboxCUDA[cb[0]];
