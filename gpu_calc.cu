@@ -317,7 +317,7 @@ __device__ void AddRoundKeyCUDA(int *state, int *w, int n) {
   memcpy(state, cw, sizeof(int) * NB);
 }
 
-__device__ void CipherCUDA(int *pt, int *rkey) {
+__device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   int rnd;
   int* state = pt;
 //  int state[NB];
@@ -446,7 +446,7 @@ __device__ void CipherCUDA(int *pt, int *rkey) {
 
 //  SubShift(state);
 //  AddRoundKeyCUDA(state, rkey, rnd);
-  memcpy(pt, state, sizeof(int) * NB);
+  memcpy(ct, state, sizeof(int) * NB);
 
   return;
 }
@@ -463,7 +463,7 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
 */
   __shared__ int state[BLOCKSIZE][NB];
 //  memcpy(&(state[threadIdx.x][0]), &(pt[thread_id << 4]), sizeof(unsigned char) * NBb);
-  CipherCUDA(&(state[threadIdx.x][0]), rkey);
+  CipherCUDA(&(state[threadIdx.x][0]),ct, rkey);
 //  memcpy(&ct[thread_id << 4], &state[threadIdx.x], sizeof(unsigned char) * NBb);
 }
 
