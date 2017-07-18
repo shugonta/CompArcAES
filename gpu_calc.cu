@@ -503,10 +503,10 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
            ^ rkey[11];
 
   if (threadId == 0 ) {
-    printf("cw0: 0x%x\n", cw[0]);
-    printf("cw1: 0x%x\n", cw[1]);
-    printf("cw2: 0x%x\n", cw[2]);
-    printf("cw3: 0x%x\n", cw[3]);
+    printf("cw0: 0x%x\n", cw2[0]);
+    printf("cw1: 0x%x\n", cw2[1]);
+    printf("cw2: 0x%x\n", cw2[2]);
+    printf("cw3: 0x%x\n", cw2[3]);
   }
 //  round 3
   cw[0] = (mul2CUDA(SboxCUDA[((unsigned char *) cw2)[0]]) ^
