@@ -849,6 +849,7 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
   if(threadIdx.x == 0){
     memcpy(SboxCUDA, SboxCUDAConst, sizeof(unsigned char) * 256);
   }
+  __threadfence_block();
 //  __shared__ int state[BLOCKSIZE][NB];
 //  memcpy(&(state[threadIdx.x][0]), &(pt[thread_id << 4]), sizeof(unsigned char) * NBb);
   CipherCUDA((int *)(&pt[thread_id << 4]), ct, rkey);
