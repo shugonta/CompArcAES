@@ -3,6 +3,9 @@
 #include <math.h>
 #include "calculation.h"
 
+#define MUL3(x) (x << 1) & 0x100 ? ((x << 1 ^0x1b) & 0xff ^x) : ((x << 1) ^ x)
+#define MUL2(x) (x << 1) & 0x100 ? (x << 1 ^0x1b) & 0xff  : (x << 1)
+
 __constant__ int rkey[44];
 __shared__ unsigned char SboxCUDA[256];
 __constant__ unsigned char SboxCUDAConst[256] = {
@@ -53,8 +56,8 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   cw[2] = pt[2] ^ rkey[2];
   cw[3] = pt[3] ^ rkey[3];
 //round 1
-  cw[4] = (mul2CUDA(SboxCUDA[((unsigned char *) cw)[0]]) ^
-           mul3CUDA(SboxCUDA[((unsigned char *) cw)[5]]) ^
+  cw[4] = (MUL2(SboxCUDA[((unsigned char *) cw)[0]]) ^
+           MUL3(SboxCUDA[((unsigned char *) cw)[5]]) ^
            SboxCUDA[((unsigned char *) cw)[10]] ^
            SboxCUDA[((unsigned char *) cw)[15]]
            |
