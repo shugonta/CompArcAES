@@ -450,22 +450,24 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   cb[index2 | 1] = SboxCUDA[cb[index | 5]];
   cb[index2 | 2] = SboxCUDA[cb[index | 10]];
   cb[index2 | 3] = SboxCUDA[cb[index | 15]];
-  cw[index2w] ^= rkey[40];
+  ((int*)ct)[threadId] = cw[index2w] ^ rkey[40];
   cb[index2 | 4] = SboxCUDA[cb[index | 4]];
   cb[index2 | 5] = SboxCUDA[cb[index | 9]];
   cb[index2 | 6] = SboxCUDA[cb[index | 14]];
   cb[index2 | 7] = SboxCUDA[cb[index | 3]];
-  cw[index2w | 1] ^= rkey[41];
+  ((int *) ct)[threadId | 1] = cw[index2w | 1] ^ rkey[41];
   cb[index2 | 8] = SboxCUDA[cb[index | 8]];
   cb[index2 | 9] = SboxCUDA[cb[index | 13]];
   cb[index2 | 10] = SboxCUDA[cb[index | 2]];
   cb[index2 | 11] = SboxCUDA[cb[index | 7]];
-  cw[index2w | 2] ^= rkey[42];
+//  cw[index2w | 2] ^= rkey[42];
+  ((int *) ct)[threadId | 2] = cw[index2w | 2] ^ rkey[42];
   cb[index2 | 12] = SboxCUDA[cb[index | 12]];
   cb[index2 | 13] = SboxCUDA[cb[index | 1]];
   cb[index2 | 14] = SboxCUDA[cb[index | 6]];
   cb[index2 | 15] = SboxCUDA[cb[index | 11]];
-  cw[index2w | 3] ^= rkey[43];
+//  cw[index2w | 3] ^= rkey[43];
+  ((int *) ct)[threadId | 3] = cw[index2w | 3] ^ rkey[43];
   if (threadId == 0) {
     printf("index: %d, index2: %d, indexw :%d, index2w :%d", index, index2, indexw,index2w);
     printf("cw0: 0x%x\n", cw[index2w]);
@@ -477,8 +479,7 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
 //  SubBytesCUDA(state);
 //  ShiftRowsCUDA(state);
 //  AddRoundKeyCUDA(cw, rkey, rnd);
-  memcpy(&ct[(((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x) << 4], &(cb[index2]),
-         sizeof(int) * NB);
+//  memcpy(&ct[(((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x) << 4], &(cb[index2]),         sizeof(int) * NB);
 
   return;
 }
