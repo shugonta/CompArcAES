@@ -351,7 +351,7 @@ __device__ void CipherCUDA(int *pt, int *rkey) {
 //    cb[15] = SboxCUDA[((unsigned char *) state)[11]];
 
 //    memcpy(key, &(rkey[rnd]), sizeof(int) * NB);
-    cw[0] = (mul2CUDA(SboxCUDA[((unsigned char *) state)[0]]) ^
+    /*cw[0] = (mul2CUDA(SboxCUDA[((unsigned char *) state)[0]]) ^
              mul3CUDA(SboxCUDA[((unsigned char *) state)[5]]) ^
              SboxCUDA[((unsigned char *) state)[10]] ^
              SboxCUDA[((unsigned char *) state)[15]]
@@ -434,7 +434,7 @@ __device__ void CipherCUDA(int *pt, int *rkey) {
               SboxCUDA[((unsigned char *) state)[1]] ^
               SboxCUDA[((unsigned char *) state)[6]]) << 24)
             ^ rkey[rnd | 3];
-    memcpy(state, cb, sizeof(int) * NB);
+    memcpy(state, cb, sizeof(int) * NB);*/
 
 //    SubShift(state);
 //    SubBytesCUDA(state);
