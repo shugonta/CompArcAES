@@ -39,7 +39,7 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
      printf("size = %ld\n", size);
  //  printf("You can use printf function to eliminate bugs in your kernel.\n");
  */
-    memcpy(&(SboxCUDA[threadIdx.x << 1]), &(SboxCUDAConst[threadIdx.x << 1]), sizeof(unsigned char) * 2);
+    memcpy(&(SboxCUDA[threadIdx.x << 1]), &(SboxCUDAConst[threadIdx.x << 1]), 2);
   __syncthreads();
 
   unsigned char cb[NBb2];
