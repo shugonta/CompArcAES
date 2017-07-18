@@ -3,6 +3,7 @@
 
 #define NB (4)                        /* 128bit 固定としての規格(データの長さ) */
 #define NBb (16)
+#define NBb2 (32)
 
 #define NK (4)                        /* 128-bit鍵モードでの鍵の長さ */
 #define NR (10)                       /* ラウンド数 */
