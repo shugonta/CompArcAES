@@ -3,8 +3,8 @@
 #include <math.h>
 #include "calculation.h"
 
-#define MUL3(x) ((x << 1) & 0x100 ? ((x << 1 ^0x1b) & 0xff ^x) : ((x << 1) ^ x))
-#define MUL2(x) ((x << 1) & 0x100 ? (x << 1 ^0x1b) & 0xff  : (x << 1))
+#define MUL3(x) (x & 0x10 ? ((x << 1 ^0x1b) & 0xff ^x) : ((x << 1) ^ x))
+#define MUL2(x) (x & 0x10 ? (x << 1 ^0x1b) & 0xff  : (x << 1))
 
 __constant__ int rkey[44];
 __shared__ unsigned char SboxCUDA[256];
