@@ -4,7 +4,7 @@
 #include "calculation.h"
 
 __constant__ int rkey[44];
-__constant__ unsigned char SboxCUDAConst[256] = {
+__constant__ unsigned char SboxCUDA[256] = {
         0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
         0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
         0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15,
@@ -22,7 +22,6 @@ __constant__ unsigned char SboxCUDAConst[256] = {
         0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf,
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
-__shared__ unsigned char SboxCUDA[256];
 
 __device__ int mul3CUDA(unsigned char dt) {
   int x;
@@ -836,21 +835,18 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
   return;
 }
 
-__global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, /*unsigned char *r_key,*/ long int size) {
+__global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long int size) {
 
   //This kernel executes AES encryption on a GPU.
   //Please modify this kernel!!
   int thread_id = ((blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x) * blockDim.x + threadIdx.x;
+
   /* if (thread_id == 0)
      printf("size = %ld\n", size);
  //  printf("You can use printf function to eliminate bugs in your kernel.\n");
  */
 //  __shared__ int state[BLOCKSIZE][NB];
 //  memcpy(&(state[threadIdx.x][0]), &(pt[thread_id << 4]), sizeof(unsigned char) * NBb);
-  if(threadIdx.x == 0) {
-    memcpy(&SboxCUDA, &SboxCUDAConst, sizeof(unsigned char) * 256);
-//    memcpy(&(rkey), &(r_key), sizeof(int) * 44);
-  }
   CipherCUDA((int *)(&pt[thread_id << 4]), ct, rkey);
 //  memcpy(&ct[thread_id << 4], &state[threadIdx.x], sizeof(unsigned char) * NBb);
 }
