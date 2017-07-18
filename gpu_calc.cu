@@ -442,9 +442,9 @@ __device__ void CipherCUDA(int *pt, unsigned char *ct, int *rkey) {
             ^ rkey[rnd | 3];
 
 
-    unsigned  char * swap = cb;
-    cb = cb2;
-    cb2 = swap;
+    int * swap = cw;
+    cw = cw2;
+    cw2 = swap;
     if (threadId == 0 && rnd == 4) {
       printf("cw0: 0x%x\n", cw[0]);
       printf("cw1: 0x%x\n", cw[1]);
