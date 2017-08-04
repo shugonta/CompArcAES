@@ -841,20 +841,20 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
 
 //  dim3 dim_grid(GRIDSIZE_X, GRIDSIZE_Y, GRIDSIZE_Z), dim_block(BLOCKSIZE, 1, 1);
 //  dim3 dim_grid(GRIDSIZE_X, 1, 1), dim_block(BLOCKSIZE, 1, 1);
-  dim3 dim_grid(GRIDSIZE_X >> 2, 1, 1), dim_block(BLOCKSIZE, 1, 1);
+  dim3 dim_grid(GRIDSIZE, 1, 1), dim_block(BLOCKSIZE, 1, 1);
 
   cudaMalloc((void **) &d_pt, sizeof(unsigned char) * size);
   cudaMalloc((void **) &d_ct, sizeof(unsigned char) * size);
 
-  cudaMemcpy(d_pt, pt, sizeof(unsigned char) * (size >> 2), cudaMemcpyHostToDevice);
+  cudaMemcpy(d_pt, pt, sizeof(unsigned char) * (size), cudaMemcpyHostToDevice);
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
 
   device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
   cudaMemcpy(ct, d_pt, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
-  cudaMemcpy(d_pt, &(pt[(size >> 2)]), sizeof(unsigned char) * (size >> 2), cudaMemcpyHostToDevice);
-  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
+//  cudaMemcpy(d_pt, &(pt[(size >> 2)]), sizeof(unsigned char) * (size >> 2), cudaMemcpyHostToDevice);
+//  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
 
-  cudaMemcpy(&(ct[(size >> 2)]), d_pt, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
+//  cudaMemcpy(&(ct[(size >> 2)]), d_pt, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
 
   cudaFree(d_pt);
   cudaFree(d_ct);
