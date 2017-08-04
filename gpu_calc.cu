@@ -861,10 +861,10 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size2, cudaMemcpyHostToDevice);
   device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size2);
   cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size2, cudaMemcpyDeviceToHost);
-  cudaMemcpy(d_pt, pt + size2), sizeof(unsigned char) * size2, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_pt, pt + size2, sizeof(unsigned char) * size2, cudaMemcpyHostToDevice);
   device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size2);
 
-  cudaMemcpy(ct + size2), d_ct, sizeof(unsigned char) * size2, cudaMemcpyDeviceToHost);
+  cudaMemcpy(ct + size2, d_ct, sizeof(unsigned char) * size2, cudaMemcpyDeviceToHost);
 
   cudaFree(d_pt);
   cudaFree(d_ct);
