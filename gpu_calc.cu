@@ -28,7 +28,7 @@ __constant__ unsigned char SboxCUDAConst[256] = {
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
 
-__global__ void device_aes_encrypt(unsigned char *ct, int offset) {
+__global__ void device_aes_encrypt(unsigned char *ct, long int offset) {
 //  __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, int offset) {
 
   //This kernel executes AES encryption on a GPU.
@@ -853,7 +853,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   //In this function, you need to allocate the device memory and so on.
   unsigned char *d_ct/*, *d_pt*/;
   int *d_pt;
-  long size2 = size >> 6;
+  long int size2 = size >> 6;
   cudaStream_t stream[Stream];
   dim3 dim_grid(GRIDSIZE >> 6, 1, 1), dim_block(BLOCKSIZE, 1, 1);
   cudaHostRegister(pt, size, cudaHostRegisterDefault);
