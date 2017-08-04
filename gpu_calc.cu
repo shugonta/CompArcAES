@@ -841,16 +841,16 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct) {
     printf("state3: 0x%x\n", ((int *) ct)[thread_id << 2|3]);
   }*/
 }
-#define Stream 64
+#define Stream 32
 void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int size) {
   //This function launches the AES kernel.
   //Please modify this function for AES kernel.
   //In this function, you need to allocate the device memory and so on.
   unsigned char *d_ct, *d_pt;
 //  int *d_pt;
-  long size2 = size >> 6;
+  long size2 = size >> 5;
   cudaStream_t stream[Stream];
-  dim3 dim_grid(GRIDSIZE >> 6, 1, 1), dim_block(BLOCKSIZE, 1, 1);
+  dim3 dim_grid(GRIDSIZE >> 5, 1, 1), dim_block(BLOCKSIZE, 1, 1);
   cudaHostRegister(pt, size, cudaHostRegisterDefault);
   cudaHostRegister(ct, size, cudaHostRegisterDefault);
 
@@ -858,7 +858,6 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   for (stm = 0; stm < Stream; stm++) {
     cudaStreamCreate(&stream[stm]);
   }
-
 
   cudaMalloc((void **) &d_pt, size);
   cudaMalloc((void **) &d_ct, size);
@@ -876,6 +875,9 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   }
 
 //  cudaUnbindTexture(pt_texture);
+  for (stm = 0; stm < Stream; stm++) {
+    cudaStreamDestroy(&stream[stm]);
+  }
   cudaHostUnregister(pt);
   cudaHostUnregister(ct);
   cudaFree(d_pt);
