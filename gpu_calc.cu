@@ -846,7 +846,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   unsigned char *d_ct;
   int *d_pt, *plaintext;
 
-  cudaHostAlloc((void?**)&plaintext, sizeof(unsigned char) * size,?cudaHostAllocDefault);
+  cudaHostAlloc((void **)&plaintext, sizeof(unsigned char) * size, cudaHostAllocDefault);
   memcpy(plaintext, pt, sizeof(unsigned char) * size);
 
   dim3 dim_grid(GRIDSIZE, 1, 1), dim_block(BLOCKSIZE, 1, 1);
