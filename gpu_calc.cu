@@ -841,7 +841,9 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct) {
     printf("state3: 0x%x\n", ((int *) ct)[thread_id << 2|3]);
   }*/
 }
+
 #define Stream 64
+
 void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int size) {
   //This function launches the AES kernel.
   //Please modify this function for AES kernel.
@@ -866,18 +868,17 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   for (i = 0; i < Stream; i++) {
     device_aes_encrypt <<< dim_grid, dim_block, 0, stream[i] >>> (d_pt + size2 * i, d_ct + size2 * i);
     cudaMemcpyAsync(ct + size2 * i, d_ct + size2 * i, size2, cudaMemcpyDeviceToHost, stream[i]);
-    if (i != Stream -1) {
+    if (i != Stream - 1) {
       cudaStreamCreateWithFlags(&stream[i + 1], cudaStreamNonBlocking);
       cudaMemcpyAsync(d_pt + size2 * (i + 1), pt + size2 * (i + 1), size2, cudaMemcpyHostToDevice, stream[i + 1]);
     }
-    cudaStreamDestroy(stream[i]);
   }
 
-  /*int stm;
+//  cudaUnbindTexture(pt_texture);
+  int stm;
   for (stm = 0; stm < Stream; stm++) {
     cudaStreamDestroy(stream[stm]);
-  }*/
-//  cudaUnbindTexture(pt_texture);
+  }
   cudaHostUnregister(pt);
   cudaHostUnregister(ct);
   cudaFree(d_pt);
