@@ -52,10 +52,10 @@ __global__ void device_aes_encrypt(unsigned char *ct, long int size) {
     printf("state2: 0x%x\n", tex1Dfetch(pt_texture, thread_id << 2 | 2));
     printf("state3: 0x%x\n", tex1Dfetch(pt_texture, thread_id << 2 | 3));
   }
-  cw[0] = tex1Dfetch(pt_texture, thread_id << 4) ^ rkey[0];
-  cw[1] = tex1Dfetch(pt_texture, thread_id << 4 | 1) ^ rkey[1];
-  cw[2] = tex1Dfetch(pt_texture, thread_id << 4 | 2) ^ rkey[2];
-  cw[3] = tex1Dfetch(pt_texture, thread_id << 4 | 3) ^ rkey[3];
+  cw[0] = tex1Dfetch(pt_texture, thread_id << 2) ^ rkey[0];
+  cw[1] = tex1Dfetch(pt_texture, thread_id << 2 | 1) ^ rkey[1];
+  cw[2] = tex1Dfetch(pt_texture, thread_id << 2 | 2) ^ rkey[2];
+  cw[3] = tex1Dfetch(pt_texture, thread_id << 2 | 3) ^ rkey[3];
 //round 1
   cw[4] = (MUL2(SboxCUDA[((unsigned char *) cw)[0]]) ^
            MUL3(SboxCUDA[((unsigned char *) cw)[5]]) ^
