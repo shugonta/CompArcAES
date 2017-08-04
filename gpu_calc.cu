@@ -44,7 +44,7 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
 
   unsigned char cb[NBb2];
   int *cw = (int *) cb;
-  int *state = (int *) &(state_const[thread_id << 4]);
+  int *state = (int *) &(pt[thread_id << 4]);
 /*  if (thread_id == 0) {
     printf("state0: 0x%x\n", state[0]);
     printf("state1: 0x%x\n", state[1]);
