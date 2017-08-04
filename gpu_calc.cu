@@ -854,15 +854,11 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaHostRegister(pt, size, cudaHostRegisterDefault);
   cudaHostRegister(ct, size, cudaHostRegisterDefault);
 
-  int stm;
-  for (stm = 0; stm < Stream; stm++) {
-    cudaStreamCreate(&stream[stm]);
-  }
-
   cudaMalloc((void **) &d_pt, size);
   cudaMalloc((void **) &d_ct, size);
   cudaMemcpyToSymbol(rkey, rk, 176);
 
+  cudaStreamCreate(&stream[0]);
   cudaMemcpyAsync(d_pt, pt, size2, cudaMemcpyHostToDevice, stream[0]);
 //  cudaBindTexture(NULL, pt_texture, d_pt);
 
@@ -870,8 +866,10 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   for (i = 0; i < Stream; i++) {
     device_aes_encrypt <<< dim_grid, dim_block, 0, stream[i] >>> (d_pt + size2 * i, d_ct + size2 * i);
     cudaMemcpyAsync(ct + size2 * i, d_ct + size2 * i, size2, cudaMemcpyDeviceToHost, stream[i]);
-    if (i != Stream -1)
+    if (i != Stream -1) {
+      cudaStreamCreate(&stream[i + 1]);
       cudaMemcpyAsync(d_pt + size2 * (i + 1), pt + size2 * (i + 1), size2, cudaMemcpyHostToDevice, stream[i + 1]);
+    }
   }
 
 //  cudaUnbindTexture(pt_texture);
