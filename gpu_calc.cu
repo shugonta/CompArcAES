@@ -832,10 +832,10 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
   cb[15] = SboxCUDA[cb[27]];
   ((int *) pt)[thread_id << 2 | 3] = cw[3] ^ rkey[43];
   if (thread_id == 0) {
-    printf("state0: 0x%x\n", cw[0]);
-    printf("state1: 0x%x\n", cw[1]);
-    printf("state2: 0x%x\n", cw[2]);
-    printf("state3: 0x%x\n", cw[3]);
+    printf("state0: 0x%x\n", ((int *) pt)[thread_id << 2]);
+    printf("state1: 0x%x\n", ((int *) pt)[thread_id << 2|1]);
+    printf("state2: 0x%x\n", ((int *) pt)[thread_id << 2|2]);
+    printf("state3: 0x%x\n", ((int *) pt)[thread_id << 2|3]);
   }
 }
 
