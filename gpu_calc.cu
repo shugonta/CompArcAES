@@ -6,6 +6,10 @@
 #define MUL3(x) (x & 0x80 ? ((x << 1 ^0x1b) & 0xff ^x) : ((x << 1) ^ x))
 #define MUL2(x) (x & 0x80 ? (x << 1 ^0x1b) & 0xff  : (x << 1))
 
+#define BLOCKSIZE (128)
+#define GRIDSIZE ((FILESIZE/16)/BLOCKSIZE) //128*26*32
+#define Stream 64
+
 texture<int, 1, cudaReadModeElementType> pt_texture;
 __constant__ int rkey[44];
 __shared__ unsigned char SboxCUDA[256];
@@ -841,8 +845,6 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct) {
     printf("state3: 0x%x\n", ((int *) ct)[thread_id << 2|3]);
   }*/
 }
-
-#define Stream 64
 
 void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int size) {
   //This function launches the AES kernel.

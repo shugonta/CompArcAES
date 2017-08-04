@@ -15,9 +15,6 @@
 /*******************************************************************************/
 //#define FILESIZE (32)
 #define FILESIZE (16*128*13*16*512)
-#define BLOCKSIZE (128)
-#define GRIDSIZE ((FILESIZE/16)/BLOCKSIZE) //128*26*32
-
 
 void SubBytes(int *);                 /* FIPS 197  P.16 Figure  6 */
 void ShiftRows(int *);                /* FIPS 197  P.17 Figure  8 */
