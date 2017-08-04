@@ -873,6 +873,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   }
 
 //  cudaUnbindTexture(pt_texture);
+  int stm;
   for (stm = 0; stm < Stream; stm++) {
     cudaStreamDestroy(stream[stm]);
   }
