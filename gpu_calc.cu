@@ -839,7 +839,7 @@ __global__ void device_aes_encrypt(unsigned char *ct, long int size) {
   }*/
 }
 
-void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int size) {
+void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, int size) {
   //This function launches the AES kernel.
   //Please modify this function for AES kernel.
   //In this function, you need to allocate the device memory and so on.
