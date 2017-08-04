@@ -44,9 +44,9 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
 
   unsigned char cb[NBb2];
   int *cw = (int *) cb;
-  int* state = (int*)&(pt[thread_id << 4]);
+  int *state = (int *) &(pt[thread_id << 4]);
 
- /* cw[0] = state[0] ^ rkey[0];
+  cw[0] = state[0] ^ rkey[0];
   cw[1] = state[1] ^ rkey[1];
   cw[2] = state[2] ^ rkey[2];
   cw[3] = state[3] ^ rkey[3];
@@ -815,22 +815,22 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
   cb[1] = SboxCUDA[cb[21]];
   cb[2] = SboxCUDA[cb[26]];
   cb[3] = SboxCUDA[cb[31]];
-  ((int *) ct)[thread_id << 2] = cw[0] ^ rkey[40];
+  ((int *) pt)[thread_id << 2] = cw[0] ^ rkey[40];
   cb[4] = SboxCUDA[cb[20]];
   cb[5] = SboxCUDA[cb[25]];
   cb[6] = SboxCUDA[cb[30]];
   cb[7] = SboxCUDA[cb[19]];
-  ((int *) ct)[thread_id << 2 | 1] = cw[1] ^ rkey[41];
+  ((int *) pt)[thread_id << 2 | 1] = cw[1] ^ rkey[41];
   cb[8] = SboxCUDA[cb[24]];
   cb[9] = SboxCUDA[cb[29]];
   cb[10] = SboxCUDA[cb[18]];
   cb[11] = SboxCUDA[cb[23]];
-  ((int *) ct)[thread_id << 2 | 2] = cw[2] ^ rkey[42];
+  ((int *) pt)[thread_id << 2 | 2] = cw[2] ^ rkey[42];
   cb[12] = SboxCUDA[cb[28]];
   cb[13] = SboxCUDA[cb[17]];
   cb[14] = SboxCUDA[cb[22]];
   cb[15] = SboxCUDA[cb[27]];
-  ((int *) ct)[thread_id << 2 | 3] = cw[3] ^ rkey[43];*/
+  ((int *) pt)[thread_id << 2 | 3] = cw[3] ^ rkey[43];
 }
 
 void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int size) {
@@ -851,7 +851,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
 //  cudaMemcpyToSymbol(state_org, pt, sizeof(unsigned char) * size);
 
-  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
+  device_aes_encrypt << < dim_grid, dim_block >> > (d_pt, d_ct, size);
 
   cudaMemcpy(ct, d_pt, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
 
