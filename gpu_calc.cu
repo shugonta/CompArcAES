@@ -870,13 +870,14 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
       cudaStreamCreateWithFlags(&stream[i + 1], cudaStreamNonBlocking);
       cudaMemcpyAsync(d_pt + size2 * (i + 1), pt + size2 * (i + 1), size2, cudaMemcpyHostToDevice, stream[i + 1]);
     }
+    cudaStreamDestroy(stream[i]);
   }
 
-//  cudaUnbindTexture(pt_texture);
-  int stm;
+  /*int stm;
   for (stm = 0; stm < Stream; stm++) {
     cudaStreamDestroy(stream[stm]);
-  }
+  }*/
+//  cudaUnbindTexture(pt_texture);
   cudaHostUnregister(pt);
   cudaHostUnregister(ct);
   cudaFree(d_pt);
