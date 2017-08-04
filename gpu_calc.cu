@@ -35,21 +35,22 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
   //Please modify this kernel!!
   int thread_id = blockIdx.x * blockDim.x + threadIdx.x;
 
-   if (thread_id == 0) {
-     printf("state0: 0x%x\n", state[0]);
-     printf("state1: 0x%x\n", state[1]);
-     printf("state2: 0x%x\n", state[2]);
-     printf("state3: 0x%x\n", state[3]);
-   }
-//     printf("size = %ld\n", size);
+  /* if (thread_id == 0)
+     printf("size = %ld\n", size);
  //  printf("You can use printf function to eliminate bugs in your kernel.\n");
+ */
   memcpy(&(SboxCUDA[threadIdx.x << 1]), &(SboxCUDAConst[threadIdx.x << 1]), 2);
   __syncthreads();
 
   unsigned char cb[NBb2];
   int *cw = (int *) cb;
   int *state = (int *) &(pt[thread_id << 4]);
-
+  if (thread_id == 0) {
+    printf("state0: 0x%x\n", state[0]);
+    printf("state1: 0x%x\n", state[1]);
+    printf("state2: 0x%x\n", state[2]);
+    printf("state3: 0x%x\n", state[3]);
+  }
   cw[0] = state[0] ^ rkey[0];
   cw[1] = state[1] ^ rkey[1];
   cw[2] = state[2] ^ rkey[2];
@@ -852,10 +853,10 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size2, cudaMemcpyHostToDevice);
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
 
-  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size2);
+  device_aes_encrypt << < dim_grid, dim_block >> > (d_pt, d_ct, size2);
   cudaMemcpy(ct, d_pt, sizeof(unsigned char) * size2, cudaMemcpyDeviceToHost);
   cudaMemcpy(d_pt, &(pt[size2]), sizeof(unsigned char) * size2, cudaMemcpyHostToDevice);
-  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size2);
+  device_aes_encrypt << < dim_grid, dim_block >> > (d_pt, d_ct, size2);
 
   cudaMemcpy(&(ct[size2]), d_pt, sizeof(unsigned char) * size2, cudaMemcpyDeviceToHost);
 
