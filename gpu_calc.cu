@@ -837,12 +837,12 @@ __global__ void device_aes_encrypt(unsigned char *ct, int offset) {
   cb[14] = SboxCUDA[cb[22]];
   cb[15] = SboxCUDA[cb[27]];
   ((int *) ct)[thread_id << 2 | 3] = cw[3] ^ rkey[43];
-/*  if (thread_id == 0) {
+  if (thread_id == 0) {
     printf("state0: 0x%x\n", ((int *) ct)[thread_id << 2]);
     printf("state1: 0x%x\n", ((int *) ct)[thread_id << 2|1]);
     printf("state2: 0x%x\n", ((int *) ct)[thread_id << 2|2]);
     printf("state3: 0x%x\n", ((int *) ct)[thread_id << 2|3]);
-  }*/
+  }
 }
 
 #define Stream 64
