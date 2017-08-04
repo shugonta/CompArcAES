@@ -30,7 +30,7 @@ __constant__ unsigned char SboxCUDAConst[256] = {
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
 
-__global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long int size) {
+__global__ void device_aes_encrypt(unsigned char *ct, long int size) {
 
   //This kernel executes AES encryption on a GPU.
   //Please modify this kernel!!
@@ -858,7 +858,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
   cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
   cudaBindTexture(NULL, pt_texture, d_pt);
-  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
+  device_aes_encrypt <<< dim_grid, dim_block >>> (d_ct, size);
   cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
   cudaUnbindTexture(pt_texture);
   cudaFree(d_pt);
