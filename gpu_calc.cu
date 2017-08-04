@@ -6,7 +6,7 @@
 #define MUL3(x) (x & 0x80 ? ((x << 1 ^0x1b) & 0xff ^x) : ((x << 1) ^ x))
 #define MUL2(x) (x & 0x80 ? (x << 1 ^0x1b) & 0xff  : (x << 1))
 
-texture<int, 1, cudaReadModeElementType> pt_texture;
+//texture<int, 1, cudaReadModeElementType> pt_texture;
 __constant__ int rkey[44];
 __shared__ unsigned char SboxCUDA[256];
 __constant__ unsigned char SboxCUDAConst[256] = {
@@ -28,7 +28,7 @@ __constant__ unsigned char SboxCUDAConst[256] = {
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
 
-__global__ void device_aes_encrypt(unsigned char *ct) {
+__global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct) {
 
   //This kernel executes AES encryption on a GPU.
   //Please modify this kernel!!
@@ -44,10 +44,15 @@ __global__ void device_aes_encrypt(unsigned char *ct) {
   unsigned char cb[NBb2];
   int *cw = (int *) cb;
 
-  cw[0] = tex1Dfetch(pt_texture, thread_id << 2) ^ rkey[0];
+  cw[0] = ((int *) pt)[thread_id << 2] ^ rkey[0];
+  cw[1] = ((int *) pt)[thread_id << 2 | 1] ^ rkey[1];
+  cw[2] = ((int *) pt)[thread_id << 2 | 2] ^ rkey[2];
+  cw[3] = ((int *) pt)[thread_id << 2 | 3] ^ rkey[3];
+
+/*  cw[0] = tex1Dfetch(pt_texture, thread_id << 2) ^ rkey[0];
   cw[1] = tex1Dfetch(pt_texture, thread_id << 2 | 1) ^ rkey[1];
   cw[2] = tex1Dfetch(pt_texture, thread_id << 2 | 2) ^ rkey[2];
-  cw[3] = tex1Dfetch(pt_texture, thread_id << 2 | 3) ^ rkey[3];
+  cw[3] = tex1Dfetch(pt_texture, thread_id << 2 | 3) ^ rkey[3];*/
 //round 1
   cw[4] = (MUL2(SboxCUDA[((unsigned char *) cw)[0]]) ^
            MUL3(SboxCUDA[((unsigned char *) cw)[5]]) ^
@@ -841,8 +846,8 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   //This function launches the AES kernel.
   //Please modify this function for AES kernel.
   //In this function, you need to allocate the device memory and so on.
-  unsigned char *d_ct;
-  int *d_pt;
+  unsigned char *d_ct, *d_pt;
+//  int *d_pt;
   long size2 = size >> 2;
   cudaStream_t stream[Stream];
   dim3 dim_grid(GRIDSIZE >> 2, 1, 1), dim_block(BLOCKSIZE, 1, 1);
@@ -860,11 +865,11 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaMemcpyToSymbol(rkey, rk, 176);
 
   cudaMemcpyAsync(d_pt, pt, size2, cudaMemcpyHostToDevice, stream[0]);
-  cudaBindTexture(NULL, pt_texture, d_pt);
+//  cudaBindTexture(NULL, pt_texture, d_pt);
 
   int i;
   for (i = 0; i < 4; i++) {
-    device_aes_encrypt <<< dim_grid, dim_block, 0, stream[i] >>> (d_ct + size2 * i);
+    device_aes_encrypt <<< dim_grid, dim_block, 0, stream[i] >>> (d_pt + size2 * i, d_ct + size2 * i);
     cudaMemcpyAsync(ct + size2 * i, d_ct + size2 * i, size2, cudaMemcpyDeviceToHost, stream[i]);
     if (i != 3)
       cudaMemcpyAsync(d_pt + size2 * (i + 1), pt + size2 * (i + 1), size2, cudaMemcpyHostToDevice, stream[i + 1]);
