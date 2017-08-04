@@ -35,10 +35,14 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
   //Please modify this kernel!!
   int thread_id = blockIdx.x * blockDim.x + threadIdx.x;
 
-  /* if (thread_id == 0)
-     printf("size = %ld\n", size);
+   if (thread_id == 0) {
+     printf("state0: 0x%x\n", state[0]);
+     printf("state1: 0x%x\n", state[1]);
+     printf("state2: 0x%x\n", state[2]);
+     printf("state3: 0x%x\n", state[3]);
+   }
+//     printf("size = %ld\n", size);
  //  printf("You can use printf function to eliminate bugs in your kernel.\n");
- */
   memcpy(&(SboxCUDA[threadIdx.x << 1]), &(SboxCUDAConst[threadIdx.x << 1]), 2);
   __syncthreads();
 
