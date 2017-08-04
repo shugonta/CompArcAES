@@ -875,7 +875,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
       cudaMemcpyAsync(d_pt + size2 * (i + 1), pt + size2 * (i + 1), size2, cudaMemcpyHostToDevice, stream[i + 1]);
   }
 
-  cudaUnbindTexture(pt_texture);
+//  cudaUnbindTexture(pt_texture);
   cudaHostUnregister(pt);
   cudaHostUnregister(ct);
   cudaFree(d_pt);
