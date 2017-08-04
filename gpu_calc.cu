@@ -28,7 +28,7 @@ __constant__ unsigned char SboxCUDAConst[256] = {
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
 
-__global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct) {
+__global__ void device_aes_encrypt(unsigned char *ct) {
 
   //This kernel executes AES encryption on a GPU.
   //Please modify this kernel!!
@@ -44,16 +44,10 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct) {
   unsigned char cb[NBb2];
   int *cw = (int *) cb;
 
-
-  cw[0] = ((int *) pt)[thread_id << 2] ^ rkey[0];
-  cw[1] = ((int *) pt)[thread_id << 2 | 1] ^ rkey[1];
-  cw[2] = ((int *) pt)[thread_id << 2 | 2] ^ rkey[2];
-  cw[3] = ((int *) pt)[thread_id << 2 | 3] ^ rkey[3];
-
-  /*cw[0] = tex1Dfetch(pt_texture, thread_id << 2) ^ rkey[0];
+  cw[0] = tex1Dfetch(pt_texture, thread_id << 2) ^ rkey[0];
   cw[1] = tex1Dfetch(pt_texture, thread_id << 2 | 1) ^ rkey[1];
   cw[2] = tex1Dfetch(pt_texture, thread_id << 2 | 2) ^ rkey[2];
-  cw[3] = tex1Dfetch(pt_texture, thread_id << 2 | 3) ^ rkey[3];*/
+  cw[3] = tex1Dfetch(pt_texture, thread_id << 2 | 3) ^ rkey[3];
 //round 1
   cw[4] = (MUL2(SboxCUDA[((unsigned char *) cw)[0]]) ^
            MUL3(SboxCUDA[((unsigned char *) cw)[5]]) ^
@@ -848,24 +842,18 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   //Please modify this function for AES kernel.
   //In this function, you need to allocate the device memory and so on.
   unsigned char *d_ct;
-//  int *d_pt;
-  unsigned char *d_pt;
-  long int size2 = size >> 2;
+  int *d_pt;
+
   dim3 dim_grid(GRIDSIZE, 1, 1), dim_block(BLOCKSIZE, 1, 1);
 
-  cudaMalloc((void **) &d_pt, size2);
-  cudaMalloc((void **) &d_ct, size2);
+  cudaMalloc((void **) &d_pt, size);
+  cudaMalloc((void **) &d_ct, size);
   cudaMemcpyToSymbol(rkey, rk, 176);
-  cudaMemcpy(d_pt, pt, size2, cudaMemcpyHostToDevice);
-//  cudaBindTexture(NULL, pt_texture, d_pt);
-  int i;
-  for (i = 0; i < 4; i++) {
-    device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct);
-    cudaMemcpy(ct + size2 * i, d_ct, size2, cudaMemcpyDeviceToHost);
-    if (i != 3)
-      cudaMemcpy(d_pt, pt + size2 * i, size2, cudaMemcpyHostToDevice);
-  }
-//  cudaUnbindTexture(pt_texture);
+//  cudaMemcpy(d_pt, pt, size, cudaMemcpyHostToDevice);
+  cudaBindTexture(NULL, pt_texture, d_pt);
+  device_aes_encrypt <<< dim_grid, dim_block >>> (d_ct);
+//  cudaMemcpy(ct, d_ct, size, cudaMemcpyDeviceToHost);
+  cudaUnbindTexture(pt_texture);
   cudaFree(d_pt);
   cudaFree(d_ct);
 }
