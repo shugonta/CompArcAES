@@ -8,6 +8,7 @@
 #define MUL3(x) (x & 0x80 ? ((x << 1 ^0x1b) & 0xff ^x) : ((x << 1) ^ x))
 #define MUL2(x) (x & 0x80 ? (x << 1 ^0x1b) & 0xff  : (x << 1))
 
+texture<unsigned char, 1, cudaReadModeElementType> pt_texture;
 __constant__ int rkey[44];
 __shared__ unsigned char SboxCUDA[256];
 __constant__ unsigned char SboxCUDAConst[256] = {
@@ -44,17 +45,17 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
 
   unsigned char cb[NBb2];
   int *cw = (int *) cb;
-  int *state = (int *) &(pt[thread_id << 4]);
+//  int *state = (int *) &(pt[thread_id << 4]);
 /*  if (thread_id == 0) {
     printf("state0: 0x%x\n", state[0]);
     printf("state1: 0x%x\n", state[1]);
     printf("state2: 0x%x\n", state[2]);
     printf("state3: 0x%x\n", state[3]);
   }*/
-  cw[0] = state[0] ^ rkey[0];
-  cw[1] = state[1] ^ rkey[1];
-  cw[2] = state[2] ^ rkey[2];
-  cw[3] = state[3] ^ rkey[3];
+  cw[0] = tex1Dfetch(pt_texture, thread_id << 4) ^ rkey[0];
+  cw[1] = tex1Dfetch(pt_texture, thread_id << 4 | 1) ^ rkey[1];
+  cw[2] = tex1Dfetch(pt_texture, thread_id << 4 | 2) ^ rkey[2];
+  cw[3] = tex1Dfetch(pt_texture, thread_id << 4 | 3) ^ rkey[3];
 //round 1
   cw[4] = (MUL2(SboxCUDA[((unsigned char *) cw)[0]]) ^
            MUL3(SboxCUDA[((unsigned char *) cw)[5]]) ^
@@ -852,16 +853,17 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
 
   dim3 dim_grid(GRIDSIZE, 1, 1), dim_block(BLOCKSIZE, 1, 1);
 
-  cudaMalloc((void **) &d_pt, sizeof(unsigned char) * size);
+//  cudaMalloc((void **) &d_pt, sizeof(unsigned char) * size);
   cudaMalloc((void **) &d_ct, sizeof(unsigned char) * size);
 
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
-
-  cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
+  cudaBindTexture(0, pt_texture, pt,
+                  cudaCreateChannelDesc<unsigned char>(), sizeof(unsigned char) * size);
+//  cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
   device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
   cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
-
-  cudaFree(d_pt);
+  cudaUnbindTexture(pt_texture);
+//  cudaFree(d_pt);
   cudaFree(d_ct);
 }
 
