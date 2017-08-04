@@ -831,9 +831,9 @@ __global__ void device_aes_encrypt(unsigned char *ct) {
   ((int *) ct)[thread_id << 2 | 3] = cw[3] ^ rkey[43];
   if (thread_id == 0) {
     printf("state0: 0x%x\n", ((int *) ct)[thread_id << 2]);
-    printf("state1: 0x%x\n", ((int *) ct)[thread_id << 2|1]);
-    printf("state2: 0x%x\n", ((int *) ct)[thread_id << 2|2]);
-    printf("state3: 0x%x\n", ((int *) ct)[thread_id << 2|3]);
+    printf("state1: 0x%x\n", ((int *) ct)[thread_id << 2 | 1]);
+    printf("state2: 0x%x\n", ((int *) ct)[thread_id << 2 | 2]);
+    printf("state3: 0x%x\n", ((int *) ct)[thread_id << 2 | 3]);
   }
 }
 
@@ -854,13 +854,20 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaMemcpy(d_pt, pt, size2, cudaMemcpyHostToDevice);
   cudaBindTexture(NULL, pt_texture, d_pt);
 
-  int i;
-  for (i = 0; i < 4; i++) {
-    device_aes_encrypt <<< dim_grid, dim_block >>> (d_ct);
-    cudaMemcpy(ct + size2 * i, d_ct, size2, cudaMemcpyDeviceToHost);
-    if (i != 3)
-      cudaMemcpy(d_pt, pt + size2 * i, size2, cudaMemcpyHostToDevice);
-  }
+  device_aes_encrypt << < dim_grid, dim_block >> > (d_ct);
+  cudaMemcpy(ct , d_ct, size2, cudaMemcpyDeviceToHost);
+  cudaMemcpy(d_pt, pt + size2 , size2, cudaMemcpyHostToDevice);
+
+  device_aes_encrypt << < dim_grid, dim_block >> > (d_ct);
+  cudaMemcpy(ct + size2 , d_ct, size2, cudaMemcpyDeviceToHost);
+  cudaMemcpy(d_pt, pt + size2 *2, size2, cudaMemcpyHostToDevice);
+
+  device_aes_encrypt << < dim_grid, dim_block >> > (d_ct);
+  cudaMemcpy(ct + size2 * 2, d_ct, size2, cudaMemcpyDeviceToHost);
+  cudaMemcpy(d_pt, pt + size2 * 3, size2, cudaMemcpyHostToDevice);
+
+  device_aes_encrypt << < dim_grid, dim_block >> > (d_ct);
+  cudaMemcpy(ct + size2 * 3, d_ct, size2, cudaMemcpyDeviceToHost);
 
   cudaUnbindTexture(pt_texture);
   cudaFree(d_pt);
