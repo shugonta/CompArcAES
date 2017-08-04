@@ -843,7 +843,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   //In this function, you need to allocate the device memory and so on.
   unsigned char *d_ct;
   int *d_pt, *plaintext;
-  cudaHostAlloc((void **) &plaintext, size, cudaHostAllocWriteCombine);
+  cudaHostAlloc((void **) &plaintext, size, cudaHostAllocWriteCombined);
   memcpy(plaintext, pt, size);
 
   dim3 dim_grid(GRIDSIZE, 1, 1), dim_block(BLOCKSIZE, 1, 1);
