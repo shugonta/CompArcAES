@@ -34,7 +34,7 @@ __global__ void device_aes_encrypt(unsigned char *ct, long int offset, int i) {
   //This kernel executes AES encryption on a GPU.
   //Please modify this kernel!!
   int thread_id = blockIdx.x * blockDim.x + threadIdx.x;
-   if (thread_id == 0)
+   if (thread_id == 1)
      printf("offset[%d] = %ld\n",i, offset + (thread_id << 2));
 
   /* if (thread_id == 0)
