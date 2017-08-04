@@ -45,13 +45,7 @@ __global__ void device_aes_encrypt(unsigned char *ct, long int size) {
 
   unsigned char cb[NBb2];
   int *cw = (int *) cb;
-//  int *state = (int *) &(pt[thread_id << 4]);
-  if (thread_id == 0) {
-    printf("state0: 0x%x\n", tex1Dfetch(pt_texture, thread_id << 2));
-    printf("state1: 0x%x\n", tex1Dfetch(pt_texture, thread_id << 2 | 1));
-    printf("state2: 0x%x\n", tex1Dfetch(pt_texture, thread_id << 2 | 2));
-    printf("state3: 0x%x\n", tex1Dfetch(pt_texture, thread_id << 2 | 3));
-  }
+
   cw[0] = tex1Dfetch(pt_texture, thread_id << 2) ^ rkey[0];
   cw[1] = tex1Dfetch(pt_texture, thread_id << 2 | 1) ^ rkey[1];
   cw[2] = tex1Dfetch(pt_texture, thread_id << 2 | 2) ^ rkey[2];
