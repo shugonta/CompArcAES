@@ -52,10 +52,10 @@ __global__ void device_aes_encrypt(unsigned char *ct, long int offset, int i) {
   cw[2] = ((int *) pt)[thread_id << 2 | 2] ^ rkey[2];
   cw[3] = ((int *) pt)[thread_id << 2 | 3] ^ rkey[3];*/
 
-  cw[0] = tex1Dfetch(pt_texture, offset + thread_id << 2) ^ rkey[0];
-  cw[1] = tex1Dfetch(pt_texture, offset + thread_id << 2 | 1) ^ rkey[1];
-  cw[2] = tex1Dfetch(pt_texture, offset + thread_id << 2 | 2) ^ rkey[2];
-  cw[3] = tex1Dfetch(pt_texture, offset + thread_id << 2 | 3) ^ rkey[3];
+  cw[0] = tex1Dfetch(pt_texture, offset + (thread_id << 2)) ^ rkey[0];
+  cw[1] = tex1Dfetch(pt_texture, offset + (thread_id << 2 | 1)) ^ rkey[1];
+  cw[2] = tex1Dfetch(pt_texture, offset + (thread_id << 2 | 2)) ^ rkey[2];
+  cw[3] = tex1Dfetch(pt_texture, offset + (thread_id << 2 | 3)) ^ rkey[3];
 //round 1
   cw[4] = (MUL2(SboxCUDA[((unsigned char *) cw)[0]]) ^
            MUL3(SboxCUDA[((unsigned char *) cw)[5]]) ^
@@ -870,7 +870,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   int i;
   for (i = 0; i < Stream; i++) {
 //    device_aes_encrypt <<< dim_grid, dim_block, 0, stream[i] >>> (d_pt + size2 * i, d_ct + size2 * i, size2 * i);
-    device_aes_encrypt << < dim_grid, dim_block, 0, stream[i] >> > (d_ct + size2 * i, (size2 >> 2) * i, i);
+    device_aes_encrypt <<< dim_grid, dim_block, 0, stream[i] >>> (d_ct + size2 * i, (size2 >> 2) * i, i);
     cudaMemcpyAsync(ct + size2 * i, d_ct + size2 * i, size2, cudaMemcpyDeviceToHost, stream[i]);
     if (i != Stream - 1) {
       cudaStreamCreateWithFlags(&stream[i + 1], cudaStreamNonBlocking);
