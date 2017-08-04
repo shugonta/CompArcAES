@@ -850,7 +850,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   //In this function, you need to allocate the device memory and so on.
   unsigned char *d_ct, *d_pt;
 //  int *d_pt;
-  long size2 = size >> 6;
+  long int size2 = size >> 6;
   cudaStream_t stream[Stream];
   dim3 dim_grid(GRIDSIZE >> 6, 1, 1), dim_block(BLOCKSIZE, 1, 1);
   cudaHostRegister(pt, size, cudaHostRegisterDefault);
