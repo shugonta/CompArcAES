@@ -28,14 +28,14 @@ __constant__ unsigned char SboxCUDAConst[256] = {
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
 
-__global__ void device_aes_encrypt(unsigned char *ct, long int offset) {
+__global__ void device_aes_encrypt(unsigned char *ct, long int offset, int i) {
 //  __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, int offset) {
 
   //This kernel executes AES encryption on a GPU.
   //Please modify this kernel!!
   int thread_id = blockIdx.x * blockDim.x + threadIdx.x;
    if (thread_id == 0)
-     printf("offset = %ld\n", offset);
+     printf("offset[%d] = %ld\n",i, offset);
 
   /* if (thread_id == 0)
      printf("size = %ld\n", size);
@@ -870,7 +870,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   int i;
   for (i = 0; i < Stream; i++) {
 //    device_aes_encrypt <<< dim_grid, dim_block, 0, stream[i] >>> (d_pt + size2 * i, d_ct + size2 * i, size2 * i);
-    device_aes_encrypt <<< dim_grid, dim_block, 0, stream[i] >>> (d_ct + size2 * i, (size2 * i) >> 2);
+    device_aes_encrypt <<< dim_grid, dim_block, 0, stream[i] >>> (d_ct + size2 * i, (size2 * i) >> 2, i);
     cudaMemcpyAsync(ct + size2 * i, d_ct + size2 * i, size2, cudaMemcpyDeviceToHost, stream[i]);
     if (i != Stream - 1) {
       cudaStreamCreateWithFlags(&stream[i + 1], cudaStreamNonBlocking);
