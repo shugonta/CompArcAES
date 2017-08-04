@@ -843,16 +843,18 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   //In this function, you need to allocate the device memory and so on.
   unsigned char *d_ct;
   int *d_pt;
-
+  long int size2 = size << 2;
   dim3 dim_grid(GRIDSIZE, 1, 1), dim_block(BLOCKSIZE, 1, 1);
 
-  cudaMalloc((void **) &d_pt, size);
-  cudaMalloc((void **) &d_ct, size);
+  cudaMalloc((void **) &d_pt, size2);
+  cudaMalloc((void **) &d_ct, size2);
   cudaMemcpyToSymbol(rkey, rk, 176);
-//  cudaMemcpy(d_pt, pt, size, cudaMemcpyHostToDevice);
-  cudaBindTexture(NULL, pt_texture, d_pt);
-  device_aes_encrypt <<< dim_grid, dim_block >>> (d_ct);
-//  cudaMemcpy(ct, d_ct, size, cudaMemcpyDeviceToHost);
+  for (int i = 0; i < 4; i++) {
+    cudaMemcpy(d_pt, pt + size2 * i, size2, cudaMemcpyHostToDevice);
+    cudaBindTexture(NULL, pt_texture, d_pt);
+    device_aes_encrypt <<< dim_grid, dim_block >>> (d_ct);
+    cudaMemcpy(ct + size2 * i, d_ct, size2, cudaMemcpyDeviceToHost);
+  }
   cudaUnbindTexture(pt_texture);
   cudaFree(d_pt);
   cudaFree(d_ct);
