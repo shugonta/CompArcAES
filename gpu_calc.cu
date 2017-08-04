@@ -857,9 +857,9 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaMalloc((void **) &d_ct, sizeof(unsigned char) * size);
 
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
-  cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
-  cudaBindTexture(0, pt_texture, d_pt,
-                  cudaCreateChannelDesc<unsigned char>(), sizeof(unsigned char) * size);
+  checkCudaErrors(cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice));
+  checkCudaErrors(cudaBindTexture(0, pt_texture, d_pt,
+                  cudaCreateChannelDesc<unsigned char>(), sizeof(unsigned char) * size));
   device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
   cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
   cudaUnbindTexture(pt_texture);
