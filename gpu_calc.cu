@@ -8,7 +8,7 @@
 #define MUL3(x) (x & 0x80 ? ((x << 1 ^0x1b) & 0xff ^x) : ((x << 1) ^ x))
 #define MUL2(x) (x & 0x80 ? (x << 1 ^0x1b) & 0xff  : (x << 1))
 
-texture<unsigned char, 1> pt_texture;
+texture<unsigned char, 1, cudaReadModeElementType> pt_texture;
 __constant__ int rkey[44];
 __shared__ unsigned char SboxCUDA[256];
 __constant__ unsigned char SboxCUDAConst[256] = {
@@ -858,8 +858,9 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
 
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
   cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
+  cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc();
   cudaBindTexture(0, pt_texture, d_pt,
-                  cudaCreateChannelDesc<unsigned char>(), sizeof(unsigned char) * size);
+                  channelDesc, sizeof(unsigned char) * size);
   device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
   cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
   cudaUnbindTexture(pt_texture);
