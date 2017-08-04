@@ -841,16 +841,16 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct) {
     printf("state3: 0x%x\n", ((int *) ct)[thread_id << 2|3]);
   }*/
 }
-#define Stream 8
+#define Stream 16
 void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int size) {
   //This function launches the AES kernel.
   //Please modify this function for AES kernel.
   //In this function, you need to allocate the device memory and so on.
   unsigned char *d_ct, *d_pt;
 //  int *d_pt;
-  long size2 = size >> 3;
+  long size2 = size >> 4;
   cudaStream_t stream[Stream];
-  dim3 dim_grid(GRIDSIZE >> 3, 1, 1), dim_block(BLOCKSIZE, 1, 1);
+  dim3 dim_grid(GRIDSIZE >> 4, 1, 1), dim_block(BLOCKSIZE, 1, 1);
   cudaHostRegister(pt, size, cudaHostRegisterDefault);
   cudaHostRegister(ct, size, cudaHostRegisterDefault);
 
