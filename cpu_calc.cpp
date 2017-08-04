@@ -206,7 +206,12 @@ void launch_cpu_aes(unsigned char *pt, int *rk, unsigned char *ct, long int size
   //"size / 16" means overall number of plaintexts.
   for(int i = 0; i < (size / 16); i++){
     memcpy(data, pt+16*i, NBb); //With NB, 16 bytes are defined as 4 words.
-    
+    if(i == 6815744||i == 0){
+      printf("stateCPU0: 0x%x\n", data[0]);
+      printf("stateCPU1: 0x%x\n", data[1]);
+      printf("stateCPU2: 0x%x\n", data[2]);
+      printf("stateCPU3: 0x%x\n", data[3]);
+    }
     //datadump("Plaintext        : ", data, 4);      
       
     Cipher(data, rk, i);
