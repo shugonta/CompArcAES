@@ -8,6 +8,7 @@
 #define MUL3(x) (x & 0x80 ? ((x << 1 ^0x1b) & 0xff ^x) : ((x << 1) ^ x))
 #define MUL2(x) (x & 0x80 ? (x << 1 ^0x1b) & 0xff  : (x << 1))
 
+__constant__ unsigned char state_const[FILESIZE];
 __constant__ int rkey[44];
 __shared__ unsigned char SboxCUDA[256];
 __constant__ unsigned char SboxCUDAConst[256] = {
@@ -857,6 +858,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaMalloc((void **) &d_ct, sizeof(unsigned char) * size2);
 
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
+  cudaMemcpyToSymbol(state_const, pt, sizeof(unsigned char) * FILESIZE);
 
   cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size2, cudaMemcpyHostToDevice);
   device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size2);
