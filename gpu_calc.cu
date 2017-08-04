@@ -836,31 +836,43 @@ __global__ void device_aes_encrypt(unsigned char *ct) {
     printf("state3: 0x%x\n", ((int *) ct)[thread_id << 2|3]);
   }*/
 }
-
+#define Stream 4
 void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int size) {
   //This function launches the AES kernel.
   //Please modify this function for AES kernel.
   //In this function, you need to allocate the device memory and so on.
   unsigned char *d_ct;
   int *d_pt;
-  long size2 = size >> 1;
+  long size2 = size >> 2;
+  cudaStream_t stream[Stream];
+  dim3 dim_grid(GRIDSIZE >> 2, 1, 1), dim_block(BLOCKSIZE, 1, 1);
+  cudaHostRegister(pt, size2, cudaHostRegisterDefault);
+  cudaHostRegister(ct, size2, cudaHostRegisterDefault);
 
-  dim3 dim_grid(GRIDSIZE >> 1, 1, 1), dim_block(BLOCKSIZE, 1, 1);
+  int stm;
+  for (stm = 0; stm < Stream; stm++) {
+    cudaStreamCreate(&stream[stm]);
+  }
+
 
   cudaMalloc((void **) &d_pt, size2);
   cudaMalloc((void **) &d_ct, size2);
   cudaMemcpyToSymbol(rkey, rk, 176);
 
-  cudaMemcpy(d_pt, pt, size2, cudaMemcpyHostToDevice);
+  cudaMemcpyAsync(d_pt, pt, size2, cudaMemcpyHostToDevice, stream[0]);
   cudaBindTexture(NULL, pt_texture, d_pt);
-  device_aes_encrypt << < dim_grid, dim_block >> > (d_ct);
-  cudaMemcpy(ct, d_ct, size2, cudaMemcpyDeviceToHost);
 
-  cudaMemcpy(d_pt, pt + size2, size2, cudaMemcpyHostToDevice);
-  device_aes_encrypt << < dim_grid, dim_block >> > (d_ct);
-  cudaMemcpy(ct + size2, d_ct, size2, cudaMemcpyDeviceToHost);
+  int i;
+  for (i = 0; i < 4; i++) {
+    device_aes_encrypt <<< dim_grid, dim_block, 0, stream[i] >>> (d_ct);
+    cudaMemcpyAsync(ct + size2 * i, d_ct, size2, cudaMemcpyDeviceToHost, stream[i]);
+    if (i != 3)
+      cudaMemcpyAsync(d_pt, pt + size2 * (i + 1), size2, cudaMemcpyHostToDevice, stream[i + 1]);
+  }
 
   cudaUnbindTexture(pt_texture);
+  cudaHostUnregister(pt);
+  cudaHostUnregister(ct);
   cudaFree(d_pt);
   cudaFree(d_ct);
 }
