@@ -45,8 +45,7 @@ int main(int argc, char **argv){
 
   printf("initialize..\n");
   //malloc
-//  plaintext   = (unsigned char*)malloc(sizeof(unsigned char)*FILESIZE);
-  cudaHostAlloc( (unsigned char*) &plaintext, sizeof(unsigned char)*FILESIZE, cudaHostAllocMapped);
+  plaintext   = (unsigned char*)malloc(sizeof(unsigned char)*FILESIZE);
   ciphertext  = (unsigned char*)malloc(sizeof(unsigned char)*FILESIZE);
   ciphertext2 = (unsigned char*)malloc(sizeof(unsigned char)*FILESIZE);
 
