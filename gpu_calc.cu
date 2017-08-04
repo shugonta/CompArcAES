@@ -8,7 +8,6 @@
 #define MUL3(x) (x & 0x80 ? ((x << 1 ^0x1b) & 0xff ^x) : ((x << 1) ^ x))
 #define MUL2(x) (x & 0x80 ? (x << 1 ^0x1b) & 0xff  : (x << 1))
 
-__constant__ unsigned char state_const[32768];
 __constant__ int rkey[44];
 __shared__ unsigned char SboxCUDA[256];
 __constant__ unsigned char SboxCUDAConst[256] = {
@@ -851,24 +850,17 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   //In this function, you need to allocate the device memory and so on.
   unsigned char *d_pt, *d_ct;
 
-  dim3 dim_grid(16, 1, 1), dim_block(BLOCKSIZE, 1, 1);
-  long int size_thread = 32768;
+  dim3 dim_grid(GRIDSIZE, 1, 1), dim_block(BLOCKSIZE, 1, 1);
 
-  cudaMalloc((void **) &d_pt, sizeof(unsigned char) * size_thread);
-  cudaMalloc((void **) &d_ct, sizeof(unsigned char) * size_thread);
+  cudaMalloc((void **) &d_pt, sizeof(unsigned char) * size);
+  cudaMalloc((void **) &d_ct, sizeof(unsigned char) * size);
 
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
-  int i;
-  for (i = 0; i < 6656; i++) {
-    cudaMemcpyToSymbol(state_const, pt + i * size_thread, sizeof(unsigned char) * size_thread);
-    device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size_thread);
-    cudaMemcpy(ct + i * size_thread, d_ct, sizeof(unsigned char) * size_thread, cudaMemcpyDeviceToHost);
-  }
-  /*cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size2, cudaMemcpyHostToDevice);
-  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size2);
 
-  cudaMemcpy(ct + 8192, d_ct, sizeof(unsigned char) * size2, cudaMemcpyDeviceToHost);
-*/
+  cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
+  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
+  cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
+
   cudaFree(d_pt);
   cudaFree(d_ct);
 }
