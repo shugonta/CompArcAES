@@ -839,22 +839,21 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   //In this function, you need to allocate the device memory and so on.
   unsigned char *d_pt, *d_ct;
 
-//  dim3 dim_grid(GRIDSIZE_X, GRIDSIZE_Y, GRIDSIZE_Z), dim_block(BLOCKSIZE, 1, 1);
-//  dim3 dim_grid(GRIDSIZE_X, 1, 1), dim_block(BLOCKSIZE, 1, 1);
-  dim3 dim_grid(GRIDSIZE, 1, 1), dim_block(BLOCKSIZE, 1, 1);
+  dim3 dim_grid(GRIDSIZE << 2, 1, 1), dim_block(BLOCKSIZE, 1, 1);
+  long int size2 = size >> 2;
 
-  cudaMalloc((void **) &d_pt, sizeof(unsigned char) * size);
-  cudaMalloc((void **) &d_ct, sizeof(unsigned char) * size);
+  cudaMalloc((void **) &d_pt, sizeof(unsigned char) * size2);
+  cudaMalloc((void **) &d_ct, sizeof(unsigned char) * size2);
 
-  cudaMemcpy(d_pt, pt, sizeof(unsigned char) * (size), cudaMemcpyHostToDevice);
+  cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size2, cudaMemcpyHostToDevice);
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
 
-  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
-  cudaMemcpy(ct, d_pt, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
-//  cudaMemcpy(d_pt, &(pt[(size >> 2)]), sizeof(unsigned char) * (size >> 2), cudaMemcpyHostToDevice);
-//  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
+  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size2);
+  cudaMemcpy(ct, d_pt, sizeof(unsigned char) * size2, cudaMemcpyDeviceToHost);
+  cudaMemcpy(d_pt, &(pt[size2]), sizeof(unsigned char) * size2, cudaMemcpyHostToDevice);
+  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size2);
 
-//  cudaMemcpy(&(ct[(size >> 2)]), d_pt, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
+  cudaMemcpy(&(ct[size2]), d_pt, sizeof(unsigned char) * size2, cudaMemcpyDeviceToHost);
 
   cudaFree(d_pt);
   cudaFree(d_ct);
