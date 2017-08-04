@@ -210,7 +210,7 @@ void launch_cpu_aes(unsigned char *pt, int *rk, unsigned char *ct, long int size
     //datadump("Plaintext        : ", data, 4);      
       
     Cipher(data, rk, i);
-    if(i == 109051904||i == 0){
+    if(i == 6815744||i == 0){
       printf("stateCPU0: 0x%x\n", data[0]);
       printf("stateCPU1: 0x%x\n", data[1]);
       printf("stateCPU2: 0x%x\n", data[2]);
