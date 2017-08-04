@@ -3,8 +3,6 @@
 #include <math.h>
 #include "calculation.h"
 
-//#define MUL3(x) (x & 0x80 ? ((x << 1 ^0x1b) & 0xff ^x) : ((x << 1) ^ x))
-//#define MUL2(x) (x & 0x80 ? (x << 1 ^0x1b) & 0xff  : (x << 1))
 #define MUL3(x) (x & 0x80 ? ((x << 1 ^0x1b) & 0xff ^x) : ((x << 1) ^ x))
 #define MUL2(x) (x & 0x80 ? (x << 1 ^0x1b) & 0xff  : (x << 1))
 
@@ -848,13 +846,13 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
 
   dim3 dim_grid(GRIDSIZE, 1, 1), dim_block(BLOCKSIZE, 1, 1);
 
-  cudaMalloc((void **) &d_pt, sizeof(int) * (size >> 2));
-  cudaMalloc((void **) &d_ct, sizeof(unsigned char) * size);
-  cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
-  cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
+  cudaMalloc((void **) &d_pt, size);
+  cudaMalloc((void **) &d_ct, size);
+  cudaMemcpyToSymbol(rkey, rk, 176);
+  cudaMemcpy(d_pt, pt, size, cudaMemcpyHostToDevice);
   cudaBindTexture(NULL, pt_texture, d_pt);
   device_aes_encrypt <<< dim_grid, dim_block >>> (d_ct);
-  cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
+  cudaMemcpy(ct, d_ct, size, cudaMemcpyDeviceToHost);
   cudaUnbindTexture(pt_texture);
   cudaFree(d_pt);
   cudaFree(d_ct);
