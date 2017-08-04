@@ -853,14 +853,12 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
 
   cudaMemcpy(d_pt, pt, size2, cudaMemcpyHostToDevice);
   cudaBindTexture(NULL, pt_texture, d_pt);
+  device_aes_encrypt << < dim_grid, dim_block >> > (d_ct);
+  cudaMemcpy(ct, d_ct, size2, cudaMemcpyDeviceToHost);
 
-  int i;
-  for (i = 0; i < 2; i++) {
-    device_aes_encrypt << < dim_grid, dim_block >> > (d_ct);
-    cudaMemcpy(ct + size2 * i, d_ct, size2, cudaMemcpyDeviceToHost);
-    if (i != 2)
-      cudaMemcpy(d_pt, pt + size2 * (i + 1), size2, cudaMemcpyHostToDevice);
-  }
+  cudaMemcpy(d_pt, pt + size2, size2, cudaMemcpyHostToDevice);
+  device_aes_encrypt << < dim_grid, dim_block >> > (d_ct);
+  cudaMemcpy(ct + size2, d_ct, size2, cudaMemcpyDeviceToHost);
 
   cudaUnbindTexture(pt_texture);
   cudaFree(d_pt);
