@@ -854,19 +854,22 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   dim3 dim_grid(GRIDSIZE, 1, 1), dim_block(BLOCKSIZE, 1, 1);
 
 //  cudaMalloc((void **) &d_pt, sizeof(int) * (size >> 2));
-  cudaMalloc((void **) &d_ct, sizeof(unsigned char) * size);
+//  cudaMalloc((void **) &d_ct, sizeof(unsigned char) * size);
 
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
 
 //  cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
   cudaHostRegister(pt, size * sizeof(unsigned char), cudaHostRegisterMapped);
+  cudaHostRegister(ct, size * sizeof(unsigned char), cudaHostRegisterMapped);
   cudaHostGetDevicePointer((void **) &d_pt, pt, 0);
-  device_aes_encrypt << < dim_grid, dim_block >> > (d_pt, d_ct, size);
-  cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
+  cudaHostGetDevicePointer((void **) &d_ct, ct, 0);
+  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
+//  cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
 
 //  cudaFree(d_pt);
   cudaHostUnregister(pt);
-  cudaFree(d_ct);
+  cudaHostUnregister(ct);
+//  cudaFree(d_ct);
 }
 
 
