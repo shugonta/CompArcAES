@@ -45,12 +45,9 @@ int main(int argc, char **argv){
 
   printf("initialize..\n");
   //malloc
-//  plaintext   = (unsigned char*)malloc(sizeof(unsigned char)*FILESIZE);
-  cudaHostAlloc((void **) &plaintext, sizeof(unsigned char) * FILESIZE, cudaHostAllocDefault);
-  cudaHostAlloc((void **) &ciphertext2, sizeof(unsigned char) * FILESIZE, cudaHostAllocDefault);
-//  plaintext   = (unsigned char*)malloc(sizeof(unsigned char)*FILESIZE);
+  plaintext   = (unsigned char*)malloc(sizeof(unsigned char)*FILESIZE);
   ciphertext  = (unsigned char*)malloc(sizeof(unsigned char)*FILESIZE);
-//  ciphertext2 = (unsigned char*)malloc(sizeof(unsigned char)*FILESIZE);
+  ciphertext2 = (unsigned char*)malloc(sizeof(unsigned char)*FILESIZE);
 
   // set plaintext with random numbers
   srand((unsigned)time(NULL));
