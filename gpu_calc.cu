@@ -35,7 +35,7 @@ __global__ void device_aes_encrypt(unsigned char *ct, long int offset) {
   //Please modify this kernel!!
   int thread_id = blockIdx.x * blockDim.x + threadIdx.x;
    if (thread_id == 0)
-     printf("offset = %d\n", offset);
+     printf("offset = %ld\n", offset);
 
   /* if (thread_id == 0)
      printf("size = %ld\n", size);
