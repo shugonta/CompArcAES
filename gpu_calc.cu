@@ -839,7 +839,7 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   //In this function, you need to allocate the device memory and so on.
   unsigned char *d_pt, *d_ct;
 
-  dim3 dim_grid(GRIDSIZE << 2, 1, 1), dim_block(BLOCKSIZE, 1, 1);
+  dim3 dim_grid(GRIDSIZE >> 2, 1, 1), dim_block(BLOCKSIZE, 1, 1);
   long int size2 = size >> 2;
 
   cudaMalloc((void **) &d_pt, sizeof(unsigned char) * size2);
