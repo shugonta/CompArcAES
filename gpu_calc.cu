@@ -861,9 +861,9 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
   cudaMalloc((void **) &d_ct, size);
   cudaMemcpyToSymbol(rkey, rk, 176);
 
-  cudaStreamCreateWithFlags(&stream[0], cudaStreamNonBlocking);
+  cudaStreamCreateWithFlag(&stream[0], cudaStreamNonBlocking);
   cudaMemcpyAsync(d_pt, pt, size2, cudaMemcpyHostToDevice, stream[0]);
-  cudaBindTextureWithFlags(NULL, pt_texture, d_pt);
+  cudaBindTextureWithFlag(NULL, pt_texture, d_pt);
 
   int i;
   for (i = 0; i < Stream; i++) {
