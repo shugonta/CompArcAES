@@ -9,6 +9,7 @@
 #define BLOCKSIZE (128)
 #define GRIDSIZE ((FILESIZE/16)/BLOCKSIZE) //128*26*32
 #define Stream 64
+#define NBb2 (NB << 1)
 
 texture<int, 1, cudaReadModeElementType> pt_texture;
 __constant__ int rkey[44];
