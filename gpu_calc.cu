@@ -858,9 +858,10 @@ void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int s
 
   cudaMemcpyToSymbol(rkey, rk, sizeof(int) * 44);
 
-  cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
-  cudaHostGetDevicePointer((void **)&d_pt, pt, 0);
-  device_aes_encrypt <<< dim_grid, dim_block >>> (d_pt, d_ct, size);
+//  cudaMemcpy(d_pt, pt, sizeof(unsigned char) * size, cudaMemcpyHostToDevice);
+  cudaHostRegister(pt, size * sizeof(unsigned char), cudaHostRegisterMapped);
+  cudaHostGetDevicePointer((void **) &d_pt, pt, 0);
+  device_aes_encrypt << < dim_grid, dim_block >> > (d_pt, d_ct, size);
   cudaMemcpy(ct, d_ct, sizeof(unsigned char) * size, cudaMemcpyDeviceToHost);
 
 //  cudaFree(d_pt);
