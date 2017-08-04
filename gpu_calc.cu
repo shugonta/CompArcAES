@@ -45,12 +45,7 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
   unsigned char cb[NBb2];
   int *cw = (int *) cb;
   int *state = (int *) &(pt[thread_id << 4]);
-  if (thread_id == 0) {
-    printf("state0: 0x%x\n", state[0]);
-    printf("state1: 0x%x\n", state[1]);
-    printf("state2: 0x%x\n", state[2]);
-    printf("state3: 0x%x\n", state[3]);
-  }
+
   cw[0] = state[0] ^ rkey[0];
   cw[1] = state[1] ^ rkey[1];
   cw[2] = state[2] ^ rkey[2];
@@ -836,6 +831,12 @@ __global__ void device_aes_encrypt(unsigned char *pt, unsigned char *ct, long in
   cb[14] = SboxCUDA[cb[22]];
   cb[15] = SboxCUDA[cb[27]];
   ((int *) pt)[thread_id << 2 | 3] = cw[3] ^ rkey[43];
+  if (thread_id == 0) {
+    printf("state0: 0x%x\n", cw[0]);
+    printf("state1: 0x%x\n", cw[1]);
+    printf("state2: 0x%x\n", cw[2]);
+    printf("state3: 0x%x\n", cw[3]);
+  }
 }
 
 void launch_aes_kernel(unsigned char *pt, int *rk, unsigned char *ct, long int size) {
